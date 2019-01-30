@@ -1,0 +1,68 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.3",
+    "version": "0.6.0",
+    "id": "b6a9a11b-75a4-4bbd-ad8b-0f135cf08069",
+    "packageName": "com.luckydrawbot",
+    "developer": {
+        "name": "Tony",
+        "websiteUrl": "https://www.microsoft.com",
+        "privacyUrl": "https://www.microsoft.com",
+        "termsOfUseUrl": "https://www.microsoft.com"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "LuckyDrawBot",
+        "full": "Lucky-Draw Bot"
+    },
+    "description": {
+        "short": "Lucky Draw Bot",
+        "full": "A smart bot for lucky draw activities in channels."
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [
+        {
+            "botId": "20128cb3-5809-4b4f-a32d-b9929e67238c",
+            "scopes": [
+                "team",
+                "personal"
+            ],
+            "commandLists": [
+                {
+                    "scopes": [
+                        "personal"
+                    ],
+                    "commands": [
+                        {
+                            "title": "help",
+                            "description": "Display help information"
+                        }
+                    ]
+                },
+                {
+                    "scopes": [
+                        "team"
+                    ],
+                    "commands": [
+                        {
+                            "title": "help",
+                            "description": "Display help information"
+                        }
+                    ]
+                }
+            ],
+            "supportsFiles": true,
+            "isNotificationOnly": false
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": [
+        "*.ngrok.io"
+    ]
+}
