@@ -24,95 +24,92 @@ namespace LuckyDrawBot.Controllers
         public async Task<IActionResult> GetMessage([FromBody]Activity activity)
         {
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl, DateTime.Now.AddDays(7));
-            var connector = new ConnectorClient(new Uri(activity.ServiceUrl), "20128cb3-5809-4b4f-a32d-b9929e67238c", ".l!c}F4xt8=*{%x{I6wZ7Ek");
-            var reply = activity.CreateReply();
-            reply.Attachments = new List<Attachment>
+
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), "20128cb3-5809-4b4f-a32d-b9929e67238c", ".l!c}F4xt8=*{%x{I6wZ7Ek");
+
+            var rootActivity = Activity.CreateMessageActivity() as Activity;
+            rootActivity.From = new ChannelAccount("20128cb3-5809-4b4f-a32d-b9929e67238c", "a name");
+            rootActivity.Conversation = new ConversationAccount(id: channelData.Channel.Id);
+            rootActivity.Attachments = new List<Attachment>
             {
                 new Attachment
                 {
                     ContentType = HeroCard.ContentType,
                     Content = new HeroCard()
                     {
-                        Title = "Superhero",
-                        Subtitle = "An incredible hero",
-                        Text = "Microsoft Teams",
+                        Title = "Yummy Steak",
+                        Subtitle = "",
+                        Text = "",
                         Images = new List<CardImage>()
                         {
                             new CardImage()
                             {
                                 Url = "https://github.com/tony-xia/microsoft-teams-templates/raw/master/images/steak.jpg"
                             }
-                        },
-                        Buttons = new List<CardAction>()
-                        {
-                            new CardAction()
-                            {
-                                Type = "openUrl",
-                                Title = "Visit",
-                                Value = "http://www.microsoft.com"
-                            }
                         }
                     }
                 }
             };
-            //var msgToUpdate = await connector.Conversations.SendToConversationAsync(reply);
-            var msgToUpdate = await connector.Conversations.ReplyToActivityAsync(reply);
-            await Task.Delay(2000);
-            Activity updatedReply = activity.CreateReply();
-            updatedReply.Attachments = new List<Attachment>
+            var rootMessage = await connectorClient.Conversations.SendToConversationAsync((Activity)rootActivity);
+
+            await UpdateActivity("1 person", connectorClient, channelData.Channel.Id, rootMessage.Id);
+            await UpdateActivity("5 persons", connectorClient, channelData.Channel.Id, rootMessage.Id);
+            await UpdateActivity("100 persons", connectorClient, channelData.Channel.Id, rootMessage.Id);
+
+            await Task.Delay(3000);
+            var resultActivity = Activity.CreateMessageActivity() as Activity;
+            resultActivity.From = new ChannelAccount("20128cb3-5809-4b4f-a32d-b9929e67238c", "a name");
+            resultActivity.Conversation = new ConversationAccount(id: channelData.Channel.Id);
+            resultActivity.Attachments = new List<Attachment>
             {
                 new Attachment
                 {
                     ContentType = HeroCard.ContentType,
                     Content = new HeroCard()
                     {
-                        Title = "This is an updated message",
-                        Subtitle = "An incredible hero",
-                        Text = "Microsoft Teams",
+                        Title = "Our winners are:",
+                        Subtitle = "Ares & Tony",
                         Images = new List<CardImage>()
                         {
                             new CardImage()
                             {
-                                Url = "https://github.com/tony-xia/microsoft-teams-templates/raw/master/images/cbd_after_sunset.jpg"
-                            }
-                        },
-                        Buttons = new List<CardAction>()
-                        {
-                            new CardAction()
-                            {
-                                Type = "openUrl",
-                                Title = "Visit",
-                                Value = "http://www.microsoft.com"
+                                Url = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif"
                             }
                         }
                     }
                 }
             };
-            await connector.Conversations.UpdateActivityAsync(reply.Conversation.Id, msgToUpdate.Id, updatedReply);
-
-            // var userId = activity.From.Id;
-            // var botId = activity.Recipient.Id;
-            // var botName = activity.Recipient.Name;
-            // var channelData = activity.GetChannelData<TeamsChannelData>();
-            // var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), "20128cb3-5809-4b4f-a32d-b9929e67238c", ".l!c}F4xt8=*{%x{I6wZ7Ek");
-            // var parameters = new ConversationParameters
-            // {
-            //     Bot = new ChannelAccount(botId, botName),
-            //     Members = new ChannelAccount[] { new ChannelAccount(userId) },
-            //     ChannelData = new TeamsChannelData
-            //     {
-            //         Tenant = channelData.Tenant,
-            //         Team = channelData.Team,
-            //         Channel = channelData.Channel,
-            //     }
-            // };
-            // var conversationResource = await connectorClient.Conversations.CreateConversationAsync(parameters);
-            // var message = Activity.CreateMessageActivity();
-            // message.From = new ChannelAccount(botId, botName);
-            // message.Conversation = new ConversationAccount(id: conversationResource.Id.ToString());
-            // message.Text = "new start";
-            // await connectorClient.Conversations.SendToConversationAsync((Activity)message);
+            var resultMessage = await connectorClient.Conversations.SendToConversationAsync((Activity)resultActivity);
             return Ok();
+        }
+
+
+        private async Task UpdateActivity(string text, ConnectorClient connectorClient, string channelId, string activityId)
+        {
+            await Task.Delay(1500);
+            var updatedActivity = Activity.CreateMessageActivity() as Activity;
+            updatedActivity.Attachments = new List<Attachment>
+            {
+                new Attachment
+                {
+                    ContentType = HeroCard.ContentType,
+                    Content = new HeroCard()
+                    {
+                        Title = "Yummy Steak - " + text,
+                        Subtitle = "",
+                        Text = "",
+                        Images = new List<CardImage>()
+                        {
+                            new CardImage()
+                            {
+                                Url = "https://github.com/tony-xia/microsoft-teams-templates/raw/master/images/steak.jpg"
+                            }
+                        }
+                    }
+                }
+            };
+            await connectorClient.Conversations.UpdateActivityAsync(channelId, activityId, updatedActivity);
         }
 
     }
