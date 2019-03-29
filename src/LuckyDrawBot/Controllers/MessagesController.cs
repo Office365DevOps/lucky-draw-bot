@@ -7,6 +7,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Extensions.Logging;
 
 namespace LuckyDrawBot.Controllers
 {
@@ -14,8 +15,11 @@ namespace LuckyDrawBot.Controllers
     [Produces("application/json")]
     public class MessagesController : ControllerBase
     {
-        public MessagesController()
+        private readonly ILogger<MessagesController> _logger;
+
+        public MessagesController(ILogger<MessagesController> logger)
         {
+            _logger = logger;
         }
 
         [HttpPost]
@@ -23,6 +27,8 @@ namespace LuckyDrawBot.Controllers
         [ProducesResponseType(typeof(Activity), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetMessage([FromBody]Activity activity)
         {
+            _logger.LogWarning($"Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
+
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl, DateTime.Now.AddDays(7));
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
@@ -75,6 +81,16 @@ namespace LuckyDrawBot.Controllers
                             new CardImage()
                             {
                                 Url = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif"
+                            }
+                        },
+                        Buttons = new List<CardAction>
+                        {
+                            new CardAction
+                            {
+                                Title = "title",
+                                Text = "text",
+                                Type = "invoke",
+                                Value = "{\"abc\":1}"
                             }
                         }
                     }
