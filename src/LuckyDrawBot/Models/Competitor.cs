@@ -4,7 +4,7 @@ namespace LuckyDrawBot.Models
 {
     public class Competitor
     {
-        public Guid AadObjectId { get; set; }
+        public string AadObjectId { get; set; }
         public string Name { get; set; }
         public DateTimeOffset JoinTime { get; set; }
     }

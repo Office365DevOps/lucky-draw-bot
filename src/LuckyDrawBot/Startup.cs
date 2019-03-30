@@ -1,4 +1,5 @@
-﻿using LuckyDrawBot.Services;
+﻿using LuckyDrawBot.Models;
+using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,12 @@ namespace LuckyDrawBot
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddSingleton(Configuration.GetSection("Bot").Get<BotSettings>());
             services.AddSingleton<IDateTimeService, DateTimeService>();
             services.AddSingleton<IRandomService, RandomService>();
             services.AddSingleton<ICompetitionRepositoryService, CompetitionRepositoryService>();
             services.AddSingleton<ICompetitionService, CompetitionService>();
+            services.AddSingleton<IActivityBuilder, ActivityBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

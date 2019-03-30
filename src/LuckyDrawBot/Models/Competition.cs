@@ -6,6 +6,7 @@ namespace LuckyDrawBot.Models
     public class Competition
     {
         public Guid Id { get; set; }
+        public string ServiceUrl { get; set; }
         public Guid TenantId { get; set; }
         public string TeamId { get; set; }
         public string ChannelId { get; set; }
@@ -17,10 +18,11 @@ namespace LuckyDrawBot.Models
         public string Locale { get; set; }
         public string Gift { get; set; }
         public string Description { get; set; }
+        public int WinnerCount { get; set; }
         public bool IsCompleted { get; set; }
         public string CreatorName { get; set; }
-        public Guid CreatorAadObject { get; set; }
-        public Guid WinnerAadObjectId { get; set; }
+        public string CreatorAadObject { get; set; }
+        public List<string> WinnerAadObjectIds { get; set; }
         public List<Competitor> Competitors { get; set; }
     }
 }

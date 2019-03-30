@@ -9,11 +9,11 @@ namespace LuckyDrawBot.Services
 {
     public interface ICompetitionService
     {
-        Task<Competition> Create(Guid tenantId, string teamId, string channelId,
-                                 DateTimeOffset drawTime, string locale, string gift, string description,
-                                 string creatorName, Guid creatorAadObject);
+        Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId,
+                                 DateTimeOffset drawTime, string locale, string gift, string description, int winnerCount,
+                                 string creatorName, string creatorAadObject);
         Task<Competition> UpdateMainActivity(Guid competitionId, string mainActivityId);
-        Task<Competition> AddCompetitor(Guid competitionId, Guid competitorAadObjectId, string competitorName);
+        Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName);
         Task<List<Guid>> GetToBeDrawnCompetitionIds();
         Task<Competition> Draw(Guid competitionId);
         Task<Competition> UpdateResultActivity(Guid competitionId, string resultActivityId);
@@ -32,9 +32,14 @@ namespace LuckyDrawBot.Services
             _repositoryService = repositoryService;
         }
 
-        public async Task<Competition> AddCompetitor(Guid competitionId, Guid competitorAadObjectId, string competitorName)
+        public async Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName)
         {
             var competition = await _repositoryService.GetOpenCompetition(competitionId);
+            if (competition.Competitors.Any(c => c.AadObjectId == competitorAadObjectId))
+            {
+                return competition;
+            }
+
             var competitor = new Competitor
             {
                 AadObjectId = competitorAadObjectId,
@@ -46,11 +51,12 @@ namespace LuckyDrawBot.Services
             return competition;
         }
 
-        public async Task<Competition> Create(Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, string gift, string description, string creatorName, Guid creatorAadObject)
+        public async Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, string gift, string description, int winnerCount, string creatorName, string creatorAadObject)
         {
             var competition = new Competition
             {
                 Id = Guid.NewGuid(),
+                ServiceUrl = serviceUrl,
                 TenantId = tenantId,
                 TeamId = teamId,
                 ChannelId = channelId,
@@ -62,10 +68,11 @@ namespace LuckyDrawBot.Services
                 Locale = locale,
                 Gift = gift,
                 Description = description,
+                WinnerCount = winnerCount,
                 IsCompleted = false,
                 CreatorName = creatorName,
                 CreatorAadObject = creatorAadObject,
-                WinnerAadObjectId = Guid.Empty,
+                WinnerAadObjectIds = new List<string>(),
                 Competitors = new List<Competitor>()
             };
             await _repositoryService.UpsertOpenCompetition(competition);
@@ -77,8 +84,13 @@ namespace LuckyDrawBot.Services
             var competition = await _repositoryService.GetOpenCompetition(competitionId);
             if (competition.Competitors.Count > 0)
             {
-                var winner = competition.Competitors[_randomService.Next(competition.Competitors.Count)];
-                competition.WinnerAadObjectId = winner.AadObjectId;
+                var candidates = competition.Competitors.Select(c => c.AadObjectId).ToList();
+                while ((candidates.Count > 0) && (competition.WinnerAadObjectIds.Count < competition.WinnerCount))
+                {
+                    var winnerIndex = _randomService.Next(candidates.Count);
+                    competition.WinnerAadObjectIds.Add(candidates[winnerIndex]);
+                    candidates.RemoveAt(winnerIndex);
+                }
             }
             competition.ActualDrawTime = _dateTimeService.UtcNow;
             competition.IsCompleted = true;
