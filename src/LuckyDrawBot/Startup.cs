@@ -1,6 +1,8 @@
-﻿using LuckyDrawBot.Models;
+﻿using HealthChecks.UI.Client;
+using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -10,17 +12,24 @@ namespace LuckyDrawBot
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IHostingEnvironment _env;
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddApiServices(Configuration, _env);
+
+            services
+                .AddHealthChecks()
+                .AddDependencyService(Configuration, "LuckyDrawBot")
+                .AddAssemblyVersion();
 
             services.AddSingleton(Configuration.GetSection("Bot").Get<BotSettings>());
             services.AddSingleton<IDateTimeService, DateTimeService>();
@@ -30,19 +39,15 @@ namespace LuckyDrawBot
             services.AddSingleton<IActivityBuilder, ActivityBuilder>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            app.UseHealthChecks("/healthcheck", new HealthCheckOptions
             {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
 
-            app.UseMvc();
+            app.UseApiServices(Configuration, _env);
         }
     }
 }
