@@ -1,0 +1,810 @@
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Startup.cs
+FN:22,Microsoft.Extensions.Configuration.IConfiguration LuckyDrawBot.Startup::get_Configuration()
+FNDA:4,Microsoft.Extensions.Configuration.IConfiguration LuckyDrawBot.Startup::get_Configuration()
+DA:23,4
+FN:25,System.Void LuckyDrawBot.Startup::ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)
+FNDA:1,System.Void LuckyDrawBot.Startup::ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)
+DA:26,1
+DA:27,1
+DA:29,1
+DA:30,1
+DA:31,1
+DA:32,1
+DA:34,1
+DA:35,1
+DA:36,1
+DA:37,1
+DA:38,1
+DA:39,1
+DA:40,1
+DA:41,1
+FN:43,System.Void LuckyDrawBot.Startup::Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)
+FNDA:1,System.Void LuckyDrawBot.Startup::Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)
+DA:44,1
+DA:45,1
+DA:46,1
+DA:47,2
+DA:48,1
+DA:49,1
+DA:51,1
+DA:52,1
+BRDA:45,25,0,1
+BRDA:45,25,1,1
+FN:16,System.Void LuckyDrawBot.Startup::.ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IHostingEnvironment)
+FNDA:1,System.Void LuckyDrawBot.Startup::.ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IHostingEnvironment)
+DA:17,1
+DA:18,1
+DA:19,1
+DA:20,1
+DA:21,1
+LF:28
+LH:28
+BRF:2
+BRH:2
+FNF:4
+FNH:4
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Services\ActivityBuilder.cs
+FN:26,Microsoft.Bot.Schema.Activity LuckyDrawBot.Services.ActivityBuilder::CreateMainActivity(LuckyDrawBot.Models.Competition)
+FNDA:0,Microsoft.Bot.Schema.Activity LuckyDrawBot.Services.ActivityBuilder::CreateMainActivity(LuckyDrawBot.Models.Competition)
+DA:27,0
+DA:28,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:33,0
+DA:34,0
+DA:35,0
+DA:37,0
+DA:38,0
+DA:39,0
+DA:40,0
+DA:41,0
+DA:42,0
+DA:43,0
+DA:44,0
+DA:45,0
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+DA:52,0
+DA:53,0
+DA:54,0
+DA:55,0
+DA:56,0
+DA:57,0
+DA:58,0
+DA:59,0
+DA:60,0
+DA:61,0
+DA:62,0
+DA:63,0
+DA:64,0
+DA:65,0
+DA:66,0
+DA:67,0
+BRDA:31,33,0,0
+BRDA:31,33,1,0
+FN:69,System.String LuckyDrawBot.Services.ActivityBuilder::GenerateCompetitorsText(System.Collections.Generic.IList`1<LuckyDrawBot.Models.Competitor>)
+FNDA:0,System.String LuckyDrawBot.Services.ActivityBuilder::GenerateCompetitorsText(System.Collections.Generic.IList`1<LuckyDrawBot.Models.Competitor>)
+DA:70,0
+DA:71,0
+DA:74,0
+DA:76,0
+DA:78,0
+DA:80,0
+DA:82,0
+DA:84,0
+BRDA:71,9,1,0
+BRDA:71,9,2,0
+BRDA:71,9,3,0
+BRDA:71,9,4,0
+BRDA:71,9,0,0
+FN:86,Microsoft.Bot.Schema.Activity LuckyDrawBot.Services.ActivityBuilder::CreateResultActivity(LuckyDrawBot.Models.Competition)
+FNDA:0,Microsoft.Bot.Schema.Activity LuckyDrawBot.Services.ActivityBuilder::CreateResultActivity(LuckyDrawBot.Models.Competition)
+DA:87,0
+DA:88,0
+DA:89,0
+DA:90,0
+DA:91,0
+DA:92,0
+DA:93,0
+DA:94,0
+DA:95,0
+DA:96,0
+DA:97,0
+DA:98,0
+DA:99,0
+DA:100,0
+DA:101,0
+DA:102,0
+DA:103,0
+DA:104,0
+DA:105,0
+DA:106,0
+DA:107,0
+DA:108,0
+DA:109,0
+DA:110,0
+DA:111,0
+BRDA:92,173,0,0
+BRDA:92,173,1,0
+FN:20,System.Void LuckyDrawBot.Services.ActivityBuilder::.ctor(LuckyDrawBot.Models.BotSettings)
+FNDA:0,System.Void LuckyDrawBot.Services.ActivityBuilder::.ctor(LuckyDrawBot.Models.BotSettings)
+DA:21,0
+DA:22,0
+DA:23,0
+DA:24,0
+LF:76
+LH:0
+BRF:9
+BRH:0
+FNF:4
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Services\BotClientFactory.cs
+FN:19,System.Void LuckyDrawBot.Services.BotClient::Dispose()
+FNDA:0,System.Void LuckyDrawBot.Services.BotClient::Dispose()
+DA:20,0
+DA:21,0
+DA:22,0
+DA:23,0
+DA:24,0
+DA:25,0
+DA:26,0
+BRDA:21,12,0,0
+BRDA:21,12,1,0
+FN:12,System.Void LuckyDrawBot.Services.BotClient::.ctor(System.String,LuckyDrawBot.Services.IDateTimeService)
+FNDA:0,System.Void LuckyDrawBot.Services.BotClient::.ctor(System.String,LuckyDrawBot.Services.IDateTimeService)
+DA:13,0
+DA:14,0
+DA:15,0
+DA:16,0
+DA:17,0
+FN:28,System.Void LuckyDrawBot.Services.BotClient/<SendToConversationAsync>d__3::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.BotClient/<SendToConversationAsync>d__3::MoveNext()
+DA:29,0
+DA:30,0
+DA:31,0
+BRDA:30,64,0,0
+BRDA:30,64,1,0
+FN:33,System.Void LuckyDrawBot.Services.BotClient/<UpdateActivityAsync>d__4::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.BotClient/<UpdateActivityAsync>d__4::MoveNext()
+DA:34,0
+DA:35,0
+DA:36,0
+BRDA:35,76,0,0
+BRDA:35,76,1,0
+FN:53,LuckyDrawBot.Services.BotClient LuckyDrawBot.Services.BotClientFactory::CreateBotClient(System.String)
+FNDA:0,LuckyDrawBot.Services.BotClient LuckyDrawBot.Services.BotClientFactory::CreateBotClient(System.String)
+DA:54,0
+DA:55,0
+DA:56,0
+FN:47,System.Void LuckyDrawBot.Services.BotClientFactory::.ctor(LuckyDrawBot.Services.IDateTimeService)
+FNDA:0,System.Void LuckyDrawBot.Services.BotClientFactory::.ctor(LuckyDrawBot.Services.IDateTimeService)
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+LF:25
+LH:0
+BRF:6
+BRH:0
+FNF:6
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Services\CompetitionRepositoryService.cs
+FN:21,System.Void LuckyDrawBot.Services.CompetitionRepositoryService::.ctor()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService::.ctor()
+DA:22,0
+DA:23,0
+FN:25,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<GetOpenCompetition>d__2::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<GetOpenCompetition>d__2::MoveNext()
+DA:26,0
+DA:27,0
+DA:28,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:33,0
+DA:35,0
+FN:40,System.Boolean LuckyDrawBot.Services.CompetitionRepositoryService/<>c__DisplayClass3_0::<GetOpenCompetitionIds>b__0(LuckyDrawBot.Models.Competition)
+FNDA:0,System.Boolean LuckyDrawBot.Services.CompetitionRepositoryService/<>c__DisplayClass3_0::<GetOpenCompetitionIds>b__0(LuckyDrawBot.Models.Competition)
+DA:41,0
+FN:37,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<GetOpenCompetitionIds>d__3::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<GetOpenCompetitionIds>d__3::MoveNext()
+DA:38,0
+DA:39,0
+DA:40,0
+DA:43,0
+FN:45,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<UpsertOpenCompetition>d__4::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<UpsertOpenCompetition>d__4::MoveNext()
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+FN:53,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<DeleteOpenCompetition>d__5::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<DeleteOpenCompetition>d__5::MoveNext()
+DA:54,0
+DA:55,0
+DA:56,0
+DA:57,0
+DA:58,0
+DA:59,0
+FN:61,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<GetCompletedCompetition>d__6::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<GetCompletedCompetition>d__6::MoveNext()
+DA:62,0
+DA:63,0
+DA:64,0
+DA:65,0
+DA:66,0
+DA:67,0
+DA:69,0
+DA:71,0
+FN:73,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<UpsertCompletedCompetition>d__7::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionRepositoryService/<UpsertCompletedCompetition>d__7::MoveNext()
+DA:74,0
+DA:75,0
+DA:76,0
+DA:77,0
+DA:78,0
+DA:79,0
+LF:41
+LH:0
+BRF:0
+BRH:0
+FNF:8
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Services\CompetitionService.cs
+FN:27,System.Void LuckyDrawBot.Services.CompetitionService::.ctor(LuckyDrawBot.Services.IDateTimeService,LuckyDrawBot.Services.IRandomService,LuckyDrawBot.Services.ICompetitionRepositoryService)
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService::.ctor(LuckyDrawBot.Services.IDateTimeService,LuckyDrawBot.Services.IRandomService,LuckyDrawBot.Services.ICompetitionRepositoryService)
+DA:28,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:33,0
+FN:37,System.Boolean LuckyDrawBot.Services.CompetitionService/<>c__DisplayClass4_0::<AddCompetitor>b__0(LuckyDrawBot.Models.Competitor)
+FNDA:0,System.Boolean LuckyDrawBot.Services.CompetitionService/<>c__DisplayClass4_0::<AddCompetitor>b__0(LuckyDrawBot.Models.Competitor)
+DA:38,0
+FN:35,System.Void LuckyDrawBot.Services.CompetitionService/<AddCompetitor>d__4::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService/<AddCompetitor>d__4::MoveNext()
+DA:36,0
+DA:37,0
+DA:39,0
+DA:40,0
+DA:43,0
+DA:44,0
+DA:45,0
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+DA:52,0
+BRDA:36,14,0,0
+BRDA:37,89,0,0
+BRDA:37,89,1,0
+BRDA:38,227,0,0
+BRDA:38,227,1,0
+BRDA:50,366,0,0
+BRDA:36,14,1,0
+BRDA:50,366,1,0
+FN:54,System.Void LuckyDrawBot.Services.CompetitionService/<Create>d__5::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService/<Create>d__5::MoveNext()
+DA:55,0
+DA:56,0
+DA:57,0
+DA:58,0
+DA:59,0
+DA:60,0
+DA:61,0
+DA:62,0
+DA:63,0
+DA:64,0
+DA:65,0
+DA:66,0
+DA:67,0
+DA:68,0
+DA:69,0
+DA:70,0
+DA:71,0
+DA:72,0
+DA:73,0
+DA:74,0
+DA:75,0
+DA:76,0
+DA:77,0
+DA:78,0
+DA:79,0
+DA:80,0
+BRDA:78,310,0,0
+BRDA:78,310,1,0
+FN:86,System.String LuckyDrawBot.Services.CompetitionService/<>c::<Draw>b__6_0(LuckyDrawBot.Models.Competitor)
+FNDA:0,System.String LuckyDrawBot.Services.CompetitionService/<>c::<Draw>b__6_0(LuckyDrawBot.Models.Competitor)
+DA:87,0
+FN:82,System.Void LuckyDrawBot.Services.CompetitionService/<Draw>d__6::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService/<Draw>d__6::MoveNext()
+DA:83,0
+DA:84,0
+DA:85,0
+DA:86,0
+DA:88,0
+DA:89,0
+DA:90,0
+DA:91,0
+DA:92,0
+DA:93,0
+DA:94,0
+DA:95,0
+DA:96,0
+DA:97,0
+DA:98,0
+DA:99,0
+DA:100,0
+BRDA:84,75,0,0
+BRDA:84,75,1,0
+BRDA:85,199,0,0
+BRDA:87,223,0,0
+BRDA:87,223,1,0
+BRDA:88,402,1,0
+BRDA:88,364,0,0
+BRDA:88,364,1,0
+BRDA:88,402,0,0
+BRDA:85,199,1,0
+BRDA:97,492,0,0
+BRDA:97,492,1,0
+BRDA:98,612,0,0
+BRDA:98,612,1,0
+FN:102,System.Void LuckyDrawBot.Services.CompetitionService/<GetToBeDrawnCompetitionIds>d__7::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService/<GetToBeDrawnCompetitionIds>d__7::MoveNext()
+DA:103,0
+DA:104,0
+DA:105,0
+BRDA:104,60,0,0
+BRDA:104,60,1,0
+FN:107,System.Void LuckyDrawBot.Services.CompetitionService/<UpdateMainActivity>d__8::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService/<UpdateMainActivity>d__8::MoveNext()
+DA:108,0
+DA:109,0
+DA:110,0
+DA:111,0
+DA:112,0
+DA:113,0
+BRDA:108,14,0,0
+BRDA:109,61,0,0
+BRDA:109,61,1,0
+BRDA:111,216,0,0
+BRDA:108,14,1,0
+BRDA:111,216,1,0
+FN:115,System.Void LuckyDrawBot.Services.CompetitionService/<UpdateResultActivity>d__9::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Services.CompetitionService/<UpdateResultActivity>d__9::MoveNext()
+DA:116,0
+DA:117,0
+DA:118,0
+DA:119,0
+DA:120,0
+DA:121,0
+BRDA:116,14,0,0
+BRDA:117,61,0,0
+BRDA:117,61,1,0
+BRDA:119,216,0,0
+BRDA:116,14,1,0
+BRDA:119,216,1,0
+LF:80
+LH:0
+BRF:38
+BRH:0
+FNF:9
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Services\DateTimeService.cs
+FN:11,System.DateTimeOffset LuckyDrawBot.Services.DateTimeService::get_UtcNow()
+FNDA:0,System.DateTimeOffset LuckyDrawBot.Services.DateTimeService::get_UtcNow()
+DA:12,0
+LF:1
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Services\RandomService.cs
+FN:14,System.Int32 LuckyDrawBot.Services.RandomService::Next(System.Int32)
+FNDA:0,System.Int32 LuckyDrawBot.Services.RandomService::Next(System.Int32)
+DA:15,0
+DA:16,0
+DA:17,0
+FN:11,System.Void LuckyDrawBot.Services.RandomService::.ctor()
+FNDA:0,System.Void LuckyDrawBot.Services.RandomService::.ctor()
+DA:12,0
+LF:4
+LH:0
+BRF:0
+BRH:0
+FNF:2
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Models\BotSettings.cs
+FN:6,System.String LuckyDrawBot.Models.BotSettings::get_Id()
+FNDA:2,System.String LuckyDrawBot.Models.BotSettings::get_Id()
+DA:7,2
+LF:1
+LH:1
+BRF:0
+BRH:0
+FNF:1
+FNH:1
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Models\Competition.cs
+FN:7,System.Guid LuckyDrawBot.Models.Competition::get_Id()
+FNDA:0,System.Guid LuckyDrawBot.Models.Competition::get_Id()
+DA:8,0
+FN:8,System.String LuckyDrawBot.Models.Competition::get_ServiceUrl()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_ServiceUrl()
+DA:9,0
+FN:9,System.Guid LuckyDrawBot.Models.Competition::get_TenantId()
+FNDA:0,System.Guid LuckyDrawBot.Models.Competition::get_TenantId()
+DA:10,0
+FN:10,System.String LuckyDrawBot.Models.Competition::get_TeamId()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_TeamId()
+DA:11,0
+FN:11,System.String LuckyDrawBot.Models.Competition::get_ChannelId()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_ChannelId()
+DA:12,0
+FN:12,System.String LuckyDrawBot.Models.Competition::get_MainActivityId()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_MainActivityId()
+DA:13,0
+FN:13,System.String LuckyDrawBot.Models.Competition::get_ResultActivityId()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_ResultActivityId()
+DA:14,0
+FN:14,System.DateTimeOffset LuckyDrawBot.Models.Competition::get_CreatedTime()
+FNDA:0,System.DateTimeOffset LuckyDrawBot.Models.Competition::get_CreatedTime()
+DA:15,0
+FN:15,System.DateTimeOffset LuckyDrawBot.Models.Competition::get_PlannedDrawTime()
+FNDA:0,System.DateTimeOffset LuckyDrawBot.Models.Competition::get_PlannedDrawTime()
+DA:16,0
+FN:16,System.DateTimeOffset LuckyDrawBot.Models.Competition::get_ActualDrawTime()
+FNDA:0,System.DateTimeOffset LuckyDrawBot.Models.Competition::get_ActualDrawTime()
+DA:17,0
+FN:17,System.String LuckyDrawBot.Models.Competition::get_Locale()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_Locale()
+DA:18,0
+FN:18,System.String LuckyDrawBot.Models.Competition::get_Gift()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_Gift()
+DA:19,0
+FN:19,System.String LuckyDrawBot.Models.Competition::get_Description()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_Description()
+DA:20,0
+FN:20,System.Int32 LuckyDrawBot.Models.Competition::get_WinnerCount()
+FNDA:0,System.Int32 LuckyDrawBot.Models.Competition::get_WinnerCount()
+DA:21,0
+FN:21,System.Boolean LuckyDrawBot.Models.Competition::get_IsCompleted()
+FNDA:0,System.Boolean LuckyDrawBot.Models.Competition::get_IsCompleted()
+DA:22,0
+FN:22,System.String LuckyDrawBot.Models.Competition::get_CreatorName()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_CreatorName()
+DA:23,0
+FN:23,System.String LuckyDrawBot.Models.Competition::get_CreatorAadObject()
+FNDA:0,System.String LuckyDrawBot.Models.Competition::get_CreatorAadObject()
+DA:24,0
+FN:24,System.Collections.Generic.List`1<System.String> LuckyDrawBot.Models.Competition::get_WinnerAadObjectIds()
+FNDA:0,System.Collections.Generic.List`1<System.String> LuckyDrawBot.Models.Competition::get_WinnerAadObjectIds()
+DA:25,0
+FN:25,System.Collections.Generic.List`1<LuckyDrawBot.Models.Competitor> LuckyDrawBot.Models.Competition::get_Competitors()
+FNDA:0,System.Collections.Generic.List`1<LuckyDrawBot.Models.Competitor> LuckyDrawBot.Models.Competition::get_Competitors()
+DA:26,0
+LF:19
+LH:0
+BRF:0
+BRH:0
+FNF:19
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Models\Competitor.cs
+FN:6,System.String LuckyDrawBot.Models.Competitor::get_AadObjectId()
+FNDA:0,System.String LuckyDrawBot.Models.Competitor::get_AadObjectId()
+DA:7,0
+FN:7,System.String LuckyDrawBot.Models.Competitor::get_Name()
+FNDA:0,System.String LuckyDrawBot.Models.Competitor::get_Name()
+DA:8,0
+FN:8,System.DateTimeOffset LuckyDrawBot.Models.Competitor::get_JoinTime()
+FNDA:0,System.DateTimeOffset LuckyDrawBot.Models.Competitor::get_JoinTime()
+DA:9,0
+LF:3
+LH:0
+BRF:0
+BRH:0
+FNF:3
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Models\InvokeActionData.cs
+FN:11,LuckyDrawBot.Models.InvokeActionType LuckyDrawBot.Models.InvokeActionData::get_Type()
+FNDA:0,LuckyDrawBot.Models.InvokeActionType LuckyDrawBot.Models.InvokeActionData::get_Type()
+DA:12,0
+FN:12,System.Guid LuckyDrawBot.Models.InvokeActionData::get_CompetitionId()
+FNDA:0,System.Guid LuckyDrawBot.Models.InvokeActionData::get_CompetitionId()
+DA:13,0
+LF:2
+LH:0
+BRF:0
+BRH:0
+FNF:2
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\src\LuckyDrawBot\Controllers\MessagesController.cs
+FN:26,System.Void LuckyDrawBot.Controllers.MessagesController::.ctor(Microsoft.Extensions.Logging.ILogger`1<LuckyDrawBot.Controllers.MessagesController>,LuckyDrawBot.Services.IBotClientFactory,LuckyDrawBot.Services.ICompetitionService,LuckyDrawBot.Services.IActivityBuilder)
+FNDA:0,System.Void LuckyDrawBot.Controllers.MessagesController::.ctor(Microsoft.Extensions.Logging.ILogger`1<LuckyDrawBot.Controllers.MessagesController>,LuckyDrawBot.Services.IBotClientFactory,LuckyDrawBot.Services.ICompetitionService,LuckyDrawBot.Services.IActivityBuilder)
+DA:27,0
+DA:28,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:33,0
+FN:38,System.Void LuckyDrawBot.Controllers.MessagesController/<GetMessage>d__5::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Controllers.MessagesController/<GetMessage>d__5::MoveNext()
+DA:39,0
+DA:40,0
+DA:42,0
+DA:43,0
+DA:44,0
+DA:45,0
+DA:48,0
+DA:49,0
+DA:51,0
+DA:54,0
+DA:55,0
+DA:56,0
+DA:57,0
+DA:58,0
+DA:59,0
+DA:60,0
+DA:63,0
+DA:64,0
+DA:65,0
+BRDA:42,160,0,0
+BRDA:45,206,1,0
+BRDA:48,250,0,0
+BRDA:48,250,1,0
+BRDA:45,206,0,0
+BRDA:42,160,1,0
+BRDA:54,399,0,0
+BRDA:56,436,0,0
+BRDA:56,436,1,0
+BRDA:57,546,0,0
+BRDA:59,580,0,0
+BRDA:59,580,1,0
+BRDA:57,546,1,0
+BRDA:54,399,1,0
+FN:70,System.Void LuckyDrawBot.Controllers.MessagesController/<Draw>d__6::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Controllers.MessagesController/<Draw>d__6::MoveNext()
+DA:71,0
+DA:72,0
+DA:73,0
+DA:74,0
+DA:75,0
+DA:76,0
+DA:78,0
+DA:79,0
+DA:80,0
+DA:81,0
+DA:82,0
+DA:83,0
+DA:84,0
+DA:85,0
+BRDA:71,16,0,0
+BRDA:72,57,0,0
+BRDA:72,57,1,0
+BRDA:71,16,1,0
+BRDA:73,179,0,0
+BRDA:73,787,1,0
+BRDA:75,257,0,0
+BRDA:73,179,1,0
+BRDA:75,257,1,0
+BRDA:73,187,1,0
+BRDA:78,424,0,0
+BRDA:78,430,0,0
+BRDA:80,473,0,0
+BRDA:78,424,1,0
+BRDA:80,473,1,0
+BRDA:81,628,0,0
+BRDA:78,430,1,0
+BRDA:81,628,1,0
+BRDA:73,187,0,0
+BRDA:73,787,0,0
+FN:88,System.String LuckyDrawBot.Controllers.MessagesController/<>c::<HandleCompetitionInitialization>b__7_0(System.String)
+FNDA:0,System.String LuckyDrawBot.Controllers.MessagesController/<>c::<HandleCompetitionInitialization>b__7_0(System.String)
+DA:89,0
+FN:87,System.Void LuckyDrawBot.Controllers.MessagesController/<HandleCompetitionInitialization>d__7::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Controllers.MessagesController/<HandleCompetitionInitialization>d__7::MoveNext()
+DA:88,0
+DA:90,0
+DA:91,0
+DA:92,0
+DA:95,0
+DA:97,0
+DA:98,0
+DA:99,0
+DA:100,0
+DA:101,0
+DA:102,0
+DA:103,0
+DA:104,0
+DA:105,0
+DA:106,0
+DA:107,0
+DA:108,0
+DA:109,0
+DA:110,0
+DA:111,0
+DA:112,0
+DA:113,0
+DA:114,0
+DA:115,0
+DA:117,0
+DA:118,0
+BRDA:88,16,0,0
+BRDA:89,57,0,0
+BRDA:89,57,1,0
+BRDA:90,110,0,0
+BRDA:90,110,1,0
+BRDA:98,326,0,0
+BRDA:98,326,1,0
+BRDA:88,16,1,0
+BRDA:111,492,0,0
+BRDA:111,498,0,0
+BRDA:113,541,0,0
+BRDA:111,492,1,0
+BRDA:113,541,1,0
+BRDA:114,697,0,0
+BRDA:111,498,1,0
+BRDA:114,697,1,0
+FN:120,System.Void LuckyDrawBot.Controllers.MessagesController/<HandleJoinCompetitionAction>d__8::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Controllers.MessagesController/<HandleJoinCompetitionAction>d__8::MoveNext()
+DA:121,0
+DA:122,0
+DA:123,0
+DA:124,0
+DA:125,0
+DA:126,0
+DA:127,0
+DA:128,0
+BRDA:121,14,0,0
+BRDA:122,98,0,0
+BRDA:122,98,1,0
+BRDA:121,14,1,0
+BRDA:124,263,0,0
+BRDA:126,322,0,0
+BRDA:124,263,1,0
+BRDA:126,322,1,0
+FN:130,System.Void LuckyDrawBot.Controllers.MessagesController/<HandleDisplayHelp>d__9::MoveNext()
+FNDA:0,System.Void LuckyDrawBot.Controllers.MessagesController/<HandleDisplayHelp>d__9::MoveNext()
+DA:131,0
+DA:132,0
+DA:133,0
+DA:134,0
+DA:135,0
+DA:136,0
+DA:137,0
+DA:138,0
+DA:139,0
+DA:140,0
+BRDA:136,73,0,0
+BRDA:138,110,0,0
+BRDA:136,73,1,0
+BRDA:138,110,1,0
+LF:85
+LH:0
+BRF:62
+BRH:0
+FNF:7
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\test\LuckyDrawBot.Tests\obj\Debug\netcoreapp2.2\LuckyDrawBot.Tests.Program.cs
+FN:3,System.Void AutoGeneratedProgram::Main(System.String[])
+FNDA:0,System.Void AutoGeneratedProgram::Main(System.String[])
+DA:4,0
+LF:1
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\test\LuckyDrawBot.Tests\ServerArrangementExtensions.cs
+FN:13,System.Void LuckyDrawBot.Tests.ServerArrangementExtensions::SetUtcNow(LuckyDrawBot.Tests.Infrastructure.ServerArrangement,System.DateTime)
+FNDA:0,System.Void LuckyDrawBot.Tests.ServerArrangementExtensions::SetUtcNow(LuckyDrawBot.Tests.Infrastructure.ServerArrangement,System.DateTime)
+DA:14,0
+DA:15,0
+DA:16,0
+DA:17,0
+LF:4
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\test\LuckyDrawBot.Tests\ServerFixtureConfigurations.cs
+FN:12,LuckyDrawBot.Tests.Infrastructure.ServerFixtureConfiguration LuckyDrawBot.Tests.ServerFixtureConfigurations::get_Default()
+FNDA:2,LuckyDrawBot.Tests.Infrastructure.ServerFixtureConfiguration LuckyDrawBot.Tests.ServerFixtureConfigurations::get_Default()
+DA:13,2
+FN:13,System.Void LuckyDrawBot.Tests.ServerFixtureConfigurations::.cctor()
+FNDA:1,System.Void LuckyDrawBot.Tests.ServerFixtureConfigurations::.cctor()
+DA:14,1
+DA:15,1
+DA:16,1
+DA:17,2
+DA:18,2
+DA:19,2
+DA:20,1
+DA:21,2
+DA:22,2
+DA:23,2
+DA:24,2
+DA:25,2
+DA:26,2
+DA:27,2
+DA:28,1
+LF:16
+LH:16
+BRF:0
+BRH:0
+FNF:2
+FNH:2
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\test\LuckyDrawBot.Tests\MockServices\MockDateTimeService.cs
+FN:7,System.DateTimeOffset LuckyDrawBot.Tests.MockServices.MockDateTimeService::get_UtcNow()
+FNDA:0,System.DateTimeOffset LuckyDrawBot.Tests.MockServices.MockDateTimeService::get_UtcNow()
+DA:8,0
+LF:1
+LH:0
+BRF:0
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:C:\GitHubRepos\lucky-draw-bot\test\LuckyDrawBot.Tests\Features\HealthCheck\HealthCheckTests.cs
+FN:18,System.Void LuckyDrawBot.Tests.Features.HealthCheck.HealthCheckTests::.ctor(Xunit.Abstractions.ITestOutputHelper)
+FNDA:1,System.Void LuckyDrawBot.Tests.Features.HealthCheck.HealthCheckTests::.ctor(Xunit.Abstractions.ITestOutputHelper)
+DA:19,1
+DA:20,1
+DA:21,1
+FN:15,System.String LuckyDrawBot.Tests.Features.HealthCheck.HealthCheckTests/HealthCheckResponse::get_Status()
+FNDA:2,System.String LuckyDrawBot.Tests.Features.HealthCheck.HealthCheckTests/HealthCheckResponse::get_Status()
+DA:16,2
+FN:24,System.Void LuckyDrawBot.Tests.Features.HealthCheck.HealthCheckTests/<WhenEverythingWorks_GetHealthCheck_ReturnHealthy>d__2::MoveNext()
+FNDA:1,System.Void LuckyDrawBot.Tests.Features.HealthCheck.HealthCheckTests/<WhenEverythingWorks_GetHealthCheck_ReturnHealthy>d__2::MoveNext()
+DA:25,1
+DA:26,1
+DA:27,1
+DA:28,1
+DA:29,1
+DA:31,1
+DA:32,1
+DA:33,1
+DA:34,1
+DA:35,1
+BRDA:26,41,0,1
+BRDA:26,41,1,2
+BRDA:27,66,0,1
+BRDA:27,72,0,1
+BRDA:29,113,0,1
+BRDA:27,66,1,1
+BRDA:29,113,1,1
+BRDA:32,290,1,1
+LF:14
+LH:14
+BRF:8
+BRH:8
+FNF:3
+FNH:3
+end_of_record

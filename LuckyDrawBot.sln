@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{34BB6F42-434
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyDrawBot", "src\LuckyDrawBot\LuckyDrawBot.csproj", "{96DA3519-84C0-404E-9F59-2634A7C231CD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DAAC8F33-16C1-4D5C-BA4C-79070371D7C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyDrawBot.Tests", "test\LuckyDrawBot.Tests\LuckyDrawBot.Tests.csproj", "{2C3C50DF-6BA7-4ADB-B906-F69E90502787}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,8 +36,21 @@ Global
 		{96DA3519-84C0-404E-9F59-2634A7C231CD}.Release|x64.Build.0 = Release|Any CPU
 		{96DA3519-84C0-404E-9F59-2634A7C231CD}.Release|x86.ActiveCfg = Release|Any CPU
 		{96DA3519-84C0-404E-9F59-2634A7C231CD}.Release|x86.Build.0 = Release|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Debug|x64.Build.0 = Debug|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Debug|x86.Build.0 = Debug|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Release|x64.Build.0 = Release|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Release|x86.ActiveCfg = Release|Any CPU
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{96DA3519-84C0-404E-9F59-2634A7C231CD} = {34BB6F42-4346-48A8-AC4A-40FAE2DF976C}
+		{2C3C50DF-6BA7-4ADB-B906-F69E90502787} = {DAAC8F33-16C1-4D5C-BA4C-79070371D7C9}
 	EndGlobalSection
 EndGlobal
