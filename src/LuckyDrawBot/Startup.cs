@@ -34,6 +34,7 @@ namespace LuckyDrawBot
             services.AddSingleton(Configuration.GetSection("Bot").Get<BotSettings>());
             services.AddSingleton<IDateTimeService, DateTimeService>();
             services.AddSingleton<IRandomService, RandomService>();
+            services.AddSingleton<IBotClientFactory, BotClientFactory>();
             services.AddSingleton<ICompetitionRepositoryService, CompetitionRepositoryService>();
             services.AddSingleton<ICompetitionService, CompetitionService>();
             services.AddSingleton<IActivityBuilder, ActivityBuilder>();

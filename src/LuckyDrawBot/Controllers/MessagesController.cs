@@ -20,12 +20,14 @@ namespace LuckyDrawBot.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly ILogger<MessagesController> _logger;
+        private readonly IBotClientFactory _botClientFactory;
         private readonly ICompetitionService _competitionService;
         private readonly IActivityBuilder _activityBuilder;
 
-        public MessagesController(ILogger<MessagesController> logger, ICompetitionService competitionService, IActivityBuilder activityBuilder)
+        public MessagesController(ILogger<MessagesController> logger, IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder)
         {
             _logger = logger;
+            _botClientFactory = botClientFactory;
             _competitionService = competitionService;
             _activityBuilder = activityBuilder;
         }
@@ -37,16 +39,13 @@ namespace LuckyDrawBot.Controllers
         {
             _logger.LogInformation($"Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
 
-            MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl, DateTime.Now.AddDays(7));
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), "20128cb3-5809-4b4f-a32d-b9929e67238c", ".l!c}F4xt8=*{%x{I6wZ7Ek");
-
             if (activity.Type == "invoke")
             {
                 var invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
                 switch(invokeActionData.Type)
                 {
                     case InvokeActionType.Join:
-                        await HandleJoinCompetitionAction(connectorClient, invokeActionData, activity);
+                        await HandleJoinCompetitionAction(invokeActionData, activity);
                         return Ok();
                     default:
                         throw new Exception("Unknown invoke action type: " + activity.Type);
@@ -54,10 +53,10 @@ namespace LuckyDrawBot.Controllers
             }
             else if (activity.Type == "message")
             {
-                var succeeded = await HandleCompetitionInitialization(connectorClient, activity);
+                var succeeded = await HandleCompetitionInitialization(activity);
                 if (!succeeded)
                 {
-                    await HandleDisplayHelp(connectorClient, activity);
+                    await HandleDisplayHelp(activity);
                     return Ok();
                 }
 
@@ -76,15 +75,16 @@ namespace LuckyDrawBot.Controllers
                 var competition = await _competitionService.Draw(competitionId);
                 var resultActivity = _activityBuilder.CreateResultActivity(competition);
 
-                MicrosoftAppCredentials.TrustServiceUrl(competition.ServiceUrl, DateTime.Now.AddDays(7));
-                var connectorClient = new ConnectorClient(new Uri(competition.ServiceUrl), "20128cb3-5809-4b4f-a32d-b9929e67238c", ".l!c}F4xt8=*{%x{I6wZ7Ek");
-                var resultMessage = await connectorClient.Conversations.SendToConversationAsync(resultActivity);
-                await _competitionService.UpdateResultActivity(competition.Id, resultMessage.Id);
+                using (var botClient = _botClientFactory.CreateBotClient(competition.ServiceUrl))
+                {
+                    var resultMessage = await botClient.SendToConversationAsync(resultActivity);
+                    await _competitionService.UpdateResultActivity(competition.Id, resultMessage.Id);
+                }
             }
             return Ok(competitionIds);
         }
 
-        private async Task<bool> HandleCompetitionInitialization(ConnectorClient client, Activity activity)
+        private async Task<bool> HandleCompetitionInitialization(Activity activity)
         {
             var parts = activity.Text.Split(',').Select(p => p.Trim()).ToArray();
             if (parts.Length < 2)
@@ -108,26 +108,35 @@ namespace LuckyDrawBot.Controllers
                                                                activity.From.Name,
                                                                activity.From.AadObjectId);
             var mainActivity = _activityBuilder.CreateMainActivity(competition);
-            var mainMessage = await client.Conversations.SendToConversationAsync(mainActivity);
-            await _competitionService.UpdateMainActivity(competition.Id, mainMessage.Id);
+            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+            {
+                var mainMessage = await botClient.SendToConversationAsync(mainActivity);
+                await _competitionService.UpdateMainActivity(competition.Id, mainMessage.Id);
+            }
 
             return true;
         }
 
-        private async Task HandleJoinCompetitionAction(ConnectorClient client, InvokeActionData invokeActionData, Activity activity)
+        private async Task HandleJoinCompetitionAction(InvokeActionData invokeActionData, Activity activity)
         {
             var competition = await _competitionService.AddCompetitor(invokeActionData.CompetitionId, activity.From.AadObjectId, activity.From.Name);
             var updatedActivity = _activityBuilder.CreateMainActivity(competition);
-            await client.Conversations.UpdateActivityAsync(competition.ChannelId, competition.MainActivityId, updatedActivity);
+            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+            {
+                await botClient.UpdateActivityAsync(competition.ChannelId, competition.MainActivityId, updatedActivity);
+            }
         }
 
-        private async Task HandleDisplayHelp(ConnectorClient client, Activity activity)
+        private async Task HandleDisplayHelp(Activity activity)
         {
             var help = activity.CreateReply(
                 "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1h</b>. Want more? here is the cheat sheet:<br/>"
                 + "@luckydraw [gift name], [draw time], [the number of gifts], [the url of gift url]<br>"
             );
-            await client.Conversations.SendToConversationAsync(help);
+            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+            {
+                await botClient.SendToConversationAsync(help);
+            }
         }
 
     }
