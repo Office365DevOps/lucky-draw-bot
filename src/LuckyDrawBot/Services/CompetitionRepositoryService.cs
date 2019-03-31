@@ -17,7 +17,7 @@ namespace LuckyDrawBot.Services
         Task UpsertCompletedCompetition(Competition competition);
     }
 
-    public class CompetitionRepositoryService : ICompetitionRepositoryService
+    public partial class CompetitionRepositoryService : ICompetitionRepositoryService
     {
         private readonly Dictionary<Guid, Competition> _openCompetitions = new Dictionary<Guid, Competition>();
         private readonly Dictionary<Guid, Competition> _completedCompetitions = new Dictionary<Guid, Competition>();

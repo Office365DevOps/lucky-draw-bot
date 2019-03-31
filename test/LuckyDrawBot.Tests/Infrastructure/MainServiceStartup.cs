@@ -1,3 +1,5 @@
+using LuckyDrawBot.Infrastructure.Database;
+using LuckyDrawBot.Tests.Infrastructure.Database;
 using MaxKagamine.Moq.HttpClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +54,8 @@ namespace LuckyDrawBot.Tests.Infrastructure
                     dependencyService.Setup(handler);
                 }
             }
+
+            services.ReplaceSingleton(typeof(IDataTable<,>), typeof(InMemoryDataTable<,>));
 
             serverFixtureConfiguration.MainServicePostConfigureServices?.Invoke(services);
         }
