@@ -12,7 +12,7 @@ steps:
   displayName: dotnet test
   inputs:
     command: test
-    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\\"[*]LuckyDrawBot.Program,[*]Microsoft.*,[*]System.*,[*]LuckyDrawBot.Infrastructure.*,[*]LuckyDrawBot.Tests.Infrastructure.*,[xunit*]*\\"'
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=[*]LuckyDrawBot.Program,[*]Microsoft.*,[*]System.*,[*]LuckyDrawBot.Infrastructure.*,[*]LuckyDrawBot.Tests.Infrastructure.*,[xunit*]*'
     projects: 'test/**/*.csproj'
     nobuild: true
 
