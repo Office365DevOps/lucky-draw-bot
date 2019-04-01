@@ -3,6 +3,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  codeCoverageExclude: '\"[xunit*]*\"'
 
 steps:
 - script: |
@@ -12,7 +13,7 @@ steps:
   displayName: dotnet test
   inputs:
     command: test
-    arguments: "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\\\"[xunit*]*\\\""
+    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=$(codeCoverageExclude)'
     projects: 'test/**/*.csproj'
     nobuild: true
 
