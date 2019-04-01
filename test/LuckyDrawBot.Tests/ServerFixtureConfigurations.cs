@@ -16,14 +16,15 @@ namespace LuckyDrawBot.Tests
             MainServicePostConfigureServices = (services) =>
             {
                 services.ReplaceSingleton<IDateTimeService, MockDateTimeService>();
+                services.ReplaceSingleton<IBotClientFactory, MockBotClientFactory>();
             },
-            MainServicePostAppConfiguration = (configuratoin, testContext) =>
+            MainServicePostAppConfiguration = (configuration, testContext) =>
             {
                 var settings = new Dictionary<string, string>
                 {
                     ["Bot:Id"] = Guid.NewGuid().ToString()
                 };
-                configuratoin.AddInMemoryCollection(settings);
+                configuration.AddInMemoryCollection(settings);
             }
         };
     }

@@ -39,7 +39,7 @@ namespace LuckyDrawBot.Controllers
         {
             _logger.LogInformation($"Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
 
-            if (activity.Type == "invoke")
+            if (activity.Type == ActivityTypes.Invoke)
             {
                 var invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
                 switch(invokeActionData.Type)
@@ -51,7 +51,7 @@ namespace LuckyDrawBot.Controllers
                         throw new Exception("Unknown invoke action type: " + activity.Type);
                 }
             }
-            else if (activity.Type == "message")
+            else if (activity.Type == ActivityTypes.Message)
             {
                 var succeeded = await HandleCompetitionInitialization(activity);
                 if (!succeeded)

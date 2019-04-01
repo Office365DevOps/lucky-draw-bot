@@ -6,7 +6,13 @@ using Microsoft.Bot.Schema;
 
 namespace LuckyDrawBot.Services
 {
-    public class BotClient : IDisposable
+    public interface IBotClient : IDisposable
+    {
+        Task<ResourceResponse> SendToConversationAsync(Activity activity);
+        Task<ResourceResponse> UpdateActivityAsync(string channelId, string replacedActivityId, Activity newActivity);
+    }
+
+    public class BotClient : IBotClient
     {
         private ConnectorClient _connector;
 
@@ -38,7 +44,7 @@ namespace LuckyDrawBot.Services
 
     public interface IBotClientFactory
     {
-        BotClient CreateBotClient(string botServiceUrl);
+        IBotClient CreateBotClient(string botServiceUrl);
     }
 
     public class BotClientFactory : IBotClientFactory
@@ -50,7 +56,7 @@ namespace LuckyDrawBot.Services
             _dateTimeService = dateTimeService;
         }
 
-        public BotClient CreateBotClient(string botServiceUrl)
+        public IBotClient CreateBotClient(string botServiceUrl)
         {
             return new BotClient(botServiceUrl, _dateTimeService);
         }
