@@ -14,6 +14,7 @@ namespace LuckyDrawBot.Infrastructure.Database
         Task InsertOrReplace(TEntity entity);
         Task<TEntity> Retrieve(TEntity entity);
         Task<TEntity> Retrieve(string partitionKey, string rowKey);
+        Task<bool> Delete(TEntity entity);
         Task<bool> Delete(string partitionKey, string rowKey);
         Task<List<TEntity>> Query(string filterString = null, int? takeCount = null, IList<string> selectColumns = null);
         Task Query(Action<List<TEntity>> segmentAction, string filterString = null, int? takeCount = null, IList<string> selectColumns = null);
@@ -68,6 +69,11 @@ namespace LuckyDrawBot.Infrastructure.Database
                 return (TEntity)result.Result;
             }
             return default(TEntity);
+        }
+
+        public Task<bool> Delete(TEntity entity)
+        {
+            return Delete(entity.PartitionKey, entity.RowKey);
         }
 
         public async Task<bool> Delete(string partitionKey, string rowKey)

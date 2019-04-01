@@ -29,6 +29,9 @@ namespace LuckyDrawBot.Tests.Features.HelpMessage
                 var response = await client.SendTeamsText("help");
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                createdMessages[0].Activity.Text.Should().StartWith("Hi there");
             }
         }
     }

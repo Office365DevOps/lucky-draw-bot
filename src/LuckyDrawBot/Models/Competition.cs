@@ -14,9 +14,10 @@ namespace LuckyDrawBot.Models
         public string ResultActivityId { get; set; }
         public DateTimeOffset CreatedTime { get; set; }
         public DateTimeOffset PlannedDrawTime { get; set; }
-        public DateTimeOffset ActualDrawTime { get; set; }
+        public DateTimeOffset? ActualDrawTime { get; set; }
         public string Locale { get; set; }
         public string Gift { get; set; }
+        public string GiftImageUrl { get; set; }
         public string Description { get; set; }
         public int WinnerCount { get; set; }
         public bool IsCompleted { get; set; }

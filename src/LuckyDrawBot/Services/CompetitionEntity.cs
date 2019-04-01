@@ -13,8 +13,31 @@ namespace LuckyDrawBot.Services
 {
     public partial class CompetitionRepositoryService
     {
-        [Table("competitions")]
-        private class CompetitionEntity : TableEntity
+        [Table("OpenCompetitions")]
+        public class OpenCompetitionEntity : CompetitionEntity
+        {
+            public OpenCompetitionEntity()
+            {
+            }
+
+            public OpenCompetitionEntity(Guid id) : base(id)
+            {
+            }
+        }
+
+        [Table("CompletedCompetitions")]
+        public class CompletedCompetitionEntity : CompetitionEntity
+        {
+            public CompletedCompetitionEntity()
+            {
+            }
+
+            public CompletedCompetitionEntity(Guid id) : base(id)
+            {
+            }
+        }
+
+        public class CompetitionEntity : TableEntity
         {
             public Guid Id { get; set; }
             public string ServiceUrl { get; set; }
@@ -25,9 +48,10 @@ namespace LuckyDrawBot.Services
             public string ResultActivityId { get; set; }
             public DateTimeOffset CreatedTime { get; set; }
             public DateTimeOffset PlannedDrawTime { get; set; }
-            public DateTimeOffset ActualDrawTime { get; set; }
+            public DateTimeOffset? ActualDrawTime { get; set; }
             public string Locale { get; set; }
             public string Gift { get; set; }
+            public string GiftImageUrl { get; set; }
             public string Description { get; set; }
             public int WinnerCount { get; set; }
             public bool IsCompleted { get; set; }

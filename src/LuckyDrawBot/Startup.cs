@@ -32,6 +32,7 @@ namespace LuckyDrawBot
                 .AddAssemblyVersion();
 
             services.AddSingleton(Configuration.GetSection("Bot").Get<BotSettings>());
+            services.Configure<LuckyDrawDataTablesSettings>(Configuration.GetSection("DataTable"));
             services.AddSingleton<IDateTimeService, DateTimeService>();
             services.AddSingleton<IRandomService, RandomService>();
             services.AddSingleton<IBotClientFactory, BotClientFactory>();

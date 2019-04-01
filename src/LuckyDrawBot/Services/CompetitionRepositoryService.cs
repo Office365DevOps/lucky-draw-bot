@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LuckyDrawBot.Infrastructure.Database;
 using LuckyDrawBot.Models;
 
 namespace LuckyDrawBot.Services
@@ -19,63 +20,146 @@ namespace LuckyDrawBot.Services
 
     public partial class CompetitionRepositoryService : ICompetitionRepositoryService
     {
-        private readonly Dictionary<Guid, Competition> _openCompetitions = new Dictionary<Guid, Competition>();
-        private readonly Dictionary<Guid, Competition> _completedCompetitions = new Dictionary<Guid, Competition>();
+        public IDataTable<LuckyDrawDataTablesSettings, OpenCompetitionEntity> OpenCompetitions { get; }
+        public IDataTable<LuckyDrawDataTablesSettings, CompletedCompetitionEntity> CompletedCompetitions { get; }
+
+        public CompetitionRepositoryService(
+            IDataTable<LuckyDrawDataTablesSettings, OpenCompetitionEntity> openCompetitions,
+            IDataTable<LuckyDrawDataTablesSettings, CompletedCompetitionEntity> completedCompetitions)
+        {
+            OpenCompetitions = openCompetitions;
+            CompletedCompetitions = completedCompetitions;
+        }
 
         public async Task<Competition> GetOpenCompetition(Guid competitionId)
         {
-            lock(_openCompetitions)
+            var entity = await OpenCompetitions.Retrieve(new OpenCompetitionEntity(competitionId));
+            if (entity == null)
             {
-                if (!_openCompetitions.TryGetValue(competitionId, out Competition competition))
-                {
-                    throw new Exception($"Cannot found the open competition {competitionId}");
-                }
-                return competition;
+                return null;
             }
+            return new Competition
+            {
+                Id = entity.Id,
+                ServiceUrl = entity.ServiceUrl,
+                TenantId = entity.TenantId,
+                TeamId = entity.TeamId,
+                ChannelId = entity.ChannelId,
+                MainActivityId = entity.MainActivityId,
+                ResultActivityId = entity.ResultActivityId,
+                CreatedTime = entity.CreatedTime,
+                PlannedDrawTime = entity.PlannedDrawTime,
+                ActualDrawTime = entity.ActualDrawTime,
+                Locale = entity.Locale,
+                Gift = entity.Gift,
+                GiftImageUrl = entity.GiftImageUrl,
+                Description = entity.Description,
+                WinnerCount = entity.WinnerCount,
+                IsCompleted = entity.IsCompleted,
+                CreatorName = entity.CreatorName,
+                CreatorAadObject = entity.CreatorAadObject,
+                WinnerAadObjectIds = entity.WinnerAadObjectIds,
+                Competitors = entity.Competitors
+            };
         }
 
         public async Task<List<Guid>> GetOpenCompetitionIds(DateTimeOffset maxPlannedDrawTime)
         {
-            lock(_openCompetitions)
-            {
-                return _openCompetitions.Values.Where(c => c.PlannedDrawTime < maxPlannedDrawTime).Select(c => c.Id).ToList();
-            }
+            var openCompetitions = await OpenCompetitions.Query(
+                $"PlannedDrawTime lt datetime'{maxPlannedDrawTime.ToString("yyyy-MM-ddTHH:mm:ss")}Z'",
+                selectColumns: new List<string> { "Id" });
+            return openCompetitions.Select(oc => oc.Id).ToList();
         }
 
         public async Task UpsertOpenCompetition(Competition competition)
         {
-            lock(_openCompetitions)
+            var entity = new OpenCompetitionEntity(competition.Id)
             {
-                _openCompetitions[competition.Id] = competition;
-            }
+                ServiceUrl = competition.ServiceUrl,
+                TenantId = competition.TenantId,
+                TeamId = competition.TeamId,
+                ChannelId = competition.ChannelId,
+                MainActivityId = competition.MainActivityId,
+                ResultActivityId = competition.ResultActivityId,
+                CreatedTime = competition.CreatedTime,
+                PlannedDrawTime = competition.PlannedDrawTime,
+                ActualDrawTime = competition.ActualDrawTime,
+                Locale = competition.Locale,
+                Gift = competition.Gift,
+                GiftImageUrl = competition.GiftImageUrl,
+                Description = competition.Description,
+                WinnerCount = competition.WinnerCount,
+                IsCompleted = competition.IsCompleted,
+                CreatorName = competition.CreatorName,
+                CreatorAadObject = competition.CreatorAadObject,
+                WinnerAadObjectIds = competition.WinnerAadObjectIds,
+                Competitors = competition.Competitors
+            };
+            await OpenCompetitions.InsertOrReplace(entity);
         }
 
         public async Task DeleteOpenCompetition(Guid competitionId)
         {
-            lock(_openCompetitions)
-            {
-                _openCompetitions.Remove(competitionId);
-            }
+            await OpenCompetitions.Delete(new OpenCompetitionEntity(competitionId));
         }
 
         public async Task<Competition> GetCompletedCompetition(Guid competitionId)
         {
-            lock(_completedCompetitions)
+            var entity = await CompletedCompetitions.Retrieve(new CompletedCompetitionEntity(competitionId));
+            if (entity == null)
             {
-                if (!_completedCompetitions.TryGetValue(competitionId, out Competition competition))
-                {
-                    throw new Exception($"Cannot found the completed competition {competitionId}");
-                }
-                return competition;
+                return null;
             }
+            return new Competition
+            {
+                Id = entity.Id,
+                ServiceUrl = entity.ServiceUrl,
+                TenantId = entity.TenantId,
+                TeamId = entity.TeamId,
+                ChannelId = entity.ChannelId,
+                MainActivityId = entity.MainActivityId,
+                ResultActivityId = entity.ResultActivityId,
+                CreatedTime = entity.CreatedTime,
+                PlannedDrawTime = entity.PlannedDrawTime,
+                ActualDrawTime = entity.ActualDrawTime,
+                Locale = entity.Locale,
+                Gift = entity.Gift,
+                GiftImageUrl = entity.GiftImageUrl,
+                Description = entity.Description,
+                WinnerCount = entity.WinnerCount,
+                IsCompleted = entity.IsCompleted,
+                CreatorName = entity.CreatorName,
+                CreatorAadObject = entity.CreatorAadObject,
+                WinnerAadObjectIds = entity.WinnerAadObjectIds,
+                Competitors = entity.Competitors
+            };
         }
 
         public async Task UpsertCompletedCompetition(Competition competition)
         {
-            lock(_completedCompetitions)
+            var entity = new CompletedCompetitionEntity(competition.Id)
             {
-                _completedCompetitions[competition.Id] = competition;
-            }
+                ServiceUrl = competition.ServiceUrl,
+                TenantId = competition.TenantId,
+                TeamId = competition.TeamId,
+                ChannelId = competition.ChannelId,
+                MainActivityId = competition.MainActivityId,
+                ResultActivityId = competition.ResultActivityId,
+                CreatedTime = competition.CreatedTime,
+                PlannedDrawTime = competition.PlannedDrawTime,
+                ActualDrawTime = competition.ActualDrawTime,
+                Locale = competition.Locale,
+                Gift = competition.Gift,
+                GiftImageUrl = competition.GiftImageUrl,
+                Description = competition.Description,
+                WinnerCount = competition.WinnerCount,
+                IsCompleted = competition.IsCompleted,
+                CreatorName = competition.CreatorName,
+                CreatorAadObject = competition.CreatorAadObject,
+                WinnerAadObjectIds = competition.WinnerAadObjectIds,
+                Competitors = competition.Competitors
+            };
+            await CompletedCompetitions.InsertOrReplace(entity);
         }
     }
 }

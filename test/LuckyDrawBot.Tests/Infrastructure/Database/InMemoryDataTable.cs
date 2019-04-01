@@ -11,6 +11,11 @@ namespace LuckyDrawBot.Tests.Infrastructure.Database
     {
         private readonly Dictionary<string, Dictionary<string, TEntity>> _data = new Dictionary<string, Dictionary<string, TEntity>>();
 
+        public Task<bool> Delete(TEntity entity)
+        {
+            return Delete(entity.PartitionKey, entity.RowKey);
+        }
+
         public async Task<bool> Delete(string partitionKey, string rowKey)
         {
             Dictionary<string, TEntity> partition;

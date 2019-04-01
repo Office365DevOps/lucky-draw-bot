@@ -64,7 +64,7 @@ namespace LuckyDrawBot.Services
                 ResultActivityId = string.Empty,
                 CreatedTime = _dateTimeService.UtcNow,
                 PlannedDrawTime = plannedDrawTime,
-                ActualDrawTime = DateTimeOffset.MinValue,
+                ActualDrawTime = null,
                 Locale = locale,
                 Gift = gift,
                 Description = description,
