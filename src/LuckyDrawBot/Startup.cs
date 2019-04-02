@@ -35,6 +35,7 @@ namespace LuckyDrawBot
             services.Configure<LuckyDrawDataTablesSettings>(Configuration.GetSection("DataTable"));
             services.AddSingleton<IDateTimeService, DateTimeService>();
             services.AddSingleton<IRandomService, RandomService>();
+            services.AddSingleton<ITimerService, TimerService>();
             services.AddSingleton<IBotClientFactory, BotClientFactory>();
             services.AddSingleton<ICompetitionRepositoryService, CompetitionRepositoryService>();
             services.AddSingleton<ICompetitionService, CompetitionService>();

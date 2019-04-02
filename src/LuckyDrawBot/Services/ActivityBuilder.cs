@@ -86,6 +86,37 @@ namespace LuckyDrawBot.Services
         public Activity CreateResultActivity(Competition competition)
         {
             var winners = competition.Competitors.Where(c => competition.WinnerAadObjectIds.Contains(c.AadObjectId)).ToList();
+
+            HeroCard contentCard;
+            if (winners.Count <= 0)
+            {
+                contentCard = new HeroCard()
+                {
+                    Title = "No one joined, no winner",
+                    Images = new List<CardImage>()
+                    {
+                        new CardImage()
+                        {
+                            Url = "https://media.tenor.co/images/5d6e7c144fb4ef5985652ea6d7219965/raw"
+                        }
+                    }
+                };
+            }
+            else
+            {
+                contentCard = new HeroCard()
+                {
+                    Title = "Our winners are: " + string.Join(", ", winners.Select(w => w.Name)),
+                    Images = new List<CardImage>()
+                    {
+                        new CardImage()
+                        {
+                            Url = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif"
+                        }
+                    }
+                };
+            }
+
             var activity = Activity.CreateMessageActivity() as Activity;
             activity.From = new ChannelAccount(_botSettings.Id, "bot name");
             activity.Conversation = new ConversationAccount(id: competition.ChannelId);
@@ -94,17 +125,7 @@ namespace LuckyDrawBot.Services
                 new Attachment
                 {
                     ContentType = HeroCard.ContentType,
-                    Content = new HeroCard()
-                    {
-                        Title = "Our winners are: " + string.Join(", ", winners.Select(w => w.Name)),
-                        Images = new List<CardImage>()
-                        {
-                            new CardImage()
-                            {
-                                Url = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif"
-                            }
-                        }
-                    }
+                    Content = contentCard
                 }
             };
             return activity;

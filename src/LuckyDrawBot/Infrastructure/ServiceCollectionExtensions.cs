@@ -21,7 +21,9 @@ namespace Microsoft.Extensions.DependencyInjection
             JsonConvert.DefaultSettings = (() =>
             {
                 var settings = new JsonSerializerSettings();
+                settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 return settings;
             });
 

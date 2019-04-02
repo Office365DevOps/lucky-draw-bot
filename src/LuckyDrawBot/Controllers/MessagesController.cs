@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
@@ -23,17 +24,19 @@ namespace LuckyDrawBot.Controllers
         private readonly IBotClientFactory _botClientFactory;
         private readonly ICompetitionService _competitionService;
         private readonly IActivityBuilder _activityBuilder;
+        private readonly ITimerService _timerService;
 
-        public MessagesController(ILogger<MessagesController> logger, IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder)
+        public MessagesController(ILogger<MessagesController> logger, IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder, ITimerService timerService)
         {
             _logger = logger;
             _botClientFactory = botClientFactory;
             _competitionService = competitionService;
             _activityBuilder = activityBuilder;
+            _timerService = timerService;
         }
 
         [HttpPost]
-        [Route("message")]
+        [Route("messages")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetMessage([FromBody]Activity activity)
         {
@@ -64,26 +67,6 @@ namespace LuckyDrawBot.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("draw")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Draw()
-        {
-            var competitionIds = await _competitionService.GetToBeDrawnCompetitionIds();
-            foreach (var competitionId in competitionIds)
-            {
-                var competition = await _competitionService.Draw(competitionId);
-                var resultActivity = _activityBuilder.CreateResultActivity(competition);
-
-                using (var botClient = _botClientFactory.CreateBotClient(competition.ServiceUrl))
-                {
-                    var resultMessage = await botClient.SendToConversationAsync(resultActivity);
-                    await _competitionService.UpdateResultActivity(competition.Id, resultMessage.Id);
-                }
-            }
-            return Ok(competitionIds);
-        }
-
         private async Task<bool> HandleCompetitionInitialization(Activity activity)
         {
             var parts = activity.Text.Split(',').Select(p => p.Trim()).ToArray();
@@ -100,19 +83,25 @@ namespace LuckyDrawBot.Controllers
                                                                Guid.Parse(channelData.Tenant.Id),
                                                                channelData.Team.Id,
                                                                channelData.Channel.Id,
-                                                               DateTimeOffset.UtcNow,
+                                                               DateTimeOffset.UtcNow.AddMinutes(1),
                                                                activity.Locale,
                                                                gift,
                                                                "detail terms",
                                                                1,
                                                                activity.From.Name,
                                                                activity.From.AadObjectId);
+
             var mainActivity = _activityBuilder.CreateMainActivity(competition);
             using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
             {
                 var mainMessage = await botClient.SendToConversationAsync(mainActivity);
                 await _competitionService.UpdateMainActivity(competition.Id, mainMessage.Id);
             }
+
+            await _timerService.AddScheduledHttpRequest(
+                competition.PlannedDrawTime,
+                "POST",
+                Url.Action(nameof(CompetitionsController.DrawForCompetition), "Competitions", new { competitionId = competition.Id }));
 
             return true;
         }
