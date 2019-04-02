@@ -8,13 +8,9 @@ steps:
 - script: |
     dotnet build --configuration $(buildConfiguration)
 
-- task: DotNetCoreCLI@2
+- script: |
+    dotnet test test/LuckyDrawBot.Tests/LuckyDrawBot.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\"[*]LuckyDrawBot.Program,[*]Microsoft.*,[*]System.*,[*]LuckyDrawBot.Infrastructure.*,[*]LuckyDrawBot.Tests.Infrastructure.*,[xunit*]*\"
   displayName: dotnet test
-  inputs:
-    command: test
-    arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=[xunit*]*'
-    projects: 'test/**/*.csproj'
-    nobuild: true
 
 - script: |
     dotnet tool install -g dotnet-reportgenerator-globaltool
