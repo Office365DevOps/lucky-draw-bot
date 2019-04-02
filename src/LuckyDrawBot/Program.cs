@@ -2,6 +2,8 @@
 using LuckyDrawBot.Infrastructure.Azure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -20,19 +22,21 @@ namespace LuckyDrawBot
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    var keyVaultConfig = config.Build().GetSection("Azure:KeyVault").Get<KeyVaultConfig>();
-                    if(keyVaultConfig == null || string.IsNullOrEmpty(keyVaultConfig.KeyVaultName))
+                    var keyVaultName = config.Build().GetValue<string>("KeyVaultName");
+                    if (string.IsNullOrEmpty(keyVaultName))
                     {
                         return;
                     }
 
                     var assemblyName = Assembly.GetEntryAssembly().GetName();
                     var prefix = $"{assemblyName.Name}--{assemblyName.Version.Major}";
+
+                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                    var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
                     var keyVaultConfigBuilder = new ConfigurationBuilder();
                     keyVaultConfigBuilder.AddAzureKeyVault(
-                        $"https://{keyVaultConfig.KeyVaultName}.vault.azure.net/",
-                        keyVaultConfig.ClientId,
-                        keyVaultConfig.ClientSecret,
+                        $"https://{keyVaultName}.vault.azure.net/",
+                        keyVaultClient,
                         new PrefixKeyVaultSecretManager(prefix));
 
                     config.AddConfiguration(keyVaultConfigBuilder.Build());

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
 namespace LuckyDrawBot.Services
 {
@@ -16,10 +17,10 @@ namespace LuckyDrawBot.Services
     {
         private ConnectorClient _connector;
 
-        public BotClient(string botServiceUrl, IDateTimeService dateTimeService)
+        public BotClient(string botServiceUrl, string botId, string botPassword, IDateTimeService dateTimeService)
         {
             MicrosoftAppCredentials.TrustServiceUrl(botServiceUrl, dateTimeService.UtcNow.AddDays(7).DateTime);
-            _connector = new ConnectorClient(new Uri(botServiceUrl), "20128cb3-5809-4b4f-a32d-b9929e67238c", ".l!c}F4xt8=*{%x{I6wZ7Ek");
+            _connector = new ConnectorClient(new Uri(botServiceUrl), botId, botPassword);
         }
 
         public void Dispose()
@@ -50,15 +51,21 @@ namespace LuckyDrawBot.Services
     public class BotClientFactory : IBotClientFactory
     {
         private readonly IDateTimeService _dateTimeService;
+        private readonly IConfiguration _configuration;
 
-        public BotClientFactory(IDateTimeService dateTimeService)
+        public BotClientFactory(IDateTimeService dateTimeService, IConfiguration configuration)
         {
             _dateTimeService = dateTimeService;
+            _configuration = configuration;
         }
 
         public IBotClient CreateBotClient(string botServiceUrl)
         {
-            return new BotClient(botServiceUrl, _dateTimeService);
+            return new BotClient(
+                botServiceUrl,
+                _configuration.GetValue<string>("Bot:Id"),
+                _configuration.GetValue<string>("Bot:Password"),
+                _dateTimeService);
         }
     }
 }

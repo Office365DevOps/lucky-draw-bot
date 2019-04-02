@@ -6,7 +6,7 @@ namespace LuckyDrawBot.Infrastructure.Azure
 {
     public class PrefixKeyVaultSecretManager : IKeyVaultSecretManager
     {
-        private const string CommonPrefix = "LuckyDrawBotCommon--";
+        private const string CommonPrefix = "LuckyDrawCommon--";
         private readonly string _prefix;
 
         public PrefixKeyVaultSecretManager(string prefix)

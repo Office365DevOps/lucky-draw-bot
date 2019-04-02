@@ -12,6 +12,7 @@ namespace System.Net.Http
         {
             var activity = new Activity
             {
+                ChannelId = "msteams",
                 Type = "message",
                 Text = text,
                 Locale = "en-us",

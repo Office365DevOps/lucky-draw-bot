@@ -40,7 +40,12 @@ namespace LuckyDrawBot.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetMessage([FromBody]Activity activity)
         {
-            _logger.LogInformation($"Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
+            _logger.LogInformation($"ChannelId:{activity.ChannelId} Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
+
+            if (activity.ChannelId != "msteams")
+            {
+                return Ok();
+            }
 
             if (activity.Type == ActivityTypes.Invoke)
             {

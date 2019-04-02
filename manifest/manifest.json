@@ -30,19 +30,6 @@
                 "team",
                 "personal"
             ],
-            "commandLists": [
-                {
-                    "scopes": [
-                        "team"
-                    ],
-                    "commands": [
-                        {
-                            "title": "help",
-                            "description": "Display help information"
-                        }
-                    ]
-                }
-            ],
             "supportsFiles": true,
             "isNotificationOnly": false
         }
