@@ -9,6 +9,10 @@ steps:
 - script: |
     dotnet build --configuration $(buildConfiguration)
 
+- script: |
+    'dotnet test test/**/*.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\"[*]Microsoft.*,[*]System.*,[xunit*]*\"'
+  displayName: dotnet test new
+
 - task: DotNetCoreCLI@2
   displayName: dotnet test
   inputs:
