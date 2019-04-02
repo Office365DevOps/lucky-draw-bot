@@ -10,7 +10,7 @@ steps:
     dotnet build --configuration $(buildConfiguration)
 
 - script: |
-    dotnet test test/LuckyDrawBot.Tests/LuckyDrawBot.Tests.csproj --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\"[*]Microsoft.*,[*]System.*,[xunit*]*\"
+    dotnet test test/LuckyDrawBot.Tests/LuckyDrawBot.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\"[*]Microsoft.*,[*]System.*,[xunit*]*\"
   displayName: dotnet test new
 
 - task: DotNetCoreCLI@2
