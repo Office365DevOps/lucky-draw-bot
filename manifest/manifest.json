@@ -15,7 +15,7 @@
         "outline": "outline.png"
     },
     "name": {
-        "short": "LuckyDrawBot",
+        "short": "LuckyDraw",
         "full": "Lucky-Draw Bot"
     },
     "description": {
@@ -31,17 +31,6 @@
                 "personal"
             ],
             "commandLists": [
-                {
-                    "scopes": [
-                        "personal"
-                    ],
-                    "commands": [
-                        {
-                            "title": "help",
-                            "description": "Display help information"
-                        }
-                    ]
-                },
                 {
                     "scopes": [
                         "team"
