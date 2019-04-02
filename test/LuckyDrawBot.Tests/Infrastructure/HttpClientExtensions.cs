@@ -20,7 +20,7 @@ namespace System.Net.Http
                 Conversation = new ConversationAccount(isGroup: true, id: "conv id", name: "conv name")
             };
             var requestBody = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
-            return await httpClient.PostAsync("message", requestBody);
+            return await httpClient.PostAsync("messages", requestBody);
         }
     }
 }

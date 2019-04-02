@@ -22,7 +22,8 @@ namespace LuckyDrawBot.Tests
             {
                 var settings = new Dictionary<string, string>
                 {
-                    ["Bot:Id"] = Guid.NewGuid().ToString()
+                    ["Bot:Id"] = Guid.NewGuid().ToString(),
+                    ["ServicePublicBaseUrl"] = "https://service.com"
                 };
                 configuration.AddInMemoryCollection(settings);
             }
