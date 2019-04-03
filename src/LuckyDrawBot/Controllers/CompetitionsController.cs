@@ -63,10 +63,12 @@ namespace LuckyDrawBot.Controllers
                 return false;
             }
 
-            var resultActivity = _activityBuilder.CreateResultActivity(competition);
-
             using (var botClient = _botClientFactory.CreateBotClient(competition.ServiceUrl))
             {
+                var updatedMainActivity = _activityBuilder.CreateMainActivity(competition);
+                await botClient.UpdateActivityAsync(competition.ChannelId, competition.MainActivityId, updatedMainActivity);
+
+                var resultActivity = _activityBuilder.CreateResultActivity(competition);
                 var resultMessage = await botClient.SendToConversationAsync(resultActivity);
                 await _competitionService.UpdateResultActivity(competition.Id, resultMessage.Id);
             }

@@ -51,7 +51,7 @@ namespace LuckyDrawBot.Services
                                 Url = "https://github.com/tony-xia/microsoft-teams-templates/raw/master/images/steak.jpg"
                             }
                         },
-                        Buttons = new List<CardAction>
+                        Buttons = competition.IsCompleted ? null : new List<CardAction>
                         {
                             new CardAction
                             {
