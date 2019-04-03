@@ -80,6 +80,7 @@ namespace LuckyDrawBot.Controllers
             }
 
             var gift = parts[0].Substring(parts[0].IndexOf(' ') + 1);
+            var winnerCount = int.Parse(parts[1]);
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
             var competition = await _competitionService.Create(
@@ -91,7 +92,7 @@ namespace LuckyDrawBot.Controllers
                                                                activity.Locale,
                                                                gift,
                                                                "detail terms",
-                                                               1,
+                                                               winnerCount,
                                                                activity.From.Name,
                                                                activity.From.AadObjectId);
 
