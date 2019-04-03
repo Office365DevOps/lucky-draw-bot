@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using LuckyDrawBot.Infrastructure.Database;
@@ -10,6 +11,8 @@ namespace LuckyDrawBot.Tests.Infrastructure.Database
     public class InMemoryDataTable<TSettings, TEntity> : IDataTable<TSettings, TEntity> where TSettings : DataTableSettings, new() where TEntity : ITableEntity, new()
     {
         private readonly Dictionary<string, Dictionary<string, TEntity>> _data = new Dictionary<string, Dictionary<string, TEntity>>();
+
+        public IReadOnlyList<TEntity> AllEntities => _data.Values.SelectMany(p => p.Values).ToImmutableList();
 
         public Task<bool> Delete(TEntity entity)
         {

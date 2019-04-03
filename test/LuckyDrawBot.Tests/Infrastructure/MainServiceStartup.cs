@@ -66,6 +66,9 @@ namespace LuckyDrawBot.Tests.Infrastructure
                 _startup,
                 "Configure",
                 new Dictionary<Type, object>() { [typeof(IApplicationBuilder)] = app });
+
+            var serverFixtureConfiguration = serviceProvider.GetRequiredService<ServerFixtureConfiguration>();
+            serverFixtureConfiguration.MainServicePostConfigure?.Invoke(app, serviceProvider);
         }
 
     }

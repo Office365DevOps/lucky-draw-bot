@@ -1,4 +1,5 @@
 using LuckyDrawBot.Tests.Infrastructure.Xunit;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ namespace LuckyDrawBot.Tests.Infrastructure
         public Type StartupType { get; set; }
         public List<DependencyServiceConfiguration> DependencyServices { get; set; } = new List<DependencyServiceConfiguration>();
         public Action<IServiceCollection> MainServicePostConfigureServices { get; set; }
+        public Action<IApplicationBuilder, IServiceProvider> MainServicePostConfigure { get; set; }
         public Action<IConfigurationBuilder, TestContext> MainServicePostAppConfiguration { get; set; }
     }
 

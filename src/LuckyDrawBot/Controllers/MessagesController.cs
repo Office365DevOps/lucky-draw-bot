@@ -67,7 +67,6 @@ namespace LuckyDrawBot.Controllers
                     await HandleDisplayHelp(activity);
                     return Ok();
                 }
-
             }
             return Ok();
         }

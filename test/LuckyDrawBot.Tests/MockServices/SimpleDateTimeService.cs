@@ -3,7 +3,7 @@ using LuckyDrawBot.Services;
 
 namespace LuckyDrawBot.Tests.MockServices
 {
-    public class MockDateTimeService : IDateTimeService
+    public class SimpleDateTimeService : IDateTimeService
     {
         public DateTimeOffset UtcNow { get; set; } = DateTimeOffset.UtcNow;
     }

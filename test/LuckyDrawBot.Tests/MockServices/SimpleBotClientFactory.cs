@@ -6,11 +6,11 @@ using Microsoft.Bot.Schema;
 
 namespace LuckyDrawBot.Tests.MockServices
 {
-    public class MockBotClient : IBotClient
+    public class SimpleBotClient : IBotClient
     {
-        private readonly MockBotClientFactory _factory;
+        private readonly SimpleBotClientFactory _factory;
 
-        public MockBotClient(MockBotClientFactory factory)
+        public SimpleBotClient(SimpleBotClientFactory factory)
         {
             _factory = factory;
         }
@@ -58,14 +58,14 @@ namespace LuckyDrawBot.Tests.MockServices
         public ResourceResponse Response { get; set; }
     }
 
-    public class MockBotClientFactory : IBotClientFactory
+    public class SimpleBotClientFactory : IBotClientFactory
     {
         public List<CreatedMessage> CreatedMessages { get; } = new List<CreatedMessage>();
         public List<UpdatedMessage> UpdatedMessages { get; } = new List<UpdatedMessage>();
 
         public IBotClient CreateBotClient(string botServiceUrl)
         {
-            return new MockBotClient(this);
+            return new SimpleBotClient(this);
         }
     }
 }

@@ -7,7 +7,7 @@ using LuckyDrawBot.Services;
 
 namespace LuckyDrawBot.Tests.MockServices
 {
-    public partial class MockCompetitionRepositoryService : ICompetitionRepositoryService
+    public partial class SimpleCompetitionRepositoryService : ICompetitionRepositoryService
     {
         private readonly Dictionary<Guid, Competition> _openCompetitions = new Dictionary<Guid, Competition>();
         private readonly Dictionary<Guid, Competition> _completedCompetitions = new Dictionary<Guid, Competition>();

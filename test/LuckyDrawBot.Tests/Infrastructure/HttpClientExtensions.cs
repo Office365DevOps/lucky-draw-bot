@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
 
 namespace System.Net.Http
@@ -12,14 +13,27 @@ namespace System.Net.Http
         {
             var activity = new Activity
             {
+                ServiceUrl = "https://service-url.com",
                 ChannelId = "msteams",
                 Type = "message",
                 Text = text,
                 Locale = "en-us",
                 From = new ChannelAccount("id", "name"),
                 Recipient = new ChannelAccount("bot id", "bot name"),
-                Conversation = new ConversationAccount(isGroup: true, id: "conv id", name: "conv name")
+                Conversation = new ConversationAccount(isGroup: true, id: "conv id", name: "conv name"),
+                ChannelData = new TeamsChannelData
+                {
+                    Tenant = new TenantInfo { Id = Guid.NewGuid().ToString() },
+                    Team = new TeamInfo { Id = Guid.NewGuid().ToString() },
+                    Channel = new ChannelInfo { Id = Guid.NewGuid().ToString() },
+                }
             };
+            var requestBody = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
+            return await httpClient.PostAsync("messages", requestBody);
+        }
+
+        public static async Task<HttpResponseMessage> SendActivity(this HttpClient httpClient, Activity activity)
+        {
             var requestBody = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
             return await httpClient.PostAsync("messages", requestBody);
         }
