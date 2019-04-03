@@ -73,13 +73,21 @@ namespace LuckyDrawBot.Controllers
 
         private async Task<bool> HandleCompetitionInitialization(Activity activity)
         {
-            var parts = activity.Text.Split(',').Select(p => p.Trim()).ToArray();
+            const string MentionBotEndingFlag = "</at>";
+            var text = activity.Text;
+            if (text.IndexOf(MentionBotEndingFlag) < 0)
+            {
+                return false;
+            }
+            text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
+
+            var parts = text.Split(',').Select(p => p.Trim()).ToArray();
             if (parts.Length < 2)
             {
                 return false;
             }
 
-            var gift = parts[0].Substring(parts[0].IndexOf(' ') + 1);
+            var gift = parts[0].Trim();
             var winnerCount = int.Parse(parts[1]);
 
             var channelData = activity.GetChannelData<TeamsChannelData>();

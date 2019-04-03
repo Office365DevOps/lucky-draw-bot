@@ -25,7 +25,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
             using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
             using (var client = server.CreateClient())
             {
-                var text = $"botname {giftName}, {winnerCount}";
+                var text = $"<at>bot name</at>{giftName}, {winnerCount}";
                 var response = await client.SendTeamsText(text);
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
