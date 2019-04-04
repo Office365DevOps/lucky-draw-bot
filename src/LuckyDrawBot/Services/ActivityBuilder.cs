@@ -44,11 +44,11 @@ namespace LuckyDrawBot.Services
                         Title = competition.Gift,
                         Subtitle = competition.Description,
                         Text = GenerateCompetitorsText(competition.Competitors),
-                        Images = new List<CardImage>()
+                        Images = string.IsNullOrEmpty(competition.GiftImageUrl) ? null : new List<CardImage>()
                         {
                             new CardImage()
                             {
-                                Url = "https://github.com/tony-xia/microsoft-teams-templates/raw/master/images/steak.jpg"
+                                Url = competition.GiftImageUrl
                             }
                         },
                         Buttons = competition.IsCompleted ? null : new List<CardAction>

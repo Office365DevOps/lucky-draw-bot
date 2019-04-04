@@ -10,7 +10,7 @@ namespace LuckyDrawBot.Services
     public interface ICompetitionService
     {
         Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId,
-                                 DateTimeOffset drawTime, string locale, string gift, string description, int winnerCount,
+                                 DateTimeOffset drawTime, string locale, string gift, string giftImageUrl, string description, int winnerCount,
                                  string creatorName, string creatorAadObject);
         Task<Competition> UpdateMainActivity(Guid competitionId, string mainActivityId);
         Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName);
@@ -51,7 +51,7 @@ namespace LuckyDrawBot.Services
             return competition;
         }
 
-        public async Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, string gift, string description, int winnerCount, string creatorName, string creatorAadObject)
+        public async Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, string gift, string giftImageUrl, string description, int winnerCount, string creatorName, string creatorAadObject)
         {
             var competition = new Competition
             {
@@ -67,6 +67,7 @@ namespace LuckyDrawBot.Services
                 ActualDrawTime = null,
                 Locale = locale,
                 Gift = gift,
+                GiftImageUrl = giftImageUrl,
                 Description = description,
                 WinnerCount = winnerCount,
                 IsCompleted = false,

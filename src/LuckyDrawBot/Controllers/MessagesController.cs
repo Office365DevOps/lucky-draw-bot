@@ -25,14 +25,16 @@ namespace LuckyDrawBot.Controllers
         private readonly ICompetitionService _competitionService;
         private readonly IActivityBuilder _activityBuilder;
         private readonly ITimerService _timerService;
+        private readonly IDateTimeService _dateTimeService;
 
-        public MessagesController(ILogger<MessagesController> logger, IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder, ITimerService timerService)
+        public MessagesController(ILogger<MessagesController> logger, IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder, ITimerService timerService, IDateTimeService dateTimeService)
         {
             _logger = logger;
             _botClientFactory = botClientFactory;
             _competitionService = competitionService;
             _activityBuilder = activityBuilder;
             _timerService = timerService;
+            _dateTimeService = dateTimeService;
         }
 
         [HttpPost]
@@ -89,6 +91,8 @@ namespace LuckyDrawBot.Controllers
 
             var gift = parts[0].Trim();
             var winnerCount = int.Parse(parts[1]);
+            var plannedDrawTime = parts.Length > 2 ? DateTimeOffset.Parse(parts[2]) : _dateTimeService.UtcNow.AddMinutes(1);
+            var giftImageUrl = parts.Length > 3 ? parts[3].Trim() : string.Empty;
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
             var competition = await _competitionService.Create(
@@ -96,9 +100,10 @@ namespace LuckyDrawBot.Controllers
                                                                Guid.Parse(channelData.Tenant.Id),
                                                                channelData.Team.Id,
                                                                channelData.Channel.Id,
-                                                               DateTimeOffset.UtcNow.AddMinutes(1),
+                                                               plannedDrawTime,
                                                                activity.Locale,
                                                                gift,
+                                                               giftImageUrl,
                                                                "detail terms",
                                                                winnerCount,
                                                                activity.From.Name,
