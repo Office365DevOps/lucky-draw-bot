@@ -51,13 +51,24 @@ namespace LuckyDrawBot.Services
                                 Url = competition.GiftImageUrl
                             }
                         },
+                        Tap = new CardAction
+                        {
+                            Type = "invoke",
+                            Value = new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id }
+                        },
                         Buttons = competition.IsCompleted ? null : new List<CardAction>
                         {
                             new CardAction
                             {
                                 Title = "I am in",
                                 Type = "invoke",
-                                Value = new InvokeActionData { Type = InvokeActionType.Join, CompetitionId = competition.Id }
+                                Value = new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = competition.Id }
+                            },
+                            new CardAction
+                            {
+                                Title = "Detail",
+                                Type = "invoke",
+                                Value = new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id }
                             }
                         }
                     }

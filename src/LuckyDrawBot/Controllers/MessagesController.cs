@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -20,6 +21,15 @@ namespace LuckyDrawBot.Controllers
     [Produces("application/json")]
     public class MessagesController : ControllerBase
     {
+        private class CreateCompetitionParameters
+        {
+            public string Gift { get; set; }
+            public string GiftImageUrl { get; set; }
+            public int WinnerCount { get; set; }
+            public DateTimeOffset PlannedDrawTime { get; set; }
+            public string Description { get; set; }
+        }
+
         private readonly ILogger<MessagesController> _logger;
         private readonly IBotClientFactory _botClientFactory;
         private readonly ICompetitionService _competitionService;
@@ -52,8 +62,23 @@ namespace LuckyDrawBot.Controllers
             if (activity.Type == ActivityTypes.Invoke)
             {
                 var invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
-                switch(invokeActionData.Type)
+                switch(invokeActionData.UserAction)
                 {
+                    // case InvokeActionType.ViewDetail:
+                    //     var taskEnvelope = new {
+                    //         task = new {
+                    //             type = "continue",
+                    //             value = new {
+                    //                 title = "abc",
+                    //                 height = 500,
+                    //                 width = 400,
+                    //                 url = "https://www.ngrok.io"
+                    //             }
+                    //         }
+                    //     };
+                    //     var json = JsonConvert.SerializeObject(taskEnvelope);
+                    //     _logger.LogWarning(json);
+                    //     return Ok(taskEnvelope);
                     case InvokeActionType.Join:
                         await HandleJoinCompetitionAction(invokeActionData, activity);
                         return Ok();
@@ -75,24 +100,11 @@ namespace LuckyDrawBot.Controllers
 
         private async Task<bool> HandleCompetitionInitialization(Activity activity)
         {
-            const string MentionBotEndingFlag = "</at>";
-            var text = activity.Text;
-            if (text.IndexOf(MentionBotEndingFlag) < 0)
+            var parameters = ParseCreateCompetitionParameters(activity);
+            if (parameters == null)
             {
                 return false;
             }
-            text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
-
-            var parts = text.Split(',').Select(p => p.Trim()).ToArray();
-            if (parts.Length < 2)
-            {
-                return false;
-            }
-
-            var gift = parts[0].Trim();
-            var winnerCount = int.Parse(parts[1]);
-            var plannedDrawTime = parts.Length > 2 ? DateTimeOffset.Parse(parts[2]) : _dateTimeService.UtcNow.AddMinutes(1);
-            var giftImageUrl = parts.Length > 3 ? parts[3].Trim() : string.Empty;
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
             var competition = await _competitionService.Create(
@@ -100,12 +112,12 @@ namespace LuckyDrawBot.Controllers
                                                                Guid.Parse(channelData.Tenant.Id),
                                                                channelData.Team.Id,
                                                                channelData.Channel.Id,
-                                                               plannedDrawTime,
+                                                               parameters.PlannedDrawTime,
                                                                activity.Locale,
-                                                               gift,
-                                                               giftImageUrl,
-                                                               "detail terms",
-                                                               winnerCount,
+                                                               parameters.Gift,
+                                                               parameters.GiftImageUrl,
+                                                               parameters.Description,
+                                                               parameters.WinnerCount,
                                                                activity.From.Name,
                                                                activity.From.AadObjectId);
 
@@ -146,5 +158,46 @@ namespace LuckyDrawBot.Controllers
             }
         }
 
+        private CreateCompetitionParameters ParseCreateCompetitionParameters(Activity activity)
+        {
+            const string MentionBotEndingFlag = "</at>";
+            var text = activity.Text;
+            if (text.IndexOf(MentionBotEndingFlag) < 0)
+            {
+                return null;
+            }
+            text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
+
+            var parts = text.Split(',').Select(p => p.Trim()).ToArray();
+            if (parts.Length < 2)
+            {
+                return null;
+            }
+
+            var gift = parts[0].Trim();
+            var winnerCount = int.Parse(parts[1]);
+            var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
+            DateTimeOffset plannedDrawTime;
+            if (parts.Length > 2)
+            {
+                var time = DateTimeOffset.Parse(parts[2]);
+                plannedDrawTime = new DateTimeOffset(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
+            }
+            else
+            {
+                plannedDrawTime = _dateTimeService.UtcNow.AddMinutes(1);
+            }
+            var giftImageUrl = parts.Length > 3 ? parts[3].Trim() : string.Empty;
+
+            var plannedDrawTimeString = plannedDrawTime.ToOffset(offset).ToString("f", CultureInfo.GetCultureInfo(activity.Locale));
+            return new CreateCompetitionParameters
+            {
+                Gift = gift,
+                GiftImageUrl = giftImageUrl,
+                WinnerCount = winnerCount,
+                PlannedDrawTime = plannedDrawTime,
+                Description = $"{winnerCount} prize(s). Time: {plannedDrawTimeString}"
+            };
+        }
     }
 }

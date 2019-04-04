@@ -41,7 +41,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 openCompetitions.Should().HaveCount(1);
                 openCompetitions[0].Gift.Should().StartWith(giftName);
                 openCompetitions[0].WinnerCount.Should().Be(winnerCount);
-                openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(plannedDrawTime));
+                openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(plannedDrawTime + "Z"));
                 openCompetitions[0].GiftImageUrl.Should().Be(giftImageUrl);
             }
         }
