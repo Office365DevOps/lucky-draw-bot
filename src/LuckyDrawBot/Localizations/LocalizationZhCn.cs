@@ -7,7 +7,7 @@ namespace LuckyDrawBot.Localizations
     {
         private static readonly Dictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
-            ["Help.Message"] = "您可以发送这样一条消息来创建一个抽奖：<b>@luckydraw secret gift, 1h</b> 还想了解更多？这个是发送给抽奖机器人的消息格式：<br/>@luckydraw [奖品名字], [奖品数目], [抽奖时间], [奖品图片的URL网址]<br>",
+            ["Help.Message"] = "您可以发送这样一条消息来创建一个抽奖：<b>@luckydraw secret gift, 1h</b><br/>还想了解更多？这个是发送给抽奖机器人的消息格式：<br/>@luckydraw [奖品名字], [奖品数目], [抽奖时间], [奖品图片的URL网址]<br>",
             ["MainActivity.Description"] = "共有 {0} 个奖品. 抽奖时间：{1}",
             ["MainActivity.JoinButton"] = "我要参加",
             ["MainActivity.NoCompetitor"] = "",
