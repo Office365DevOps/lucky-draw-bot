@@ -15,7 +15,7 @@ namespace LuckyDrawBot.Tests
             return arrangement.GetHttpHandler("Timer");
         }
 
-        public static void SetUtcNow(this ServerArrangement arrangement, DateTime utcNow)
+        public static void SetUtcNow(this ServerArrangement arrangement, DateTimeOffset utcNow)
         {
             var mockService = arrangement.MainServices.GetRequiredService<IDateTimeService>() as SimpleDateTimeService;
             mockService.UtcNow = utcNow;

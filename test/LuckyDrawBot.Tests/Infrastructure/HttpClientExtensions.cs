@@ -9,7 +9,11 @@ namespace System.Net.Http
 {
     public static class HttpClientExtensions
     {
-        public static async Task<HttpResponseMessage> SendTeamsText(this HttpClient httpClient, string text)
+        public static async Task<HttpResponseMessage> SendTeamsText(
+            this HttpClient httpClient,
+            string text,
+            string locale = null,
+            double? offsetHours = null)
         {
             var activity = new Activity
             {
@@ -17,7 +21,8 @@ namespace System.Net.Http
                 ChannelId = "msteams",
                 Type = "message",
                 Text = text,
-                Locale = "en-us",
+                Locale = locale ?? "en-us",
+                LocalTimestamp = offsetHours.HasValue ? new DateTimeOffset(2018, 1, 1, 1, 1, 1, 1, TimeSpan.FromHours(offsetHours.Value)) : (DateTimeOffset?)null,
                 From = new ChannelAccount("id", "name"),
                 Recipient = new ChannelAccount("bot id", "bot name"),
                 Conversation = new ConversationAccount(isGroup: true, id: "conv id", name: "conv name"),

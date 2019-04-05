@@ -180,7 +180,7 @@ namespace LuckyDrawBot.Controllers
             DateTimeOffset plannedDrawTime;
             if (parts.Length > 2)
             {
-                var time = DateTimeOffset.Parse(parts[2]);
+                var time = DateTimeOffset.Parse(parts[2].Trim(), CultureInfo.GetCultureInfo(activity.Locale));
                 plannedDrawTime = new DateTimeOffset(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
             }
             else
