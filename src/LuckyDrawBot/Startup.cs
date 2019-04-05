@@ -40,6 +40,7 @@ namespace LuckyDrawBot
             services.AddSingleton<ICompetitionRepositoryService, CompetitionRepositoryService>();
             services.AddSingleton<ICompetitionService, CompetitionService>();
             services.AddSingleton<IActivityBuilder, ActivityBuilder>();
+            services.AddSingleton<ILocalizationFactory, LocalizationFactory>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -27,7 +27,7 @@ namespace LuckyDrawBot.Controllers
             public string GiftImageUrl { get; set; }
             public int WinnerCount { get; set; }
             public DateTimeOffset PlannedDrawTime { get; set; }
-            public string Description { get; set; }
+            public double OffsetHours { get; set; }
         }
 
         private readonly ILogger<MessagesController> _logger;
@@ -36,8 +36,16 @@ namespace LuckyDrawBot.Controllers
         private readonly IActivityBuilder _activityBuilder;
         private readonly ITimerService _timerService;
         private readonly IDateTimeService _dateTimeService;
+        private readonly ILocalizationFactory _localizationFactory;
 
-        public MessagesController(ILogger<MessagesController> logger, IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder, ITimerService timerService, IDateTimeService dateTimeService)
+        public MessagesController(
+            ILogger<MessagesController> logger,
+            IBotClientFactory botClientFactory,
+            ICompetitionService competitionService,
+            IActivityBuilder activityBuilder,
+            ITimerService timerService,
+            IDateTimeService dateTimeService,
+            ILocalizationFactory localizationFactory)
         {
             _logger = logger;
             _botClientFactory = botClientFactory;
@@ -45,6 +53,7 @@ namespace LuckyDrawBot.Controllers
             _activityBuilder = activityBuilder;
             _timerService = timerService;
             _dateTimeService = dateTimeService;
+            _localizationFactory = localizationFactory;
         }
 
         [HttpPost]
@@ -64,21 +73,6 @@ namespace LuckyDrawBot.Controllers
                 var invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
                 switch(invokeActionData.UserAction)
                 {
-                    // case InvokeActionType.ViewDetail:
-                    //     var taskEnvelope = new {
-                    //         task = new {
-                    //             type = "continue",
-                    //             value = new {
-                    //                 title = "abc",
-                    //                 height = 500,
-                    //                 width = 400,
-                    //                 url = "https://www.ngrok.io"
-                    //             }
-                    //         }
-                    //     };
-                    //     var json = JsonConvert.SerializeObject(taskEnvelope);
-                    //     _logger.LogWarning(json);
-                    //     return Ok(taskEnvelope);
                     case InvokeActionType.Join:
                         await HandleJoinCompetitionAction(invokeActionData, activity);
                         return Ok();
@@ -114,9 +108,9 @@ namespace LuckyDrawBot.Controllers
                                                                channelData.Channel.Id,
                                                                parameters.PlannedDrawTime,
                                                                activity.Locale,
+                                                               parameters.OffsetHours,
                                                                parameters.Gift,
                                                                parameters.GiftImageUrl,
-                                                               parameters.Description,
                                                                parameters.WinnerCount,
                                                                activity.From.Name,
                                                                activity.From.AadObjectId);
@@ -148,10 +142,8 @@ namespace LuckyDrawBot.Controllers
 
         private async Task HandleDisplayHelp(Activity activity)
         {
-            var help = activity.CreateReply(
-                "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1h</b>. Want more? here is the cheat sheet:<br/>"
-                + "@luckydraw [gift name], [draw time], [the number of gifts], [the url of gift url]<br>"
-            );
+            var localization = _localizationFactory.Create(activity.Locale);
+            var help = activity.CreateReply(localization["Help.Message"]);
             using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
             {
                 await botClient.SendToConversationAsync(help);
@@ -189,14 +181,14 @@ namespace LuckyDrawBot.Controllers
             }
             var giftImageUrl = parts.Length > 3 ? parts[3].Trim() : string.Empty;
 
-            var plannedDrawTimeString = plannedDrawTime.ToOffset(offset).ToString("f", CultureInfo.GetCultureInfo(activity.Locale));
+            var localization = _localizationFactory.Create(activity.Locale);
             return new CreateCompetitionParameters
             {
                 Gift = gift,
                 GiftImageUrl = giftImageUrl,
                 WinnerCount = winnerCount,
                 PlannedDrawTime = plannedDrawTime,
-                Description = $"{winnerCount} prize(s). Time: {plannedDrawTimeString}"
+                OffsetHours = offset.TotalHours
             };
         }
     }

@@ -30,7 +30,7 @@
                 }
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "local"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"

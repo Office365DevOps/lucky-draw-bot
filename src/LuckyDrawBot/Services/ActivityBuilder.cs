@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using LuckyDrawBot.Models;
@@ -17,10 +18,12 @@ namespace LuckyDrawBot.Services
     public class ActivityBuilder : IActivityBuilder
     {
         private readonly BotSettings _botSettings;
+        private readonly ILocalizationFactory _localizationFactory;
 
-        public ActivityBuilder(BotSettings botSettings)
+        public ActivityBuilder(BotSettings botSettings, ILocalizationFactory localizationFactory)
         {
             _botSettings = botSettings;
+            _localizationFactory = localizationFactory;
         }
 
         public Activity CreateMainActivity(Competition competition)
@@ -34,6 +37,9 @@ namespace LuckyDrawBot.Services
                 activity.Conversation = new ConversationAccount(id: competition.ChannelId);
             }
 
+            var localization = _localizationFactory.Create(competition.Locale);
+            var plannedDrawTimeString = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
+                                                                   .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
             activity.Attachments = new List<Attachment>
             {
                 new Attachment
@@ -42,8 +48,8 @@ namespace LuckyDrawBot.Services
                     Content = new HeroCard()
                     {
                         Title = competition.Gift,
-                        Subtitle = competition.Description,
-                        Text = GenerateCompetitorsText(competition.Competitors),
+                        Subtitle = localization["MainActivity.Description", competition.WinnerCount, plannedDrawTimeString],
+                        Text = GenerateCompetitorsText(competition),
                         Images = string.IsNullOrEmpty(competition.GiftImageUrl) ? null : new List<CardImage>()
                         {
                             new CardImage()
@@ -51,24 +57,13 @@ namespace LuckyDrawBot.Services
                                 Url = competition.GiftImageUrl
                             }
                         },
-                        Tap = new CardAction
-                        {
-                            Type = "invoke",
-                            Value = new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id }
-                        },
                         Buttons = competition.IsCompleted ? null : new List<CardAction>
                         {
                             new CardAction
                             {
-                                Title = "I am in",
+                                Title = localization["MainActivity.JoinButton"],
                                 Type = "invoke",
                                 Value = new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = competition.Id }
-                            },
-                            new CardAction
-                            {
-                                Title = "Detail",
-                                Type = "invoke",
-                                Value = new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id }
                             }
                         }
                     }
@@ -77,20 +72,23 @@ namespace LuckyDrawBot.Services
             return activity;
         }
 
-        private string GenerateCompetitorsText(IList<Competitor> competitors)
+        private string GenerateCompetitorsText(Competition competition)
         {
+            var localization = _localizationFactory.Create(competition.Locale);
+
+            var competitors = competition.Competitors;
             switch (competitors.Count)
             {
                 case 0:
-                    return string.Empty;
+                    return localization["MainActivity.NoCompetitor"];
                 case 1:
-                    return string.Format("{0} joined this lucky draw", competitors[0].Name);
+                    return localization["MainActivity.OneCompetitor", competitors[0].Name];
                 case 2:
-                    return string.Format("{0} and {1} joined this lucky draw", competitors[0].Name, competitors[1].Name);
+                    return localization["MainActivity.TwoCompetitors", competitors[0].Name, competitors[1].Name];
                 case 3:
-                    return string.Format("{0}, {1} and {2} joined this lucky draw", competitors[0].Name, competitors[1].Name, competitors[2].Name);
+                    return localization["MainActivity.ThreeCompetitors", competitors[0].Name, competitors[1].Name, competitors[2].Name];
                 default:
-                    return string.Format("{0}, {1} and {2} others joined this lucky draw", competitors[0].Name, competitors[1].Name, competitors.Count - 2);
+                    return localization["MainActivity.FourOrMoreCompetitors", competitors[0].Name, competitors[1].Name, competitors.Count - 2];
             }
         }
 
@@ -98,17 +96,18 @@ namespace LuckyDrawBot.Services
         {
             var winners = competition.Competitors.Where(c => competition.WinnerAadObjectIds.Contains(c.AadObjectId)).ToList();
 
+            var localization = _localizationFactory.Create(competition.Locale);
             HeroCard contentCard;
             if (winners.Count <= 0)
             {
                 contentCard = new HeroCard()
                 {
-                    Title = "No one joined, no winner",
+                    Title = localization["ResultActivity.NoWinner"],
                     Images = new List<CardImage>()
                     {
                         new CardImage()
                         {
-                            Url = "https://media.tenor.co/images/5d6e7c144fb4ef5985652ea6d7219965/raw"
+                            Url = localization["ResultActivity.NoWinnerImageUrl"]
                         }
                     }
                 };
@@ -117,12 +116,12 @@ namespace LuckyDrawBot.Services
             {
                 contentCard = new HeroCard()
                 {
-                    Title = "Our winners are: " + string.Join(", ", winners.Select(w => w.Name)),
+                    Title = localization["ResultActivity.Winners", string.Join(", ", winners.Select(w => w.Name))],
                     Images = new List<CardImage>()
                     {
                         new CardImage()
                         {
-                            Url = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif"
+                            Url = localization["ResultActivity.WinnersImageUrl"]
                         }
                     }
                 };
