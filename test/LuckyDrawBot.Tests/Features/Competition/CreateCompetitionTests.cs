@@ -99,6 +99,33 @@ namespace LuckyDrawBot.Tests.Features.Competition
             }
         }
 
+        [Theory]
+        [InlineData("8m", "2019-09-08T00:08:00Z")]
+        [InlineData("8.25min", "2019-09-08T00:08:15Z")]
+        [InlineData("2minutes", "2019-09-08T00:02:00Z")]
+        [InlineData("3 分钟", "2019-09-08T00:03:00Z")]
+        [InlineData("1.5h", "2019-09-08T01:30:00Z")]
+        [InlineData("2.5 hrs", "2019-09-08T02:30:00Z")]
+        [InlineData("4hours", "2019-09-08T04:00:00Z")]
+        [InlineData("8小时", "2019-09-08T08:00:00Z")]
+        public async Task WhenPlannedDrawTimeIsGivenAsDurationText_SendTextToBot_PlannedDrawTimeIsParseCorrectly(
+            string inputPlannedDrawTime, string expectedPlannedDrawTime)
+        {
+            using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
+            using (var client = server.CreateClient())
+            {
+                server.Arrange().SetUtcNow(DateTimeOffset.Parse("2019-09-08T00:00:00Z"));
+
+                var text = $"<at>bot name</at>free coffee,1,{inputPlannedDrawTime}";
+                var response = await client.SendTeamsText(text);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var openCompetitions = server.Assert().GetOpenCompetitions();
+                openCompetitions.Should().HaveCount(1);
+                openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(expectedPlannedDrawTime));
+            }
+        }
+
         [Fact]
         public async Task WhenUseChineseSeparator_SendTextToBot_TextIsParsedCorrectly()
         {

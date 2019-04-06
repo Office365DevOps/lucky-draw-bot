@@ -173,8 +173,16 @@ namespace LuckyDrawBot.Controllers
             DateTimeOffset plannedDrawTime;
             if (parts.Length > 2)
             {
-                var time = DateTimeOffset.Parse(parts[2].Trim(), CultureInfo.GetCultureInfo(activity.Locale));
-                plannedDrawTime = new DateTimeOffset(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
+                var timeString = parts[2].Trim();
+                if (TryParseTimeDuration(timeString, out TimeSpan duration))
+                {
+                    plannedDrawTime = _dateTimeService.UtcNow.Add(duration);
+                }
+                else
+                {
+                    var time = DateTimeOffset.Parse(timeString, CultureInfo.GetCultureInfo(activity.Locale));
+                    plannedDrawTime = new DateTimeOffset(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
+                }
             }
             else
             {
@@ -191,6 +199,38 @@ namespace LuckyDrawBot.Controllers
                 PlannedDrawTime = plannedDrawTime,
                 OffsetHours = offset.TotalHours
             };
+        }
+
+        // We will leverage LUIS to parse the input time
+        private bool TryParseTimeDuration(string time, out TimeSpan duration)
+        {
+            var minutePostfixes = new string[] { "m", "min", "mins", "minute", "minutes", "分钟" };
+            var hourPostfixes = new string[] { "h", "hr", "hrs", "hour", "hours", "小时" };
+
+            foreach (var minutePostfix in minutePostfixes)
+            {
+                if (time.EndsWith(minutePostfix, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (double.TryParse(time.Substring(0, time.Length - minutePostfix.Length), out double minutes))
+                    {
+                        duration = TimeSpan.FromMinutes(minutes);
+                        return true;
+                    }
+                }
+            }
+            foreach (var hourPostfix in hourPostfixes)
+            {
+                if (time.EndsWith(hourPostfix, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (double.TryParse(time.Substring(0, time.Length - hourPostfix.Length), out double hours))
+                    {
+                        duration = TimeSpan.FromHours(hours);
+                        return true;
+                    }
+                }
+            }
+            duration = TimeSpan.Zero;
+            return false;
         }
     }
 }
