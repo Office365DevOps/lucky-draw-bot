@@ -30,6 +30,27 @@
                 "team",
                 "personal"
             ],
+            "commandLists": [
+                {
+                    "scopes": [
+                        "team"
+                    ],
+                    "commands": [
+                        {
+                            "title": "help",
+                            "description": "Get quick answers and advanced tips"
+                        },
+                        {
+                            "title": "Prize, # of prizes, Draw Time",
+                            "description": "Example: Surface Pro, 6, 23:59"
+                        },
+                        {
+                            "title": "Prize, # of prizes, Time, Image",
+                            "description": "Example: Surface Pro, 6, 2019-08-08 00:00, http://www.a.com/b.jpg"
+                        }
+                    ]
+                }
+            ],
             "supportsFiles": true,
             "isNotificationOnly": false
         }

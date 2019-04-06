@@ -102,7 +102,8 @@ namespace LuckyDrawBot.Services
             {
                 contentCard = new HeroCard()
                 {
-                    Title = localization["ResultActivity.NoWinner"],
+                    Title = localization["ResultActivity.NoWinnerTitle"],
+                    Subtitle = localization["ResultActivity.NoWinnerSubtitle", competition.Gift],
                     Images = new List<CardImage>()
                     {
                         new CardImage()
@@ -116,7 +117,8 @@ namespace LuckyDrawBot.Services
             {
                 contentCard = new HeroCard()
                 {
-                    Title = localization["ResultActivity.Winners", string.Join(", ", winners.Select(w => w.Name))],
+                    Title = localization["ResultActivity.WinnersTitle", string.Join(", ", winners.Select(w => w.Name))],
+                    Subtitle = localization["ResultActivity.WinnersSubtitle", competition.Gift],
                     Images = new List<CardImage>()
                     {
                         new CardImage()
