@@ -30,6 +30,7 @@ namespace LuckyDrawBot.Controllers
             public double OffsetHours { get; set; }
         }
 
+        private const char ChineseCommaCharacter = '，';
         private readonly ILogger<MessagesController> _logger;
         private readonly IBotClientFactory _botClientFactory;
         private readonly ICompetitionService _competitionService;
@@ -160,7 +161,7 @@ namespace LuckyDrawBot.Controllers
             }
             text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
 
-            var parts = text.Split(',').Select(p => p.Trim()).ToArray();
+            var parts = text.Split(',', ChineseCommaCharacter).Select(p => p.Trim()).ToArray();
             if (parts.Length < 2)
             {
                 return null;

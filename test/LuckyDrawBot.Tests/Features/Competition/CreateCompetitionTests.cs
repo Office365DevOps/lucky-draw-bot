@@ -98,5 +98,28 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(expectedPlannedDrawTime));
             }
         }
+
+        [Fact]
+        public async Task WhenUseChineseSeparator_SendTextToBot_TextIsParsedCorrectly()
+        {
+            var giftName = "gift name";
+            var winnerCount = 6;
+            var plannedDrawTime = "2019-1-9 14:32";
+            var giftImageUrl = "http://jpg.com/01.jpg";
+
+            using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
+            using (var client = server.CreateClient())
+            {
+                var text = $"<at>bot name</at> {giftName}，{winnerCount}，{plannedDrawTime}，{giftImageUrl}";
+                var response = await client.SendTeamsText(text);
+
+                var openCompetitions = server.Assert().GetOpenCompetitions();
+                openCompetitions.Should().HaveCount(1);
+                openCompetitions[0].Gift.Should().StartWith(giftName);
+                openCompetitions[0].WinnerCount.Should().Be(winnerCount);
+                openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(plannedDrawTime + "Z"));
+                openCompetitions[0].GiftImageUrl.Should().Be(giftImageUrl);
+            }
+        }
     }
 }
