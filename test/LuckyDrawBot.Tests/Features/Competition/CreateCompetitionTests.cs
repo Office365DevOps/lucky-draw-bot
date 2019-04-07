@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
 using Microsoft.Bot.Schema;
 using Xunit;
@@ -31,18 +32,21 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 var response = await client.SendTeamsText(text);
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var createdMessages = server.Assert().GetCreatedMessages();
-                createdMessages.Should().HaveCount(1);
-                var heroCard = createdMessages[0].Activity.Attachments[0].Content as HeroCard;
-                heroCard.Title.Should().StartWith(giftName);
-                heroCard.Images.Should().HaveCount(1);
-                heroCard.Images[0].Url.Should().Be(giftImageUrl);
                 var openCompetitions = server.Assert().GetOpenCompetitions();
                 openCompetitions.Should().HaveCount(1);
                 openCompetitions[0].Gift.Should().StartWith(giftName);
                 openCompetitions[0].WinnerCount.Should().Be(winnerCount);
                 openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(plannedDrawTime + "Z"));
                 openCompetitions[0].GiftImageUrl.Should().Be(giftImageUrl);
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                var heroCard = createdMessages[0].Activity.Attachments[0].Content as HeroCard;
+                heroCard.Title.Should().StartWith(giftName);
+                heroCard.Images.Should().HaveCount(1);
+                heroCard.Images[0].Url.Should().Be(giftImageUrl);
+                heroCard.Buttons.Should().HaveCount(1);
+                heroCard.Buttons[0].Type.Should().Be("invoke");
+                heroCard.Buttons[0].Value.Should().BeEquivalentTo(new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = openCompetitions[0].Id });
             }
         }
 
@@ -148,5 +152,27 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 openCompetitions[0].GiftImageUrl.Should().Be(giftImageUrl);
             }
         }
+
+        [Theory]
+        [InlineData("only one parameter")]
+        [InlineData("giftName,wrong number")]
+        [InlineData("giftName,1,wrong hours")]
+        [InlineData("giftName,1,wrong minutes")]
+        [InlineData("giftName,1,wrong date")]
+        public async Task WhenTextDoesNotComplyWithRequiredFormat_SendTextToBot_ReplyHelpMessage(string wrongFormatText)
+        {
+            using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
+            using (var client = server.CreateClient())
+            {
+                var text = $"<at>bot name</at>" + wrongFormatText;
+                var response = await client.SendTeamsText(text);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                createdMessages[0].Activity.Text.Should().StartWith("Hi there");
+            }
+        }
+
     }
 }

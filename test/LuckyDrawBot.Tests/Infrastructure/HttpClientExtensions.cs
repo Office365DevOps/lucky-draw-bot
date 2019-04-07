@@ -1,6 +1,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using LuckyDrawBot.Models;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json;
@@ -33,8 +34,25 @@ namespace System.Net.Http
                     Channel = new ChannelInfo { Id = Guid.NewGuid().ToString() },
                 }
             };
-            var requestBody = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");
-            return await httpClient.PostAsync("messages", requestBody);
+
+            return await httpClient.SendActivity(activity);
+        }
+
+        public static async Task<HttpResponseMessage> SendTeamsInvoke(
+            this HttpClient httpClient,
+            InvokeActionData invokeValue,
+            ChannelAccount from = null)
+        {
+            var activity = new Activity
+            {
+                ServiceUrl = "https://service-url.com",
+                ChannelId = "msteams",
+                Type = "invoke",
+                Value = invokeValue,
+                From = from ?? new ChannelAccount("id", "name")
+            };
+
+            return await httpClient.SendActivity(activity);
         }
 
         public static async Task<HttpResponseMessage> SendActivity(this HttpClient httpClient, Activity activity)

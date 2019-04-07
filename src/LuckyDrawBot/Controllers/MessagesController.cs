@@ -168,7 +168,11 @@ namespace LuckyDrawBot.Controllers
             }
 
             var gift = parts[0].Trim();
-            var winnerCount = int.Parse(parts[1]);
+            int winnerCount;
+            if (!int.TryParse(parts[1], out winnerCount))
+            {
+                return null;
+            }
             var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
             DateTimeOffset plannedDrawTime;
             if (parts.Length > 2)
@@ -180,7 +184,11 @@ namespace LuckyDrawBot.Controllers
                 }
                 else
                 {
-                    var time = DateTimeOffset.Parse(timeString, CultureInfo.GetCultureInfo(activity.Locale));
+                    DateTimeOffset time;
+                    if (!DateTimeOffset.TryParse(timeString, CultureInfo.GetCultureInfo(activity.Locale), DateTimeStyles.None, out time))
+                    {
+                        return null;
+                    }
                     plannedDrawTime = new DateTimeOffset(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
                 }
             }
