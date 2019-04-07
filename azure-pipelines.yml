@@ -9,7 +9,7 @@ steps:
     dotnet build --configuration $(buildConfiguration)
 
 - script: |
-    dotnet test test/LuckyDrawBot.Tests/LuckyDrawBot.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\"[*]LuckyDrawBot.Program,[*]Microsoft.*,[*]System.*,[*]LuckyDrawBot.Infrastructure.*,[*]LuckyDrawBot.Tests.Infrastructure.*,[xunit*]*\"
+    dotnet test test/LuckyDrawBot.Tests/LuckyDrawBot.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude=\"[*]LuckyDrawBot.Program,[*]LuckyDrawBot.Services.BotClient,[*]LuckyDrawBot.Services.BotClientFactory,[*]LuckyDrawBot.Services.IDateTimeService,[*]Microsoft.*,[*]System.*,[*]LuckyDrawBot.Infrastructure.*,[*]LuckyDrawBot.Tests.Infrastructure.*,[xunit*]*\"
   displayName: dotnet test
 
 - script: |
