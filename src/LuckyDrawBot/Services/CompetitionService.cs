@@ -36,18 +36,22 @@ namespace LuckyDrawBot.Services
         public async Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName)
         {
             var competition = await _repositoryService.GetOpenCompetition(competitionId);
-            if (competition.Competitors.Any(c => c.AadObjectId == competitorAadObjectId))
+            var competitor = competition.Competitors.FirstOrDefault(c => c.AadObjectId == competitorAadObjectId);
+            if (competitor == null)
             {
-                return competition;
+                competitor = new Competitor
+                {
+                    AadObjectId = competitorAadObjectId,
+                    Name = competitorName,
+                    JoinTime = _dateTimeService.UtcNow
+                };
+                competition.Competitors.Add(competitor);
+            }
+            else
+            {
+                competitor.JoinTime = _dateTimeService.UtcNow;
             }
 
-            var competitor = new Competitor
-            {
-                AadObjectId = competitorAadObjectId,
-                Name = competitorName,
-                JoinTime = _dateTimeService.UtcNow
-            };
-            competition.Competitors.Add(competitor);
             await _repositoryService.UpsertOpenCompetition(competition);
             return competition;
         }

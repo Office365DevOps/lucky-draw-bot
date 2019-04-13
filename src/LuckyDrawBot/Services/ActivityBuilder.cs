@@ -76,7 +76,7 @@ namespace LuckyDrawBot.Services
         {
             var localization = _localizationFactory.Create(competition.Locale);
 
-            var competitors = competition.Competitors;
+            var competitors = competition.Competitors.OrderByDescending(c => c.JoinTime).ToList();
             switch (competitors.Count)
             {
                 case 0:
