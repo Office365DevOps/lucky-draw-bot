@@ -43,7 +43,6 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 arrangement.SetUtcNow(utcNow);
                 await arrangement.GetOpenCompetitions().InsertOrReplace(competition);
 
-                var text = $"<at>bot name</at>" + "wrongFormatText";
                 var response = await client.SendTeamsInvoke(new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = competition.Id }, userAccount);
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);

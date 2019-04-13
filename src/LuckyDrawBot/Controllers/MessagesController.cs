@@ -14,6 +14,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LuckyDrawBot.Controllers
 {
@@ -71,14 +72,27 @@ namespace LuckyDrawBot.Controllers
 
             if (activity.Type == ActivityTypes.Invoke)
             {
-                var invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
+                InvokeActionData invokeActionData;
+                if (activity.Name == "task/fetch")
+                {
+                    var data = ((JObject)activity.Value).GetValue("data");
+                    invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(data));
+                }
+                else
+                {
+                    invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
+                }
+
                 switch(invokeActionData.UserAction)
                 {
                     case InvokeActionType.Join:
                         await HandleJoinCompetitionAction(invokeActionData, activity);
                         return Ok();
+                    case InvokeActionType.ViewDetail:
+                        var competitionDetailResponse = await HandleViewCompetitionDetailAction(invokeActionData, activity);
+                        return Ok(competitionDetailResponse);
                     default:
-                        throw new Exception("Unknown invoke action type: " + activity.Type);
+                        throw new Exception("Unknown invoke action type: " + invokeActionData.UserAction);
                 }
             }
             else if (activity.Type == ActivityTypes.Message)
@@ -139,6 +153,13 @@ namespace LuckyDrawBot.Controllers
             {
                 await botClient.UpdateActivityAsync(competition.ChannelId, competition.MainActivityId, updatedActivity);
             }
+        }
+
+        private async Task<TaskModuleTaskInfoResponse> HandleViewCompetitionDetailAction(InvokeActionData invokeActionData, Activity activity)
+        {
+            var competition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);
+            var taskInfoResponse = _activityBuilder.CreateCompetitionDetailTaskInfoResponse(competition);
+            return taskInfoResponse;
         }
 
         private async Task HandleDisplayHelp(Activity activity)

@@ -10,6 +10,7 @@ namespace LuckyDrawBot.Localizations
             ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b>.<br/>Want more? Here is the cheat sheet:<br/>@luckydraw [prize name], [the number of prizes], [draw time], [the url of gift url]<br>",
             ["MainActivity.Description"] = "{0} prize(s). Time: {1}",
             ["MainActivity.JoinButton"] = "I am in",
+            ["MainActivity.ViewDetailButton"] = "Detail",
             ["MainActivity.NoCompetitor"] = "",
             ["MainActivity.OneCompetitor"] = "{0} joined this lucky draw",
             ["MainActivity.TwoCompetitors"] = "{0} and {1} joined this lucky draw",
@@ -21,6 +22,7 @@ namespace LuckyDrawBot.Localizations
             ["ResultActivity.WinnersTitle"] = "Our winners are: {0}",
             ["ResultActivity.WinnersSubtitle"] = "Prize: {0}",
             ["ResultActivity.WinnersImageUrl"] = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif",
+            ["CompetitionDetail.Competitors"] = "Players",
         };
 
         public LocalizationEnUs() : base(Strings)

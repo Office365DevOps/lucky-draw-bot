@@ -51,7 +51,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 updatedMessages.Should().HaveCount(1);
                 updatedMessages[0].ReplacedActivityId.Should().Be(competition.MainActivityId);
                 var updatedMessageHeroCard = updatedMessages[0].NewActivity.Attachments[0].Content as HeroCard;
-                updatedMessageHeroCard.Buttons.Should().BeNullOrEmpty();
+                updatedMessageHeroCard.Buttons.Should().HaveCount(1);
                 // The result activity should be created
                 var createdMessages = server.Assert().GetCreatedMessages();
                 createdMessages.Should().HaveCount(1);

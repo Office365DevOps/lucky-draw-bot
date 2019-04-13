@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace LuckyDrawBot.Models
 {
@@ -12,7 +13,10 @@ namespace LuckyDrawBot.Models
     public class InvokeActionData
     {
         public const string TypeTaskFetch = "task/fetch";
+
+        [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
+
         public InvokeActionType UserAction { get; set; }
         public Guid CompetitionId { get; set; }
     }

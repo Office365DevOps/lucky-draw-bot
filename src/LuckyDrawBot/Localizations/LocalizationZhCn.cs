@@ -10,6 +10,7 @@ namespace LuckyDrawBot.Localizations
             ["Help.Message"] = "您可以发送这样一条消息来创建一个抽奖：<b>@luckydraw 神秘礼物, 1, 23:59</b><br/>还想了解更多？这个是发送给抽奖机器人的消息格式：<br/>@luckydraw [奖品名字], [奖品数目], [抽奖时间], [奖品图片的URL网址]<br>",
             ["MainActivity.Description"] = "共有 {0} 个奖品. 抽奖时间：{1}",
             ["MainActivity.JoinButton"] = "我要参加",
+            ["MainActivity.ViewDetailButton"] = "详情",
             ["MainActivity.NoCompetitor"] = "",
             ["MainActivity.OneCompetitor"] = "{0} 参加了抽奖",
             ["MainActivity.TwoCompetitors"] = "{0} 和 {1} 参加了抽奖",
@@ -21,6 +22,7 @@ namespace LuckyDrawBot.Localizations
             ["ResultActivity.WinnersTitle"] = "中奖者: {0}",
             ["ResultActivity.WinnersSubtitle"] = "奖品: {0}",
             ["ResultActivity.WinnersImageUrl"] = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif",
+            ["CompetitionDetail.Competitors"] = "参与人",
         };
 
         public LocalizationZhCn() : base(Strings)

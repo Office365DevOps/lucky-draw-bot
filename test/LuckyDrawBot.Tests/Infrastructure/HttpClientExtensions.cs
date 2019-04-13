@@ -55,6 +55,25 @@ namespace System.Net.Http
             return await httpClient.SendActivity(activity);
         }
 
+        public static async Task<HttpResponseMessage> SendTeamsTaskFetch(
+            this HttpClient httpClient,
+            InvokeActionData invokeValue,
+            ChannelAccount from = null)
+        {
+            invokeValue.Type = InvokeActionData.TypeTaskFetch;
+            var activity = new Activity
+            {
+                Name = "task/fetch",
+                ServiceUrl = "https://service-url.com",
+                ChannelId = "msteams",
+                Type = "invoke",
+                Value = new { data = invokeValue },
+                From = from ?? new ChannelAccount("id", "name")
+            };
+
+            return await httpClient.SendActivity(activity);
+        }
+
         public static async Task<HttpResponseMessage> SendActivity(this HttpClient httpClient, Activity activity)
         {
             var requestBody = new StringContent(JsonConvert.SerializeObject(activity), Encoding.UTF8, "application/json");

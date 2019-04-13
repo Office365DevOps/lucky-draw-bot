@@ -13,6 +13,7 @@ namespace LuckyDrawBot.Services
                                  DateTimeOffset drawTime, string locale, double offsetHours,
                                  string gift, string giftImageUrl, int winnerCount,
                                  string creatorName, string creatorAadObject);
+        Task<Competition> GetCompetition(Guid competitionId);
         Task<Competition> UpdateMainActivity(Guid competitionId, string mainActivityId);
         Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName);
         Task<List<Guid>> GetToBeDrawnCompetitionIds();
@@ -82,6 +83,16 @@ namespace LuckyDrawBot.Services
                 Competitors = new List<Competitor>()
             };
             await _repositoryService.UpsertOpenCompetition(competition);
+            return competition;
+        }
+
+        public async Task<Competition> GetCompetition(Guid competitionId)
+        {
+            var competition = await _repositoryService.GetOpenCompetition(competitionId);
+            if (competition == null)
+            {
+                competition= await _repositoryService.GetCompletedCompetition(competitionId);
+            }
             return competition;
         }
 

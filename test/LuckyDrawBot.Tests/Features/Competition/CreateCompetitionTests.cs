@@ -44,9 +44,11 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 heroCard.Title.Should().StartWith(giftName);
                 heroCard.Images.Should().HaveCount(1);
                 heroCard.Images[0].Url.Should().Be(giftImageUrl);
-                heroCard.Buttons.Should().HaveCount(1);
+                heroCard.Buttons.Should().HaveCount(2);
                 heroCard.Buttons[0].Type.Should().Be("invoke");
                 heroCard.Buttons[0].Value.Should().BeEquivalentTo(new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = openCompetitions[0].Id });
+                heroCard.Buttons[1].Type.Should().Be("invoke");
+                heroCard.Buttons[1].Value.Should().BeEquivalentTo(new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.ViewDetail, CompetitionId = openCompetitions[0].Id });
             }
         }
 

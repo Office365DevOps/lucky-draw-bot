@@ -13,6 +13,7 @@ namespace LuckyDrawBot.Services
     {
         Activity CreateMainActivity(Competition competition);
         Activity CreateResultActivity(Competition competition);
+        TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
     }
 
     public class ActivityBuilder : IActivityBuilder
@@ -40,6 +41,19 @@ namespace LuckyDrawBot.Services
             var localization = _localizationFactory.Create(competition.Locale);
             var plannedDrawTimeString = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
                                                                    .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
+            var viewDetailAction = new CardAction
+            {
+                Title = localization["MainActivity.ViewDetailButton"],
+                Type = "invoke",
+                Value = new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id }
+            };
+            var joinAction = new CardAction
+            {
+                Title = localization["MainActivity.JoinButton"],
+                Type = "invoke",
+                Value = new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = competition.Id }
+            };
+
             activity.Attachments = new List<Attachment>
             {
                 new Attachment
@@ -57,15 +71,7 @@ namespace LuckyDrawBot.Services
                                 Url = competition.GiftImageUrl
                             }
                         },
-                        Buttons = competition.IsCompleted ? null : new List<CardAction>
-                        {
-                            new CardAction
-                            {
-                                Title = localization["MainActivity.JoinButton"],
-                                Type = "invoke",
-                                Value = new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = competition.Id }
-                            }
-                        }
+                        Buttons = competition.IsCompleted ? new List<CardAction> { viewDetailAction } : new List<CardAction> { joinAction, viewDetailAction }
                     }
                 }
             };
@@ -141,6 +147,40 @@ namespace LuckyDrawBot.Services
                 }
             };
             return activity;
+        }
+
+        public TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition)
+        {
+            var localization = _localizationFactory.Create(competition.Locale);
+            var body = new List<AdaptiveCard.AdaptiveBodyItem>
+            {
+                new AdaptiveCard.AdaptiveBodyItem
+                {
+                    Type = "TextBlock",
+                    Text = localization["CompetitionDetail.Competitors"],
+                    Size = AdaptiveTextSize.Large
+                },
+            };
+            body.AddRange(competition.Competitors.Select(c => new AdaptiveCard.AdaptiveBodyItem { Type = "TextBlock", Text = c.Name }));
+            var taskInfo = new TaskModuleTaskInfo
+            {
+                Type = "continue",
+                Value = new TaskModuleTaskInfo.TaskInfoValue
+                {
+                    Title = string.Empty,
+                    Height = "medium",
+                    Width = "small",
+                    Card = new Attachment
+                    {
+                        ContentType = AdaptiveCard.ContentType,
+                        Content = new AdaptiveCard()
+                        {
+                            Body = body
+                        }
+                    }
+                }
+            };
+            return new TaskModuleTaskInfoResponse { Task = taskInfo };
         }
     }
 }
