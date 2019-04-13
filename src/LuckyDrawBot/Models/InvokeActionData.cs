@@ -1,13 +1,15 @@
 using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LuckyDrawBot.Models
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum InvokeActionType
     {
-        Unknown,
-        ViewDetail,
-        Join
+        Unknown = 0,
+        ViewDetail = 1,
+        Join = 2
     }
 
     public class InvokeActionData
