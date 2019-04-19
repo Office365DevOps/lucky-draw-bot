@@ -32,10 +32,10 @@ namespace LuckyDrawBot.Tests
             return openCompetitions.AllEntities;
         }
 
-        public static IReadOnlyList<CompletedCompetitionEntity> GetCompletedCompetitions(this ServerAssertion assertion)
+        public static IReadOnlyList<ClosedCompetitionEntity> GetClosedCompetitions(this ServerAssertion assertion)
         {
-            var completedCompetitions = assertion.MainServices.GetRequiredService<IDataTable<LuckyDrawDataTablesSettings, CompletedCompetitionEntity>>() as InMemoryDataTable<LuckyDrawDataTablesSettings, CompletedCompetitionEntity>;
-            return completedCompetitions.AllEntities;
+            var closedCompetitions = assertion.MainServices.GetRequiredService<IDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity>>() as InMemoryDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity>;
+            return closedCompetitions.AllEntities;
         }
     }
 }

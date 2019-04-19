@@ -60,7 +60,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 assertion.GetUpdatedMessages().Should().HaveCount(2);
                 assertion.GetCreatedMessages().Should().HaveCount(2);
                 assertion.GetOpenCompetitions().Should().HaveCount(0);
-                assertion.GetCompletedCompetitions().Should().HaveCount(2);
+                assertion.GetClosedCompetitions().Should().HaveCount(2);
             }
         }
 

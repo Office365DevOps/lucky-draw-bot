@@ -25,14 +25,14 @@ namespace LuckyDrawBot.Services
             }
         }
 
-        [Table("CompletedCompetitions")]
-        public class CompletedCompetitionEntity : CompetitionEntity
+        [Table("ClosedCompetitions")]
+        public class ClosedCompetitionEntity : CompetitionEntity
         {
-            public CompletedCompetitionEntity()
+            public ClosedCompetitionEntity()
             {
             }
 
-            public CompletedCompetitionEntity(Guid id) : base(id)
+            public ClosedCompetitionEntity(Guid id) : base(id)
             {
             }
         }

@@ -91,7 +91,7 @@ namespace LuckyDrawBot.Services
             var competition = await _repositoryService.GetOpenCompetition(competitionId);
             if (competition == null)
             {
-                competition= await _repositoryService.GetCompletedCompetition(competitionId);
+                competition= await _repositoryService.GetClosedCompetition(competitionId);
             }
             return competition;
         }
@@ -111,7 +111,7 @@ namespace LuckyDrawBot.Services
             }
             competition.ActualDrawTime = _dateTimeService.UtcNow;
             competition.IsCompleted = true;
-            await _repositoryService.UpsertCompletedCompetition(competition);
+            await _repositoryService.UpsertClosedCompetition(competition);
             await _repositoryService.DeleteOpenCompetition(competition.Id);
             return competition;
         }
@@ -131,9 +131,9 @@ namespace LuckyDrawBot.Services
 
         public async Task<Competition> UpdateResultActivity(Guid competitionId, string resultActivityId)
         {
-            var competition = await _repositoryService.GetCompletedCompetition(competitionId);
+            var competition = await _repositoryService.GetClosedCompetition(competitionId);
             competition.ResultActivityId = resultActivityId;
-            await _repositoryService.UpsertCompletedCompetition(competition);
+            await _repositoryService.UpsertClosedCompetition(competition);
             return competition;
         }
 

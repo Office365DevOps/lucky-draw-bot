@@ -14,21 +14,21 @@ namespace LuckyDrawBot.Services
         Task<List<Guid>> GetOpenCompetitionIds(DateTimeOffset maxPlannedDrawTime);
         Task UpsertOpenCompetition(Competition competition);
         Task DeleteOpenCompetition(Guid competitionId);
-        Task<Competition> GetCompletedCompetition(Guid competitionId);
-        Task UpsertCompletedCompetition(Competition competition);
+        Task<Competition> GetClosedCompetition(Guid competitionId);
+        Task UpsertClosedCompetition(Competition competition);
     }
 
     public partial class CompetitionRepositoryService : ICompetitionRepositoryService
     {
         public IDataTable<LuckyDrawDataTablesSettings, OpenCompetitionEntity> OpenCompetitions { get; }
-        public IDataTable<LuckyDrawDataTablesSettings, CompletedCompetitionEntity> CompletedCompetitions { get; }
+        public IDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity> ClosedCompetitions { get; }
 
         public CompetitionRepositoryService(
             IDataTable<LuckyDrawDataTablesSettings, OpenCompetitionEntity> openCompetitions,
-            IDataTable<LuckyDrawDataTablesSettings, CompletedCompetitionEntity> completedCompetitions)
+            IDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity> closedCompetitions)
         {
             OpenCompetitions = openCompetitions;
-            CompletedCompetitions = completedCompetitions;
+            ClosedCompetitions = closedCompetitions;
         }
 
         public async Task<Competition> GetOpenCompetition(Guid competitionId)
@@ -103,9 +103,9 @@ namespace LuckyDrawBot.Services
             await OpenCompetitions.Delete(new OpenCompetitionEntity(competitionId));
         }
 
-        public async Task<Competition> GetCompletedCompetition(Guid competitionId)
+        public async Task<Competition> GetClosedCompetition(Guid competitionId)
         {
-            var entity = await CompletedCompetitions.Retrieve(new CompletedCompetitionEntity(competitionId));
+            var entity = await ClosedCompetitions.Retrieve(new ClosedCompetitionEntity(competitionId));
             if (entity == null)
             {
                 return null;
@@ -135,9 +135,9 @@ namespace LuckyDrawBot.Services
             };
         }
 
-        public async Task UpsertCompletedCompetition(Competition competition)
+        public async Task UpsertClosedCompetition(Competition competition)
         {
-            var entity = new CompletedCompetitionEntity(competition.Id)
+            var entity = new ClosedCompetitionEntity(competition.Id)
             {
                 ServiceUrl = competition.ServiceUrl,
                 TenantId = competition.TenantId,
@@ -159,7 +159,7 @@ namespace LuckyDrawBot.Services
                 WinnerAadObjectIds = competition.WinnerAadObjectIds,
                 Competitors = competition.Competitors
             };
-            await CompletedCompetitions.InsertOrReplace(entity);
+            await ClosedCompetitions.InsertOrReplace(entity);
         }
     }
 }

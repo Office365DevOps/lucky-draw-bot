@@ -60,7 +60,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 // Competition data in database should be updated
                 var openCompetitions = server.Assert().GetOpenCompetitions();
                 openCompetitions.Should().HaveCount(0);
-                var completedCompetitions = server.Assert().GetCompletedCompetitions();
+                var completedCompetitions = server.Assert().GetClosedCompetitions();
                 completedCompetitions.Should().HaveCount(1);
                 completedCompetitions[0].IsCompleted.Should().BeTrue();
                 completedCompetitions[0].ActualDrawTime.Should().Be(utcNow);
@@ -95,7 +95,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 var response = await client.PostAsync($"competitions/{competition.Id}/draw", new StringContent(string.Empty));
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var completedCompetitions = server.Assert().GetCompletedCompetitions();
+                var completedCompetitions = server.Assert().GetClosedCompetitions();
                 completedCompetitions.Should().HaveCount(1);
                 completedCompetitions[0].WinnerAadObjectIds.Should().HaveCount(0);
             }
