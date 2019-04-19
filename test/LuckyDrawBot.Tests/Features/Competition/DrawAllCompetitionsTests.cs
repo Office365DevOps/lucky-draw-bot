@@ -29,7 +29,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name 1",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor>(),
                 WinnerCount = 1,
                 WinnerAadObjectIds = new List<string>()
@@ -40,7 +40,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name 2",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor>(),
                 WinnerCount = 2,
                 WinnerAadObjectIds = new List<string>()

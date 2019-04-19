@@ -71,7 +71,7 @@ namespace LuckyDrawBot.Services
                                 Url = competition.GiftImageUrl
                             }
                         },
-                        Buttons = competition.IsCompleted ? new List<CardAction> { viewDetailAction } : new List<CardAction> { joinAction, viewDetailAction }
+                        Buttons = (competition.Status == CompetitionStatus.Completed) ? new List<CardAction> { viewDetailAction } : new List<CardAction> { joinAction, viewDetailAction }
                     }
                 }
             };

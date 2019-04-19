@@ -20,7 +20,7 @@ namespace LuckyDrawBot.Models
         public string Gift { get; set; }
         public string GiftImageUrl { get; set; }
         public int WinnerCount { get; set; }
-        public bool IsCompleted { get; set; }
+        public CompetitionStatus Status { get; set; }
         public string CreatorName { get; set; }
         public string CreatorAadObject { get; set; }
         public List<string> WinnerAadObjectIds { get; set; }

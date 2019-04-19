@@ -9,10 +9,13 @@ namespace LuckyDrawBot.Services
 {
     public interface ICompetitionService
     {
-        Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId,
-                                 DateTimeOffset drawTime, string locale, double offsetHours,
-                                 string gift, string giftImageUrl, int winnerCount,
-                                 string creatorName, string creatorAadObject);
+        Task<Competition> CreateDraftCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId,
+                                                 DateTimeOffset drawTime, string locale, double offsetHours,
+                                                 string creatorName, string creatorAadObject);
+        Task<Competition> CreateActiveCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId,
+                                                  DateTimeOffset drawTime, string locale, double offsetHours,
+                                                  string gift, string giftImageUrl, int winnerCount,
+                                                  string creatorName, string creatorAadObject);
         Task<Competition> GetCompetition(Guid competitionId);
         Task<Competition> UpdateMainActivity(Guid competitionId, string mainActivityId);
         Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName);
@@ -57,9 +60,9 @@ namespace LuckyDrawBot.Services
             return competition;
         }
 
-        public async Task<Competition> Create(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string gift, string giftImageUrl, int winnerCount, string creatorName, string creatorAadObject)
+        private Competition CreateCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string creatorName, string creatorAadObject)
         {
-            var competition = new Competition
+            return new Competition
             {
                 Id = Guid.NewGuid(),
                 ServiceUrl = serviceUrl,
@@ -73,15 +76,32 @@ namespace LuckyDrawBot.Services
                 ActualDrawTime = null,
                 Locale = locale,
                 OffsetHours = offsetHours,
-                Gift = gift,
-                GiftImageUrl = giftImageUrl,
-                WinnerCount = winnerCount,
-                IsCompleted = false,
+                Gift = string.Empty,
+                GiftImageUrl = string.Empty,
+                WinnerCount = 0,
+                Status = CompetitionStatus.Draft,
                 CreatorName = creatorName,
                 CreatorAadObject = creatorAadObject,
                 WinnerAadObjectIds = new List<string>(),
                 Competitors = new List<Competitor>()
             };
+        }
+
+        public async Task<Competition> CreateDraftCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string creatorName, string creatorAadObject)
+        {
+            var competition = CreateCompetition(serviceUrl, tenantId, teamId, channelId, plannedDrawTime, locale, offsetHours, creatorName, creatorAadObject);
+            competition.Status = CompetitionStatus.Draft;
+            await _repositoryService.UpsertOpenCompetition(competition);
+            return competition;
+        }
+
+        public async Task<Competition> CreateActiveCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string gift, string giftImageUrl, int winnerCount, string creatorName, string creatorAadObject)
+        {
+            var competition = CreateCompetition(serviceUrl, tenantId, teamId, channelId, plannedDrawTime, locale, offsetHours, creatorName, creatorAadObject);
+            competition.Status = CompetitionStatus.Active;
+            competition.Gift = gift;
+            competition.GiftImageUrl = giftImageUrl;
+            competition.WinnerCount = winnerCount;
             await _repositoryService.UpsertOpenCompetition(competition);
             return competition;
         }
@@ -110,7 +130,7 @@ namespace LuckyDrawBot.Services
                 }
             }
             competition.ActualDrawTime = _dateTimeService.UtcNow;
-            competition.IsCompleted = true;
+            competition.Status = CompetitionStatus.Completed;
             await _repositoryService.UpsertClosedCompetition(competition);
             await _repositoryService.DeleteOpenCompetition(competition.Id);
             return competition;

@@ -30,7 +30,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor> { new Competitor { Name = "user name", AadObjectId = "user aad object id" } },
                 WinnerCount = 1,
                 WinnerAadObjectIds = new List<string>()
@@ -62,7 +62,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 openCompetitions.Should().HaveCount(0);
                 var completedCompetitions = server.Assert().GetClosedCompetitions();
                 completedCompetitions.Should().HaveCount(1);
-                completedCompetitions[0].IsCompleted.Should().BeTrue();
+                completedCompetitions[0].Status.Should().Be(CompetitionStatus.Completed);
                 completedCompetitions[0].ActualDrawTime.Should().Be(utcNow);
                 completedCompetitions[0].WinnerAadObjectIds.Should().HaveCount(1);
                 completedCompetitions[0].WinnerAadObjectIds[0].Should().Be(competition.Competitors[0].AadObjectId);
@@ -79,7 +79,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor>(),
                 WinnerCount = 1,
                 WinnerAadObjectIds = new List<string>()

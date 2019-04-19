@@ -116,7 +116,7 @@ namespace LuckyDrawBot.Controllers
             }
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
-            var competition = await _competitionService.Create(
+            var competition = await _competitionService.CreateActiveCompetition(
                                                                activity.ServiceUrl,
                                                                Guid.Parse(channelData.Tenant.Id),
                                                                channelData.Team.Id,

@@ -7,7 +7,6 @@ namespace LuckyDrawBot.Models
     {
         Draft,
         Active,
-        Canceled,
         Completed,
     }
 }

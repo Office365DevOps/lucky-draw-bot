@@ -30,7 +30,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor> { new Competitor { Name = "user name", AadObjectId = "user aad object id" } },
                 WinnerCount = 1,
                 WinnerAadObjectIds = new List<string>()

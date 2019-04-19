@@ -54,7 +54,7 @@ namespace LuckyDrawBot.Services
             public string Gift { get; set; }
             public string GiftImageUrl { get; set; }
             public int WinnerCount { get; set; }
-            public bool IsCompleted { get; set; }
+            public CompetitionStatus Status { get; set; }
             public string CreatorName { get; set; }
             public string CreatorAadObject { get; set; }
             public List<string> WinnerAadObjectIds { get; set; }
@@ -76,6 +76,10 @@ namespace LuckyDrawBot.Services
             {
                 base.ReadEntity(properties, operationContext);
                 EntityProperty property;
+                if (properties.TryGetValue(nameof(CompetitionEntity.Status), out property))
+                {
+                    Status = Enum.Parse<CompetitionStatus>(property.StringValue);
+                }
                 if (properties.TryGetValue(nameof(CompetitionEntity.WinnerAadObjectIds), out property))
                 {
                     WinnerAadObjectIds = JsonConvert.DeserializeObject<List<string>>(property.StringValue);
@@ -89,6 +93,7 @@ namespace LuckyDrawBot.Services
             public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
             {
                 var properties = base.WriteEntity(operationContext);
+                properties[nameof(CompetitionEntity.Status)] = EntityProperty.GeneratePropertyForString(Status.ToString());
                 properties[nameof(CompetitionEntity.WinnerAadObjectIds)] = EntityProperty.GeneratePropertyForString(JsonConvert.SerializeObject(WinnerAadObjectIds));
                 properties[nameof(CompetitionEntity.Competitors)] = EntityProperty.GeneratePropertyForString(JsonConvert.SerializeObject(Competitors));
                 return properties;

@@ -31,7 +31,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor>()
             };
             var userAccount = new ChannelAccount { Name = "user name", AadObjectId = "user aad object id" };
@@ -75,7 +75,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 Locale = "en-US",
                 OffsetHours = 8,
                 Gift = "gift name",
-                IsCompleted = false,
+                Status = CompetitionStatus.Active,
                 Competitors = new List<Competitor>()
             };
             for (int i = 0; i < existingCompetitorCount; i++)
