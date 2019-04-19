@@ -24,6 +24,7 @@ namespace LuckyDrawBot.Controllers
     {
         private class CreateCompetitionParameters
         {
+            public bool IsDraft { get; set; }
             public string Gift { get; set; }
             public string GiftImageUrl { get; set; }
             public int WinnerCount { get; set; }
@@ -91,6 +92,9 @@ namespace LuckyDrawBot.Controllers
                     case InvokeActionType.ViewDetail:
                         var competitionDetailResponse = await HandleViewCompetitionDetailAction(invokeActionData, activity);
                         return Ok(competitionDetailResponse);
+                    case InvokeActionType.EditDraft:
+                        var editDraftCompetitionResponse = await HandleEditDraftCompetitionAction(invokeActionData, activity);
+                        return Ok(editDraftCompetitionResponse);
                     default:
                         throw new Exception("Unknown invoke action type: " + invokeActionData.UserAction);
                 }
@@ -116,6 +120,27 @@ namespace LuckyDrawBot.Controllers
             }
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
+            if (parameters.IsDraft)
+            {
+                var draftCompetition = await _competitionService.CreateDraftCompetition(
+                                                                activity.ServiceUrl,
+                                                                Guid.Parse(channelData.Tenant.Id),
+                                                                channelData.Team.Id,
+                                                                channelData.Channel.Id,
+                                                                activity.Locale,
+                                                                parameters.OffsetHours,
+                                                                activity.From.Name,
+                                                                activity.From.AadObjectId);
+
+                var activityForDraft = _activityBuilder.CreateMainActivity(draftCompetition);
+                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+                {
+                    var mainMessage = await botClient.SendToConversationAsync(activityForDraft);
+                    await _competitionService.UpdateMainActivity(draftCompetition.Id, mainMessage.Id);
+                }
+                return true;
+            }
+
             var competition = await _competitionService.CreateActiveCompetition(
                                                                activity.ServiceUrl,
                                                                Guid.Parse(channelData.Tenant.Id),
@@ -138,7 +163,7 @@ namespace LuckyDrawBot.Controllers
             }
 
             await _timerService.AddScheduledHttpRequest(
-                competition.PlannedDrawTime,
+                competition.PlannedDrawTime.Value,
                 "POST",
                 Url.Action(nameof(CompetitionsController.DrawForCompetition), "Competitions", new { competitionId = competition.Id }));
 
@@ -162,6 +187,14 @@ namespace LuckyDrawBot.Controllers
             return taskInfoResponse;
         }
 
+        private async Task<TaskModuleTaskInfoResponse> HandleEditDraftCompetitionAction(InvokeActionData invokeActionData, Activity activity)
+        {
+            var competition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);
+            var canEdit = competition.CreatorAadObjectId == activity.From.AadObjectId;
+            var taskInfoResponse = _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, canEdit);
+            return taskInfoResponse;
+        }
+
         private async Task HandleDisplayHelp(Activity activity)
         {
             var localization = _localizationFactory.Create(activity.Locale);
@@ -181,6 +214,18 @@ namespace LuckyDrawBot.Controllers
                 return null;
             }
             text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
+            text = text.Trim();
+
+            var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
+
+            if (text.Equals("start", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return new CreateCompetitionParameters
+                {
+                    IsDraft = true,
+                    OffsetHours = offset.TotalHours
+                };
+            }
 
             var parts = text.Split(',', ChineseCommaCharacter).Select(p => p.Trim()).ToArray();
             if (parts.Length < 2)
@@ -194,7 +239,6 @@ namespace LuckyDrawBot.Controllers
             {
                 return null;
             }
-            var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
             DateTimeOffset plannedDrawTime;
             if (parts.Length > 2)
             {
@@ -222,6 +266,7 @@ namespace LuckyDrawBot.Controllers
             var localization = _localizationFactory.Create(activity.Locale);
             return new CreateCompetitionParameters
             {
+                IsDraft = false,
                 Gift = gift,
                 GiftImageUrl = giftImageUrl,
                 WinnerCount = winnerCount,

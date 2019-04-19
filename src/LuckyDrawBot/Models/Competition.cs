@@ -13,7 +13,7 @@ namespace LuckyDrawBot.Models
         public string MainActivityId { get; set; }
         public string ResultActivityId { get; set; }
         public DateTimeOffset CreatedTime { get; set; }
-        public DateTimeOffset PlannedDrawTime { get; set; }
+        public DateTimeOffset? PlannedDrawTime { get; set; }
         public DateTimeOffset? ActualDrawTime { get; set; }
         public string Locale { get; set; }
         public double OffsetHours { get; set; }
@@ -22,7 +22,7 @@ namespace LuckyDrawBot.Models
         public int WinnerCount { get; set; }
         public CompetitionStatus Status { get; set; }
         public string CreatorName { get; set; }
-        public string CreatorAadObject { get; set; }
+        public string CreatorAadObjectId { get; set; }
         public List<string> WinnerAadObjectIds { get; set; }
         public List<Competitor> Competitors { get; set; }
     }

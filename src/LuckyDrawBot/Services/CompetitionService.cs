@@ -10,12 +10,12 @@ namespace LuckyDrawBot.Services
     public interface ICompetitionService
     {
         Task<Competition> CreateDraftCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId,
-                                                 DateTimeOffset drawTime, string locale, double offsetHours,
-                                                 string creatorName, string creatorAadObject);
+                                                 string locale, double offsetHours,
+                                                 string creatorName, string creatorAadObjectId);
         Task<Competition> CreateActiveCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId,
                                                   DateTimeOffset drawTime, string locale, double offsetHours,
                                                   string gift, string giftImageUrl, int winnerCount,
-                                                  string creatorName, string creatorAadObject);
+                                                  string creatorName, string creatorAadObjectId);
         Task<Competition> GetCompetition(Guid competitionId);
         Task<Competition> UpdateMainActivity(Guid competitionId, string mainActivityId);
         Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName);
@@ -60,7 +60,7 @@ namespace LuckyDrawBot.Services
             return competition;
         }
 
-        private Competition CreateCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string creatorName, string creatorAadObject)
+        private Competition CreateCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, string locale, double offsetHours, string creatorName, string creatorAadObjectId)
         {
             return new Competition
             {
@@ -72,7 +72,7 @@ namespace LuckyDrawBot.Services
                 MainActivityId = string.Empty,
                 ResultActivityId = string.Empty,
                 CreatedTime = _dateTimeService.UtcNow,
-                PlannedDrawTime = plannedDrawTime,
+                PlannedDrawTime = null,
                 ActualDrawTime = null,
                 Locale = locale,
                 OffsetHours = offsetHours,
@@ -81,15 +81,15 @@ namespace LuckyDrawBot.Services
                 WinnerCount = 0,
                 Status = CompetitionStatus.Draft,
                 CreatorName = creatorName,
-                CreatorAadObject = creatorAadObject,
+                CreatorAadObjectId = creatorAadObjectId,
                 WinnerAadObjectIds = new List<string>(),
                 Competitors = new List<Competitor>()
             };
         }
 
-        public async Task<Competition> CreateDraftCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string creatorName, string creatorAadObject)
+        public async Task<Competition> CreateDraftCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, string locale, double offsetHours, string creatorName, string creatorAadObject)
         {
-            var competition = CreateCompetition(serviceUrl, tenantId, teamId, channelId, plannedDrawTime, locale, offsetHours, creatorName, creatorAadObject);
+            var competition = CreateCompetition(serviceUrl, tenantId, teamId, channelId, locale, offsetHours, creatorName, creatorAadObject);
             competition.Status = CompetitionStatus.Draft;
             await _repositoryService.UpsertOpenCompetition(competition);
             return competition;
@@ -97,8 +97,9 @@ namespace LuckyDrawBot.Services
 
         public async Task<Competition> CreateActiveCompetition(string serviceUrl, Guid tenantId, string teamId, string channelId, DateTimeOffset plannedDrawTime, string locale, double offsetHours, string gift, string giftImageUrl, int winnerCount, string creatorName, string creatorAadObject)
         {
-            var competition = CreateCompetition(serviceUrl, tenantId, teamId, channelId, plannedDrawTime, locale, offsetHours, creatorName, creatorAadObject);
+            var competition = CreateCompetition(serviceUrl, tenantId, teamId, channelId, locale, offsetHours, creatorName, creatorAadObject);
             competition.Status = CompetitionStatus.Active;
+            competition.PlannedDrawTime = plannedDrawTime;
             competition.Gift = gift;
             competition.GiftImageUrl = giftImageUrl;
             competition.WinnerCount = winnerCount;

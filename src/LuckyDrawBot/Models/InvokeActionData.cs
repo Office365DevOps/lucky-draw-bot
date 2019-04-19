@@ -9,7 +9,8 @@ namespace LuckyDrawBot.Models
     {
         Unknown = 0,
         ViewDetail = 1,
-        Join = 2
+        Join = 2,
+        EditDraft = 3,
     }
 
     public class InvokeActionData

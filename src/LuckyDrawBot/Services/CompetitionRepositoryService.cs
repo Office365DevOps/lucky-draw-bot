@@ -57,7 +57,7 @@ namespace LuckyDrawBot.Services
                 WinnerCount = entity.WinnerCount,
                 Status = entity.Status,
                 CreatorName = entity.CreatorName,
-                CreatorAadObject = entity.CreatorAadObject,
+                CreatorAadObjectId = entity.CreatorAadObjectId,
                 WinnerAadObjectIds = entity.WinnerAadObjectIds,
                 Competitors = entity.Competitors
             };
@@ -91,7 +91,7 @@ namespace LuckyDrawBot.Services
                 WinnerCount = competition.WinnerCount,
                 Status = competition.Status,
                 CreatorName = competition.CreatorName,
-                CreatorAadObject = competition.CreatorAadObject,
+                CreatorAadObjectId = competition.CreatorAadObjectId,
                 WinnerAadObjectIds = competition.WinnerAadObjectIds,
                 Competitors = competition.Competitors
             };
@@ -129,7 +129,7 @@ namespace LuckyDrawBot.Services
                 WinnerCount = entity.WinnerCount,
                 Status = entity.Status,
                 CreatorName = entity.CreatorName,
-                CreatorAadObject = entity.CreatorAadObject,
+                CreatorAadObjectId = entity.CreatorAadObjectId,
                 WinnerAadObjectIds = entity.WinnerAadObjectIds,
                 Competitors = entity.Competitors
             };
@@ -155,7 +155,7 @@ namespace LuckyDrawBot.Services
                 WinnerCount = competition.WinnerCount,
                 Status = competition.Status,
                 CreatorName = competition.CreatorName,
-                CreatorAadObject = competition.CreatorAadObject,
+                CreatorAadObjectId = competition.CreatorAadObjectId,
                 WinnerAadObjectIds = competition.WinnerAadObjectIds,
                 Competitors = competition.Competitors
             };

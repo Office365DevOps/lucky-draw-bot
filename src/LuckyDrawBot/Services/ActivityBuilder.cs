@@ -14,6 +14,7 @@ namespace LuckyDrawBot.Services
         Activity CreateMainActivity(Competition competition);
         Activity CreateResultActivity(Competition competition);
         TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
+        TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, bool canEdit);
     }
 
     public class ActivityBuilder : IActivityBuilder
@@ -29,6 +30,11 @@ namespace LuckyDrawBot.Services
 
         public Activity CreateMainActivity(Competition competition)
         {
+            if (competition.Status == CompetitionStatus.Draft)
+            {
+                return CreateMainActivityForDraft(competition);
+            }
+
             var isInitial = competition.Competitors.Count <= 0;
 
             var activity = Activity.CreateMessageActivity() as Activity;
@@ -39,8 +45,8 @@ namespace LuckyDrawBot.Services
             }
 
             var localization = _localizationFactory.Create(competition.Locale);
-            var plannedDrawTimeString = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
-                                                                   .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
+            var plannedDrawTimeString = competition.PlannedDrawTime.Value.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
+                                                                         .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
             var viewDetailAction = new CardAction
             {
                 Title = localization["MainActivity.ViewDetailButton"],
@@ -72,6 +78,35 @@ namespace LuckyDrawBot.Services
                             }
                         },
                         Buttons = (competition.Status == CompetitionStatus.Completed) ? new List<CardAction> { viewDetailAction } : new List<CardAction> { joinAction, viewDetailAction }
+                    }
+                }
+            };
+            return activity;
+        }
+
+        public Activity CreateMainActivityForDraft(Competition competition)
+        {
+            var localization = _localizationFactory.Create(competition.Locale);
+            var editDraftAction = new CardAction
+            {
+                Title = localization["MainActivity.Draft.EditButton"],
+                Type = "invoke",
+                Value = new InvokeActionData { Type = InvokeActionData.TypeTaskFetch, UserAction = InvokeActionType.EditDraft, CompetitionId = competition.Id }
+            };
+
+            var activity = Activity.CreateMessageActivity() as Activity;
+            activity.From = new ChannelAccount(_botSettings.Id, "bot name");
+            activity.Conversation = new ConversationAccount(id: competition.ChannelId);
+            activity.Attachments = new List<Attachment>
+            {
+                new Attachment
+                {
+                    ContentType = HeroCard.ContentType,
+                    Content = new HeroCard()
+                    {
+                        Title = localization["MainActivity.Draft.Title", competition.CreatorName],
+                        Subtitle = localization["MainActivity.Draft.Subtitle"],
+                        Buttons = new List<CardAction> { editDraftAction }
                     }
                 }
             };
@@ -182,5 +217,72 @@ namespace LuckyDrawBot.Services
             };
             return new TaskModuleTaskInfoResponse { Task = taskInfo };
         }
+
+        public TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, bool canEdit)
+        {
+            var localization = _localizationFactory.Create(competition.Locale);
+            if (!canEdit)
+            {
+                return new TaskModuleTaskInfoResponse
+                {
+                    Task = new TaskModuleTaskInfo
+                    {
+                        Type = "continue",
+                        Value = new TaskModuleTaskInfo.TaskInfoValue
+                        {
+                            Title = string.Empty,
+                            Height = "small",
+                            Width = "medium",
+                            Card = new Attachment
+                            {
+                                ContentType = AdaptiveCard.ContentType,
+                                Content = new AdaptiveCard()
+                                {
+                                    Body = new List<AdaptiveCard.AdaptiveBodyItem>
+                                    {
+                                        new AdaptiveCard.AdaptiveBodyItem
+                                        {
+                                            Type = "TextBlock",
+                                            Text = localization["EditDraftCompetition.NotAllowed"],
+                                            Size = AdaptiveTextSize.Large
+                                        },
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+
+            var body = new List<AdaptiveCard.AdaptiveBodyItem>
+            {
+                new AdaptiveCard.AdaptiveBodyItem
+                {
+                    Type = "TextBlock",
+                    Text = localization["EditDraftCompetition.NotAllowed"],
+                    Size = AdaptiveTextSize.Large
+                },
+            };
+            var taskInfo = new TaskModuleTaskInfo
+            {
+                Type = "continue",
+                Value = new TaskModuleTaskInfo.TaskInfoValue
+                {
+                    Title = string.Empty,
+                    Height = "small",
+                    Width = "medium",
+                    Card = new Attachment
+                    {
+                        ContentType = AdaptiveCard.ContentType,
+                        Content = new AdaptiveCard()
+                        {
+                            Body = body
+                        }
+                    }
+                }
+            };
+            return new TaskModuleTaskInfoResponse { Task = taskInfo };
+        }
+
     }
 }

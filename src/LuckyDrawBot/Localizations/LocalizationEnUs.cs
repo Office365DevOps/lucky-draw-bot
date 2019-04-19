@@ -8,6 +8,9 @@ namespace LuckyDrawBot.Localizations
         private static readonly Dictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
             ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b>.<br/>Want more? Here is the cheat sheet:<br/>@luckydraw [prize name], [the number of prizes], [draw time], [the url of gift url]<br>",
+            ["MainActivity.Draft.EditButton"] = "Edit",
+            ["MainActivity.Draft.Title"] = "{0} is starting a lucky draw",
+            ["MainActivity.Draft.Subtitle"] = "Get ready for it 😁",
             ["MainActivity.Description"] = "{0} prize(s). Time: {1}",
             ["MainActivity.JoinButton"] = "I am in",
             ["MainActivity.ViewDetailButton"] = "Detail",
@@ -23,6 +26,7 @@ namespace LuckyDrawBot.Localizations
             ["ResultActivity.WinnersSubtitle"] = "Prize: {0}",
             ["ResultActivity.WinnersImageUrl"] = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif",
             ["CompetitionDetail.Competitors"] = "Players",
+            ["EditDraftCompetition.NotAllowed"] = "Only the creator can edit.",
         };
 
         public LocalizationEnUs() : base(Strings)
