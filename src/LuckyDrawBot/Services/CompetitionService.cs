@@ -17,6 +17,8 @@ namespace LuckyDrawBot.Services
                                                   string gift, string giftImageUrl, int winnerCount,
                                                   string creatorName, string creatorAadObjectId);
         Task<Competition> GetCompetition(Guid competitionId);
+        Task<Competition> UpdateGift(Guid competitionId, DateTimeOffset drawTime, string gift, string giftImageUrl, int winnerCount);
+        Task<Competition> ActivateCompetition(Guid competitionId);
         Task<Competition> UpdateMainActivity(Guid competitionId, string mainActivityId);
         Task<Competition> AddCompetitor(Guid competitionId, string competitorAadObjectId, string competitorName);
         Task<List<Guid>> GetToBeDrawnCompetitionIds();
@@ -72,13 +74,13 @@ namespace LuckyDrawBot.Services
                 MainActivityId = string.Empty,
                 ResultActivityId = string.Empty,
                 CreatedTime = _dateTimeService.UtcNow,
-                PlannedDrawTime = null,
+                PlannedDrawTime = _dateTimeService.UtcNow.AddHours(2),
                 ActualDrawTime = null,
                 Locale = locale,
                 OffsetHours = offsetHours,
                 Gift = string.Empty,
                 GiftImageUrl = string.Empty,
-                WinnerCount = 0,
+                WinnerCount = 1,
                 Status = CompetitionStatus.Draft,
                 CreatorName = creatorName,
                 CreatorAadObjectId = creatorAadObjectId,
@@ -114,6 +116,25 @@ namespace LuckyDrawBot.Services
             {
                 competition= await _repositoryService.GetClosedCompetition(competitionId);
             }
+            return competition;
+        }
+
+        public async Task<Competition> UpdateGift(Guid competitionId, DateTimeOffset plannedDrawTime, string gift, string giftImageUrl, int winnerCount)
+        {
+            var competition = await _repositoryService.GetOpenCompetition(competitionId);
+            competition.PlannedDrawTime = plannedDrawTime;
+            competition.Gift = gift;
+            competition.GiftImageUrl = giftImageUrl;
+            competition.WinnerCount = winnerCount;
+            await _repositoryService.UpsertOpenCompetition(competition);
+            return competition;
+        }
+
+        public async Task<Competition> ActivateCompetition(Guid competitionId)
+        {
+            var competition = await _repositoryService.GetOpenCompetition(competitionId);
+            competition.Status = CompetitionStatus.Active;
+            await _repositoryService.UpsertOpenCompetition(competition);
             return competition;
         }
 

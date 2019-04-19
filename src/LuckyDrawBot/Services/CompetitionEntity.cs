@@ -47,7 +47,7 @@ namespace LuckyDrawBot.Services
             public string MainActivityId { get; set; }
             public string ResultActivityId { get; set; }
             public DateTimeOffset CreatedTime { get; set; }
-            public DateTimeOffset? PlannedDrawTime { get; set; }
+            public DateTimeOffset PlannedDrawTime { get; set; }
             public DateTimeOffset? ActualDrawTime { get; set; }
             public string Locale { get; set; }
             public double OffsetHours { get; set; }

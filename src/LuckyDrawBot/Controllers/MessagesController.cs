@@ -32,6 +32,15 @@ namespace LuckyDrawBot.Controllers
             public double OffsetHours { get; set; }
         }
 
+        public class CompetitionEditForm
+        {
+            public string Gift { get; set; }
+            public string GiftImageUrl { get; set; }
+            public int WinnerCount { get; set; }
+            public string PlannedDrawTimeLocalDate { get; set; }
+            public string PlannedDrawTimeLocalTime { get; set; }
+        }
+
         private const char ChineseCommaCharacter = '，';
         private readonly ILogger<MessagesController> _logger;
         private readonly IBotClientFactory _botClientFactory;
@@ -74,9 +83,10 @@ namespace LuckyDrawBot.Controllers
             if (activity.Type == ActivityTypes.Invoke)
             {
                 InvokeActionData invokeActionData;
-                if (activity.Name == "task/fetch")
+                var value = (JObject)activity.Value;
+                if (value.ContainsKey("data"))
                 {
-                    var data = ((JObject)activity.Value).GetValue("data");
+                    var data = value.GetValue("data");
                     invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(data));
                 }
                 else
@@ -95,6 +105,12 @@ namespace LuckyDrawBot.Controllers
                     case InvokeActionType.EditDraft:
                         var editDraftCompetitionResponse = await HandleEditDraftCompetitionAction(invokeActionData, activity);
                         return Ok(editDraftCompetitionResponse);
+                    case InvokeActionType.SaveDraft:
+                        await HandleSaveDraftCompetitionAction(invokeActionData, activity);
+                        return Ok();
+                    case InvokeActionType.ActivateCompetition:
+                        var activateCompetitionResponse = await HandleActivateCompetitionAction(invokeActionData, activity);
+                        return Ok(activateCompetitionResponse);
                     default:
                         throw new Exception("Unknown invoke action type: " + invokeActionData.UserAction);
                 }
@@ -163,7 +179,7 @@ namespace LuckyDrawBot.Controllers
             }
 
             await _timerService.AddScheduledHttpRequest(
-                competition.PlannedDrawTime.Value,
+                competition.PlannedDrawTime,
                 "POST",
                 Url.Action(nameof(CompetitionsController.DrawForCompetition), "Competitions", new { competitionId = competition.Id }));
 
@@ -191,8 +207,83 @@ namespace LuckyDrawBot.Controllers
         {
             var competition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);
             var canEdit = competition.CreatorAadObjectId == activity.From.AadObjectId;
-            var taskInfoResponse = _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, canEdit);
-            return taskInfoResponse;
+            if (canEdit)
+            {
+                return _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, string.Empty);
+            }
+            else
+            {
+                return _activityBuilder.CreateEditNotAllowedTaskInfoResponse(competition);
+            }
+        }
+
+        private async Task HandleSaveDraftCompetitionAction(InvokeActionData invokeActionData, Activity activity)
+        {
+            var data = ((JObject)activity.Value).GetValue("data");
+            var editForm = JsonConvert.DeserializeObject<CompetitionEditForm>(JsonConvert.SerializeObject(data));
+
+            var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
+            var date = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalDate);
+            var time = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalTime);
+            var plannedDrawTime = new DateTimeOffset(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
+
+            var competition = await _competitionService.UpdateGift(
+                invokeActionData.CompetitionId,
+                plannedDrawTime,
+                editForm.Gift,
+                editForm.GiftImageUrl,
+                editForm.WinnerCount);
+        }
+
+        private async Task<TaskModuleTaskInfoResponse> HandleActivateCompetitionAction(InvokeActionData invokeActionData, Activity activity)
+        {
+            await HandleSaveDraftCompetitionAction(invokeActionData, activity);
+            var competition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);
+            var errorMessage = CanActivateCompetition(competition);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, errorMessage);
+            }
+
+            competition = await _competitionService.ActivateCompetition(competition.Id);
+
+            var mainActivity = _activityBuilder.CreateMainActivity(competition);
+            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+            {
+                await botClient.UpdateActivityAsync(competition.ChannelId, competition.MainActivityId, mainActivity);
+            }
+
+            await _timerService.AddScheduledHttpRequest(
+                competition.PlannedDrawTime,
+                "POST",
+                Url.Action(nameof(CompetitionsController.DrawForCompetition), "Competitions", new { competitionId = competition.Id }));
+            return null;
+        }
+
+        private string CanActivateCompetition(Competition competition)
+        {
+            var errorMessage = string.Empty;
+            if (string.IsNullOrEmpty(competition.Gift))
+            {
+                errorMessage += "Gift cannot be empty. ";
+            }
+            if (competition.WinnerCount <= 0)
+            {
+                errorMessage += "WinnerCount should be bigger than 0. ";
+            }
+            if (competition.PlannedDrawTime < _dateTimeService.UtcNow)
+            {
+                errorMessage += "PlannedDrawTime past. ";
+            }
+            if (!string.IsNullOrEmpty(competition.GiftImageUrl))
+            {
+                if (!competition.GiftImageUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)
+                    && !competition.GiftImageUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    errorMessage += "GiftImageUrl must start with 'http://' or 'https://'. ";
+                }
+            }
+            return errorMessage;
         }
 
         private async Task HandleDisplayHelp(Activity activity)

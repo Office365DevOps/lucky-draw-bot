@@ -11,6 +11,8 @@ namespace LuckyDrawBot.Models
         ViewDetail = 1,
         Join = 2,
         EditDraft = 3,
+        SaveDraft = 4,
+        ActivateCompetition = 5
     }
 
     public class InvokeActionData

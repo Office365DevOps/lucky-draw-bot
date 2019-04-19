@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards;
 using LuckyDrawBot.Models;
 using Microsoft.Bot.Schema;
 
@@ -14,7 +15,8 @@ namespace LuckyDrawBot.Services
         Activity CreateMainActivity(Competition competition);
         Activity CreateResultActivity(Competition competition);
         TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
-        TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, bool canEdit);
+        TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition);
+        TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage);
     }
 
     public class ActivityBuilder : IActivityBuilder
@@ -45,8 +47,8 @@ namespace LuckyDrawBot.Services
             }
 
             var localization = _localizationFactory.Create(competition.Locale);
-            var plannedDrawTimeString = competition.PlannedDrawTime.Value.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
-                                                                         .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
+            var plannedDrawTimeString = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
+                                                                   .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
             var viewDetailAction = new CardAction
             {
                 Title = localization["MainActivity.ViewDetailButton"],
@@ -187,16 +189,15 @@ namespace LuckyDrawBot.Services
         public TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition)
         {
             var localization = _localizationFactory.Create(competition.Locale);
-            var body = new List<AdaptiveCard.AdaptiveBodyItem>
+            var body = new List<AdaptiveElement>
             {
-                new AdaptiveCard.AdaptiveBodyItem
+                new AdaptiveTextBlock
                 {
-                    Type = "TextBlock",
                     Text = localization["CompetitionDetail.Competitors"],
                     Size = AdaptiveTextSize.Large
                 },
             };
-            body.AddRange(competition.Competitors.Select(c => new AdaptiveCard.AdaptiveBodyItem { Type = "TextBlock", Text = c.Name }));
+            body.AddRange(competition.Competitors.Select(c => new AdaptiveTextBlock { Text = c.Name }));
             var taskInfo = new TaskModuleTaskInfo
             {
                 Type = "continue",
@@ -208,7 +209,7 @@ namespace LuckyDrawBot.Services
                     Card = new Attachment
                     {
                         ContentType = AdaptiveCard.ContentType,
-                        Content = new AdaptiveCard()
+                        Content = new AdaptiveCard("1.0")
                         {
                             Body = body
                         }
@@ -218,65 +219,152 @@ namespace LuckyDrawBot.Services
             return new TaskModuleTaskInfoResponse { Task = taskInfo };
         }
 
-        public TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, bool canEdit)
+        public TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition)
         {
             var localization = _localizationFactory.Create(competition.Locale);
-            if (!canEdit)
+            return new TaskModuleTaskInfoResponse
             {
-                return new TaskModuleTaskInfoResponse
+                Task = new TaskModuleTaskInfo
                 {
-                    Task = new TaskModuleTaskInfo
+                    Type = "continue",
+                    Value = new TaskModuleTaskInfo.TaskInfoValue
                     {
-                        Type = "continue",
-                        Value = new TaskModuleTaskInfo.TaskInfoValue
+                        Title = string.Empty,
+                        Height = "small",
+                        Width = "medium",
+                        Card = new Attachment
                         {
-                            Title = string.Empty,
-                            Height = "small",
-                            Width = "medium",
-                            Card = new Attachment
+                            ContentType = AdaptiveCard.ContentType,
+                            Content = new AdaptiveCard("1.0")
                             {
-                                ContentType = AdaptiveCard.ContentType,
-                                Content = new AdaptiveCard()
+                                Body = new List<AdaptiveElement>
                                 {
-                                    Body = new List<AdaptiveCard.AdaptiveBodyItem>
+                                    new AdaptiveTextBlock
                                     {
-                                        new AdaptiveCard.AdaptiveBodyItem
-                                        {
-                                            Type = "TextBlock",
-                                            Text = localization["EditDraftCompetition.NotAllowed"],
-                                            Size = AdaptiveTextSize.Large
-                                        },
-                                    }
+                                        Text = localization["EditDraftCompetition.NotAllowed"],
+                                        Size = AdaptiveTextSize.Large
+                                    },
                                 }
                             }
                         }
                     }
-                };
+                }
+            };
+        }
+
+        public TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage)
+        {
+            var localization = _localizationFactory.Create(competition.Locale);
+            var localPlannedDrawTime = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours));
+
+            var body = new List<AdaptiveElement>
+            {
+                new AdaptiveTextBlock
+                {
+                    Text = "Prize",
+                },
+                new AdaptiveTextInput
+                {
+                    Id = "gift",
+                    Placeholder = "The name of prize",
+                    Value = competition.Gift,
+                    IsMultiline = false
+                },
+                new AdaptiveTextBlock
+                {
+                    Text = "The number of prizes",
+                },
+                new AdaptiveNumberInput
+                {
+                    Id = "winnerCount",
+                    Placeholder = "The number of prizes",
+                    Value = competition.WinnerCount,
+                    Min = 1,
+                    Max = 10000
+                },
+                new AdaptiveTextBlock
+                {
+                    Text = "Draw Time",
+                },
+                new AdaptiveColumnSet
+                {
+                    Columns = new List<AdaptiveColumn>
+                    {
+                        new AdaptiveColumn
+                        {
+                            Width = "1",
+                            Items = new List<AdaptiveElement>
+                            {
+                                new AdaptiveDateInput
+                                {
+                                    Id = "plannedDrawTimeLocalDate",
+                                    Value = localPlannedDrawTime.ToString("yyyy-MM-dd")
+                                }
+                            }
+                        },
+                        new AdaptiveColumn
+                        {
+                            Width = "1",
+                            Items = new List<AdaptiveElement>
+                            {
+                                new AdaptiveTimeInput
+                                {
+                                    Id = "plannedDrawTimeLocalTime",
+                                    Value = localPlannedDrawTime.ToString("HH:mm")
+                                }
+                            }
+                        }
+                    }
+                },
+                new AdaptiveTextBlock
+                {
+                    Text = "The URL of prize image",
+                },
+                new AdaptiveTextInput
+                {
+                    Id = "giftImageUrl",
+                    Style = AdaptiveTextInputStyle.Url,
+                    Placeholder = "https://www.abc.com/xyz.jpg",
+                    Value = competition.GiftImageUrl
+                }
+            };
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                body.Insert(0, new AdaptiveTextBlock
+                {
+                    Text = errorMessage,
+                    Color = AdaptiveTextColor.Attention
+                });
             }
 
-            var body = new List<AdaptiveCard.AdaptiveBodyItem>
+            var actions = new List<AdaptiveAction>
             {
-                new AdaptiveCard.AdaptiveBodyItem
+                new AdaptiveSubmitAction
                 {
-                    Type = "TextBlock",
-                    Text = localization["EditDraftCompetition.NotAllowed"],
-                    Size = AdaptiveTextSize.Large
+                    Title = "Save",
+                    Data = new InvokeActionData { UserAction = InvokeActionType.SaveDraft, CompetitionId = competition.Id } 
                 },
+                new AdaptiveSubmitAction
+                {
+                    Title = "Start",
+                    Data = new InvokeActionData { UserAction = InvokeActionType.ActivateCompetition, CompetitionId = competition.Id } 
+                }
             };
+
             var taskInfo = new TaskModuleTaskInfo
             {
                 Type = "continue",
                 Value = new TaskModuleTaskInfo.TaskInfoValue
                 {
                     Title = string.Empty,
-                    Height = "small",
-                    Width = "medium",
                     Card = new Attachment
                     {
                         ContentType = AdaptiveCard.ContentType,
-                        Content = new AdaptiveCard()
+                        Content = new AdaptiveCard("1.0")
                         {
-                            Body = body
+                            Body = body,
+                            Actions = actions
                         }
                     }
                 }

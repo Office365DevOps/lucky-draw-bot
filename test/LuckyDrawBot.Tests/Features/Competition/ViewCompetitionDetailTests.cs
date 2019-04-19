@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AdaptiveCards;
 using FluentAssertions;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
