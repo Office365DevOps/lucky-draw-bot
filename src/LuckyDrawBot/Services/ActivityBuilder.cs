@@ -16,7 +16,7 @@ namespace LuckyDrawBot.Services
         Activity CreateResultActivity(Competition competition);
         TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
         TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition);
-        TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage);
+        TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale);
     }
 
     public class ActivityBuilder : IActivityBuilder
@@ -252,7 +252,7 @@ namespace LuckyDrawBot.Services
             };
         }
 
-        public TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage)
+        public TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale)
         {
             var localization = _localizationFactory.Create(competition.Locale);
             var localPlannedDrawTime = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours));
@@ -295,11 +295,21 @@ namespace LuckyDrawBot.Services
                             Width = "1",
                             Items = new List<AdaptiveElement>
                             {
-                                new AdaptiveDateInput
-                                {
-                                    Id = "plannedDrawTimeLocalDate",
-                                    Value = localPlannedDrawTime.ToString("yyyy-MM-dd")
-                                }
+                                // Teams/AdaptiveCards BUG: https://github.com/Microsoft/AdaptiveCards/issues/2644
+                                // DateInput does not post back the value in non-English situation.
+                                // Workaround: use TextInput instead and validate user's input against "yyyy-MM-dd" format
+                                (currentLocale != null && currentLocale.StartsWith("en"))
+                                    ? new AdaptiveDateInput
+                                    {
+                                        Id = "plannedDrawTimeLocalDate",
+                                        Value = localPlannedDrawTime.ToString("yyyy-MM-dd")
+                                    }
+                                    : new AdaptiveTextInput
+                                    {
+                                        Id = "plannedDrawTimeLocalDate",
+                                        Placeholder = localization["EditCompetition.Form.PlannedDrawTimeLocalDate.Placeholder"],
+                                        Value = localPlannedDrawTime.ToString("yyyy-MM-dd")
+                                    } as AdaptiveElement
                             }
                         },
                         new AdaptiveColumn

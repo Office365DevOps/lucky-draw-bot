@@ -34,6 +34,7 @@ namespace LuckyDrawBot.Localizations
             ["EditCompetition.Form.WinnerCount.Placeholder"] = "The number should be bigger than 0",
             ["EditCompetition.Form.WinnerCount.Invalid"] = "The number of prizes must be bigger than 0.",
             ["EditCompetition.Form.PlannedDrawTime.Label"] = "Draw Time",
+            ["EditCompetition.Form.PlannedDrawTimeLocalDate.Placeholder"] = "YYYY-MM-DD. For example, 2020-08-28",
             ["EditCompetition.Form.PlannedDrawTime.Invalid"] = "The draw time must be future time.",
             ["EditCompetition.Form.GiftImageUrl.Label"] = "The URL of prize image",
             ["EditCompetition.Form.GiftImageUrl.Placeholder"] = "https://www.abc.com/xyz.jpg",

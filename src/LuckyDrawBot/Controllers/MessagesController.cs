@@ -209,7 +209,7 @@ namespace LuckyDrawBot.Controllers
             var canEdit = competition.CreatorAadObjectId == activity.From.AadObjectId;
             if (canEdit)
             {
-                return _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, string.Empty);
+                return _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, string.Empty, activity.Locale);
             }
             else
             {
@@ -221,6 +221,15 @@ namespace LuckyDrawBot.Controllers
         {
             var data = ((JObject)activity.Value).GetValue("data");
             var editForm = JsonConvert.DeserializeObject<CompetitionEditForm>(JsonConvert.SerializeObject(data));
+
+            // Teams/AdaptiveCards BUG: https://github.com/Microsoft/AdaptiveCards/issues/2644
+            // DateInput does not post back the value in non-English situation.
+            // Workaround: use TextInput instead and validate user's input against "yyyy-MM-dd" format
+            if (!DateTimeOffset.TryParseExact(editForm.PlannedDrawTimeLocalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.None, out DateTimeOffset dummy))
+            {
+                var existingCompetition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);
+                editForm.PlannedDrawTimeLocalDate = existingCompetition.PlannedDrawTime.ToString("yyyy-MM-dd");
+            }
 
             var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
             var date = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalDate);
@@ -242,7 +251,7 @@ namespace LuckyDrawBot.Controllers
             var errorMessage = CanActivateCompetition(competition);
             if (!string.IsNullOrEmpty(errorMessage))
             {
-                return _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, errorMessage);
+                return _activityBuilder.CreateDraftCompetitionEditTaskInfoResponse(competition, errorMessage, activity.Locale);
             }
 
             competition = await _competitionService.ActivateCompetition(competition.Id);

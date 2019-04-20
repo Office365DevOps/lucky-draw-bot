@@ -34,6 +34,7 @@ namespace LuckyDrawBot.Localizations
             ["EditCompetition.Form.WinnerCount.Placeholder"] = "数字必须大于 0",
             ["EditCompetition.Form.WinnerCount.Invalid"] = "奖品个数必须大于 0。",
             ["EditCompetition.Form.PlannedDrawTime.Label"] = "抽奖时间",
+            ["EditCompetition.Form.PlannedDrawTimeLocalDate.Placeholder"] = "使用格式：YYYY-MM-DD  比如：2020-08-28",
             ["EditCompetition.Form.PlannedDrawTime.Invalid"] = "抽奖时间必须是一个将来的时间。",
             ["EditCompetition.Form.GiftImageUrl.Label"] = "奖品图片URL",
             ["EditCompetition.Form.GiftImageUrl.Placeholder"] = "https://www.abc.com/xyz.jpg",
