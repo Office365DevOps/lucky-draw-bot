@@ -354,7 +354,6 @@ namespace LuckyDrawBot.Controllers
             }
             var giftImageUrl = parts.Length > 3 ? parts[3].Trim() : string.Empty;
 
-            var localization = _localizationFactory.Create(activity.Locale);
             return new CreateCompetitionParameters
             {
                 IsDraft = false,

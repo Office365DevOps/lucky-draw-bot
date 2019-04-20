@@ -241,7 +241,7 @@ namespace LuckyDrawBot.Services
                                 {
                                     new AdaptiveTextBlock
                                     {
-                                        Text = localization["EditDraftCompetition.NotAllowed"],
+                                        Text = localization["EditCompetition.NotAllowed"],
                                         Size = AdaptiveTextSize.Large
                                     },
                                 }
@@ -261,30 +261,30 @@ namespace LuckyDrawBot.Services
             {
                 new AdaptiveTextBlock
                 {
-                    Text = "Prize",
+                    Text = localization["EditCompetition.Form.Gift.Label"],
                 },
                 new AdaptiveTextInput
                 {
                     Id = "gift",
-                    Placeholder = "The name of prize",
+                    Placeholder = localization["EditCompetition.Form.Gift.Placeholder"],
                     Value = competition.Gift,
                     IsMultiline = false
                 },
                 new AdaptiveTextBlock
                 {
-                    Text = "The number of prizes",
+                    Text = localization["EditCompetition.Form.WinnerCount.Label"],
                 },
                 new AdaptiveNumberInput
                 {
                     Id = "winnerCount",
-                    Placeholder = "The number of prizes",
+                    Placeholder = localization["EditCompetition.Form.WinnerCount.Placeholder"],
                     Value = competition.WinnerCount,
                     Min = 1,
                     Max = 10000
                 },
                 new AdaptiveTextBlock
                 {
-                    Text = "Draw Time",
+                    Text = localization["EditCompetition.Form.PlannedDrawTime.Label"],
                 },
                 new AdaptiveColumnSet
                 {
@@ -318,13 +318,13 @@ namespace LuckyDrawBot.Services
                 },
                 new AdaptiveTextBlock
                 {
-                    Text = "The URL of prize image",
+                    Text = localization["EditCompetition.Form.GiftImageUrl.Label"],
                 },
                 new AdaptiveTextInput
                 {
                     Id = "giftImageUrl",
                     Style = AdaptiveTextInputStyle.Url,
-                    Placeholder = "https://www.abc.com/xyz.jpg",
+                    Placeholder = localization["EditCompetition.Form.GiftImageUrl.Placeholder"],
                     Value = competition.GiftImageUrl
                 }
             };
@@ -342,12 +342,12 @@ namespace LuckyDrawBot.Services
             {
                 new AdaptiveSubmitAction
                 {
-                    Title = "Save",
+                    Title = localization["EditCompetition.SaveDraftButton"],
                     Data = new InvokeActionData { UserAction = InvokeActionType.SaveDraft, CompetitionId = competition.Id } 
                 },
                 new AdaptiveSubmitAction
                 {
-                    Title = "Start",
+                    Title = localization["EditCompetition.ActivateCompetition"],
                     Data = new InvokeActionData { UserAction = InvokeActionType.ActivateCompetition, CompetitionId = competition.Id } 
                 }
             };

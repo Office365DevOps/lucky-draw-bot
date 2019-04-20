@@ -26,7 +26,16 @@ namespace LuckyDrawBot.Localizations
             ["ResultActivity.WinnersSubtitle"] = "Prize: {0}",
             ["ResultActivity.WinnersImageUrl"] = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif",
             ["CompetitionDetail.Competitors"] = "Players",
-            ["EditDraftCompetition.NotAllowed"] = "Only the creator can edit.",
+            ["EditCompetition.NotAllowed"] = "Only the creator can edit.",
+            ["EditCompetition.Form.Gift.Label"] = "Prize",
+            ["EditCompetition.Form.Gift.Placeholder"] = "The name of prize",
+            ["EditCompetition.Form.WinnerCount.Label"] = "The number of prizes",
+            ["EditCompetition.Form.WinnerCount.Placeholder"] = "The number should be bigger than 0",
+            ["EditCompetition.Form.PlannedDrawTime.Label"] = "Draw Time",
+            ["EditCompetition.Form.GiftImageUrl.Label"] = "The URL of prize image",
+            ["EditCompetition.Form.GiftImageUrl.Placeholder"] = "https://www.abc.com/xyz.jpg",
+            ["EditCompetition.SaveDraftButton"] = "Save",
+            ["EditCompetition.ActivateCompetition"] = "Start",
         };
 
         public LocalizationEnUs() : base(Strings)
