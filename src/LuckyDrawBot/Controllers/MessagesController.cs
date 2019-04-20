@@ -262,28 +262,29 @@ namespace LuckyDrawBot.Controllers
 
         private string CanActivateCompetition(Competition competition)
         {
-            var errorMessage = string.Empty;
+            var localization = _localizationFactory.Create(competition.Locale);
+            var errors = new List<string>();
             if (string.IsNullOrEmpty(competition.Gift))
             {
-                errorMessage += "Gift cannot be empty. ";
+                errors.Add(localization["EditCompetition.Form.Gift.Invalid"]);
             }
             if (competition.WinnerCount <= 0)
             {
-                errorMessage += "WinnerCount should be bigger than 0. ";
+                errors.Add(localization["EditCompetition.Form.WinnerCount.Invalid"]);
             }
             if (competition.PlannedDrawTime < _dateTimeService.UtcNow)
             {
-                errorMessage += "PlannedDrawTime past. ";
+                errors.Add(localization["EditCompetition.Form.PlannedDrawTime.Invalid"]);
             }
             if (!string.IsNullOrEmpty(competition.GiftImageUrl))
             {
                 if (!competition.GiftImageUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)
                     && !competition.GiftImageUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    errorMessage += "GiftImageUrl must start with 'http://' or 'https://'. ";
+                    errors.Add(localization["EditCompetition.Form.GiftImageUrl.Invalid"]);
                 }
             }
-            return errorMessage;
+            return string.Join(' ', errors);
         }
 
         private async Task HandleDisplayHelp(Activity activity)
