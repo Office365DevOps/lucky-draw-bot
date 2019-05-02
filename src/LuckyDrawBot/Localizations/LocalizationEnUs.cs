@@ -7,7 +7,8 @@ namespace LuckyDrawBot.Localizations
     {
         private static readonly Dictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
-            ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b>.<br/>Want more? Here is the cheat sheet:<br/>@luckydraw [prize name], [the number of prizes], [draw time], [the url of gift url]<br>",
+            ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b> or you can just type <b>@luckydraw start</b>.<br/>Want more? Here is the cheat sheet:<br/>@luckydraw [prize name], [the number of prizes], [draw time], [the url of gift url]<br>",
+            ["InvalidCommand.Message"] = "I'm sorry I couldn't understand what you said.\r\n\r\nGet started with the following commands:\r\n\r\n* \"start\" to create a lucky draw\r\n\r\n* \"help\" to display help information",
             ["MainActivity.Draft.EditButton"] = "Edit",
             ["MainActivity.Draft.Title"] = "{0} is starting a lucky draw",
             ["MainActivity.Draft.Subtitle"] = "Get ready for it 😁",

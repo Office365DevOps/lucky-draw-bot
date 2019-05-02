@@ -117,13 +117,32 @@ namespace LuckyDrawBot.Controllers
             }
             else if (activity.Type == ActivityTypes.Message)
             {
-                var succeeded = await HandleCompetitionInitialization(activity);
-                if (!succeeded)
+                var text = GetText(activity);
+                if (text.Equals("help", StringComparison.InvariantCultureIgnoreCase))
                 {
                     await HandleDisplayHelp(activity);
                     return Ok();
                 }
+
+                var succeeded = await HandleCompetitionInitialization(activity);
+                if (!succeeded)
+                {
+                    await HandleInvalidCommand(activity);
+                    return Ok();
+                }
             }
+            else if (activity.Type == ActivityTypes.ConversationUpdate)
+            {
+                var botSelf = activity.Recipient.Id;
+                if ((activity.MembersAdded != null)
+                    && (activity.MembersAdded.Count > 0)
+                    && (activity.MembersAdded[0].Id == botSelf))
+                {
+                    await HandleBeingAddedIntoChannelEvent(activity);
+                    return Ok();
+                }
+            }
+
             return Ok();
         }
 
@@ -296,6 +315,19 @@ namespace LuckyDrawBot.Controllers
             return string.Join(' ', errors);
         }
 
+        private string GetText(Activity activity)
+        {
+            const string MentionBotEndingFlag = "</at>";
+            var text = activity.Text;
+            if (text.IndexOf(MentionBotEndingFlag) < 0)
+            {
+                return null;
+            }
+            text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
+            text = text.Trim();
+            return text;
+        }
+
         private async Task HandleDisplayHelp(Activity activity)
         {
             var localization = _localizationFactory.Create(activity.Locale);
@@ -306,16 +338,35 @@ namespace LuckyDrawBot.Controllers
             }
         }
 
+        private async Task HandleInvalidCommand(Activity activity)
+        {
+            var localization = _localizationFactory.Create(activity.Locale);
+            var invalidCommandReply = activity.CreateReply(localization["InvalidCommand.Message"]);
+            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+            {
+                await botClient.SendToConversationAsync(invalidCommandReply);
+            }
+        }
+
+        private async Task HandleBeingAddedIntoChannelEvent(Activity activity)
+        {
+            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+            {
+                // This incoming activity does not have locale information, so response welcome message in English
+                var welcomeText = "Hi there, I'm LuckyDraw bot🎁. A teammate of yours recently added me to help your team create lucky draws.\r\n\r\n"
+                                + "Quickstart guide\r\n\r\n"
+                                + "* To create a lucky draw, type:\r\n\r\n"
+                                + "  @LuckyDraw start\r\n\r\n"
+                                + "* To find more about me, type:\r\n\r\n"
+                                + "  @LuckyDraw help";
+                var welcome = activity.CreateReply(welcomeText);
+                await botClient.SendToConversationAsync(welcome);
+            }
+        }
+
         private CreateCompetitionParameters ParseCreateCompetitionParameters(Activity activity)
         {
-            const string MentionBotEndingFlag = "</at>";
-            var text = activity.Text;
-            if (text.IndexOf(MentionBotEndingFlag) < 0)
-            {
-                return null;
-            }
-            text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
-            text = text.Trim();
+            var text = GetText(activity);
 
             var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
 
