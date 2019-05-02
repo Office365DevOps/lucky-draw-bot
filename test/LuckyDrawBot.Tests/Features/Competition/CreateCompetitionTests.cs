@@ -161,7 +161,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
         [InlineData("giftName,1,wrong hours")]
         [InlineData("giftName,1,wrong minutes")]
         [InlineData("giftName,1,wrong date")]
-        public async Task WhenTextDoesNotComplyWithRequiredFormat_SendTextToBot_ReplyHelpMessage(string wrongFormatText)
+        public async Task WhenTextDoesNotComplyWithRequiredFormat_SendTextToBot_ReplyInvalidCommandMessage(string wrongFormatText)
         {
             using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
             using (var client = server.CreateClient())
@@ -172,7 +172,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
                 var createdMessages = server.Assert().GetCreatedMessages();
                 createdMessages.Should().HaveCount(1);
-                createdMessages[0].Activity.Text.Should().StartWith("Hi there");
+                createdMessages[0].Activity.Text.Should().StartWith("I'm sorry");
             }
         }
 

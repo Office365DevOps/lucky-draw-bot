@@ -26,7 +26,7 @@ namespace LuckyDrawBot.Tests.Features.HelpMessage
             using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
             using (var client = server.CreateClient())
             {
-                var response = await client.SendTeamsText("help");
+                var response = await client.SendTeamsText("<at>bot name</at>help");
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
                 var createdMessages = server.Assert().GetCreatedMessages();
