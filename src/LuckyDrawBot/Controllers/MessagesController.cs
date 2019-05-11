@@ -74,6 +74,7 @@ namespace LuckyDrawBot.Controllers
         public async Task<IActionResult> GetMessage([FromBody]Activity activity)
         {
             _logger.LogInformation($"ChannelId:{activity.ChannelId} Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
+            _logger.LogInformation($"Input activity: {JsonConvert.SerializeObject(activity)}");
 
             if (activity.ChannelId != "msteams")
             {
