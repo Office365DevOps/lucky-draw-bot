@@ -14,7 +14,7 @@ namespace LuckyDrawBot.Localizations
             ["MainActivity.Draft.Subtitle"] = "时刻准备好哦 😁",
             ["MainActivity.Description"] = "共有 {0} 个奖品. 抽奖时间：{1}",
             ["MainActivity.JoinButton"] = "我要参加",
-            ["MainActivity.ViewDetailButton"] = "详情",
+            ["MainActivity.ViewDetailButton"] = "参与人",
             ["MainActivity.NoCompetitor"] = "",
             ["MainActivity.OneCompetitor"] = "{0} 参加了抽奖",
             ["MainActivity.TwoCompetitors"] = "{0} 和 {1} 参加了抽奖",
