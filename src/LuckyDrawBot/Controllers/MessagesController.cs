@@ -155,6 +155,11 @@ namespace LuckyDrawBot.Controllers
                 return false;
             }
 
+            if (parameters.WinnerCount <= 0)
+            {
+                parameters.WinnerCount = 1;
+            }
+
             var channelData = activity.GetChannelData<TeamsChannelData>();
             if (parameters.IsDraft)
             {
