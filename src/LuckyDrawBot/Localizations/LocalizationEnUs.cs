@@ -7,7 +7,7 @@ namespace LuckyDrawBot.Localizations
     {
         private static readonly Dictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
-            ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b> or you can just type <b>@luckydraw start</b>.<br/>Want more? Here is the cheat sheet:<br/>@luckydraw [prize name], [the number of prizes], [draw time], [the url of gift url]<br>",
+            ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b> or you can just type <b>@luckydraw start</b>.",
             ["InvalidCommand.Message"] = "I'm sorry I couldn't understand what you said.\r\n\r\nGet started with the following commands:\r\n\r\n* \"start\" to create a lucky draw\r\n\r\n* \"help\" to display help information",
             ["MainActivity.Draft.EditButton"] = "Edit",
             ["MainActivity.Draft.Title"] = "{0} is starting a lucky draw",
@@ -23,7 +23,7 @@ namespace LuckyDrawBot.Localizations
             ["ResultActivity.NoWinnerTitle"] = "No one joined, no winner",
             ["ResultActivity.NoWinnerSubtitle"] = "Prize: {0}",
             ["ResultActivity.NoWinnerImageUrl"] = "https://media.tenor.co/images/5d6e7c144fb4ef5985652ea6d7219965/raw",
-            ["ResultActivity.WinnersTitle"] = "Our winners are: {0}",
+            ["ResultActivity.WinnersTitle"] = "Our winner(s): {0}",
             ["ResultActivity.WinnersSubtitle"] = "Prize: {0}",
             ["ResultActivity.WinnersImageUrl"] = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif",
             ["CompetitionDetail.Competitors"] = "Joined Users",
