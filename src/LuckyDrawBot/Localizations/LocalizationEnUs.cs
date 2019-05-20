@@ -9,6 +9,7 @@ namespace LuckyDrawBot.Localizations
         {
             ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b> or you can just type <b>@luckydraw start</b>.",
             ["InvalidCommand.Message"] = "I'm sorry I couldn't understand what you said.\r\n\r\nGet started with the following commands:\r\n\r\n* \"start\" to create a lucky draw\r\n\r\n* \"help\" to display help information",
+            ["InvalidCommand.WinnerCountLessThanOne"] = "The number of prizes must be bigger than 0.",
             ["MainActivity.Draft.EditButton"] = "Edit",
             ["MainActivity.Draft.Title"] = "{0} is starting a lucky draw",
             ["MainActivity.Draft.Subtitle"] = "Get ready for it 😁",

@@ -128,7 +128,6 @@ namespace LuckyDrawBot.Controllers
                 var succeeded = await HandleCompetitionInitialization(activity);
                 if (!succeeded)
                 {
-                    await HandleInvalidCommand(activity);
                     return Ok();
                 }
             }
@@ -152,12 +151,19 @@ namespace LuckyDrawBot.Controllers
             var parameters = ParseCreateCompetitionParameters(activity);
             if (parameters == null)
             {
+                await HandleInvalidCommand(activity);
                 return false;
             }
 
             if (parameters.WinnerCount <= 0)
             {
-                parameters.WinnerCount = 1;
+                var localization = _localizationFactory.Create(activity.Locale);
+                var help = activity.CreateReply(localization["InvalidCommand.WinnerCountLessThanOne"]);
+                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+                {
+                    await botClient.SendToConversationAsync(help);
+                }
+                return false;
             }
 
             var channelData = activity.GetChannelData<TeamsChannelData>();
