@@ -155,17 +155,6 @@ namespace LuckyDrawBot.Controllers
                 return false;
             }
 
-            if (parameters.WinnerCount <= 0)
-            {
-                var localization = _localizationFactory.Create(activity.Locale);
-                var help = activity.CreateReply(localization["InvalidCommand.WinnerCountLessThanOne"]);
-                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-                {
-                    await botClient.SendToConversationAsync(help);
-                }
-                return false;
-            }
-
             var channelData = activity.GetChannelData<TeamsChannelData>();
             if (parameters.IsDraft)
             {
@@ -186,6 +175,17 @@ namespace LuckyDrawBot.Controllers
                     await _competitionService.UpdateMainActivity(draftCompetition.Id, mainMessage.Id);
                 }
                 return true;
+            }
+
+            if (parameters.WinnerCount <= 0)
+            {
+                var localization = _localizationFactory.Create(activity.Locale);
+                var help = activity.CreateReply(localization["InvalidCommand.WinnerCountLessThanOne"]);
+                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+                {
+                    await botClient.SendToConversationAsync(help);
+                }
+                return false;
             }
 
             var competition = await _competitionService.CreateActiveCompetition(
