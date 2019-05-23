@@ -20,7 +20,7 @@ namespace System.Net.Http
             {
                 ServiceUrl = "https://service-url.com",
                 ChannelId = "msteams",
-                Type = "message",
+                Type = ActivityTypes.Message,
                 Text = text,
                 Locale = locale ?? "en-us",
                 LocalTimestamp = offsetHours.HasValue ? new DateTimeOffset(2018, 1, 1, 1, 1, 1, 1, TimeSpan.FromHours(offsetHours.Value)) : (DateTimeOffset?)null,
@@ -47,7 +47,7 @@ namespace System.Net.Http
             {
                 ServiceUrl = "https://service-url.com",
                 ChannelId = "msteams",
-                Type = "invoke",
+                Type = ActivityTypes.Invoke,
                 Value = invokeValue,
                 From = from ?? new ChannelAccount("id", "name")
             };
@@ -66,7 +66,7 @@ namespace System.Net.Http
                 Name = "task/fetch",
                 ServiceUrl = "https://service-url.com",
                 ChannelId = "msteams",
-                Type = "invoke",
+                Type = ActivityTypes.Invoke,
                 Value = new { data = invokeValue },
                 From = from ?? new ChannelAccount("id", "name")
             };

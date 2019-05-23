@@ -34,6 +34,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
                 var openCompetitions = server.Assert().GetOpenCompetitions();
                 openCompetitions.Should().HaveCount(1);
+                openCompetitions[0].Status.Should().Be(CompetitionStatus.Active);
                 openCompetitions[0].Gift.Should().StartWith(giftName);
                 openCompetitions[0].WinnerCount.Should().Be(winnerCount);
                 openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse(plannedDrawTime + "Z"));
@@ -176,5 +177,22 @@ namespace LuckyDrawBot.Tests.Features.Competition
             }
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public async Task WhenWinnerCountIsLessThanOne_SendTextToBot_ReplyErrorMessageAboutWinnerCount(int winnerCount)
+        {
+            using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
+            using (var client = server.CreateClient())
+            {
+                var text = $"<at>bot name</at>giftName,{winnerCount}";
+                var response = await client.SendTeamsText(text);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                createdMessages[0].Activity.Text.Should().Contain("must be bigger than 0");
+            }
+        }
     }
 }
