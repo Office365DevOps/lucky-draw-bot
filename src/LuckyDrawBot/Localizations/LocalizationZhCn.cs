@@ -10,6 +10,7 @@ namespace LuckyDrawBot.Localizations
             ["Help.Message"] = "您可以发送这样一条消息来创建一个抽奖：<b>@luckydraw 神秘礼物, 1, 23:59</b> 或者输入 <b>@luckydraw start</b>",
             ["InvalidCommand.Message"] = "对不起，我不太理解您说的。\r\n\r\n您可以尝试以下命令：\r\n\r\n* \"start\" 用于创建一个抽奖活动\r\n\r\n* \"help\" 用于显示帮助信息",
             ["InvalidCommand.WinnerCountLessThanOne"] = "奖品个数必须大于 0。",
+            ["InvalidCommand.PlannedDrawTimeNotFuture"] = "抽奖时间必须是一个将来的时间。",
             ["MainActivity.Draft.EditButton"] = "编辑",
             ["MainActivity.Draft.Title"] = "{0} 正在发起抽奖活动",
             ["MainActivity.Draft.Subtitle"] = "时刻准备好哦 😁",

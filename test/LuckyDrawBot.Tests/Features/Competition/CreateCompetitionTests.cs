@@ -22,7 +22,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
         {
             var giftName = "a gift name";
             var winnerCount = 6;
-            var plannedDrawTime = "2019-1-9 14:32";
+            var plannedDrawTime = "2029-1-9 14:32";
             var giftImageUrl = "http://jpg.com/01.jpg";
 
             using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
@@ -138,7 +138,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
         {
             var giftName = "gift name";
             var winnerCount = 6;
-            var plannedDrawTime = "2019-1-9 14:32";
+            var plannedDrawTime = "2029-1-9 14:32";
             var giftImageUrl = "http://jpg.com/01.jpg";
 
             using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
@@ -192,6 +192,23 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 var createdMessages = server.Assert().GetCreatedMessages();
                 createdMessages.Should().HaveCount(1);
                 createdMessages[0].Activity.Text.Should().Contain("must be bigger than 0");
+            }
+        }
+
+        [Fact]
+        public async Task WhenPlannedDrawTimeIsNotFutureTime_SendTextToBot_ReplyErrorMessageAboutPlannedDrawTime()
+        {
+            var oneSecondAgo = DateTimeOffset.UtcNow.AddSeconds(-1);
+            using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
+            using (var client = server.CreateClient())
+            {
+                var text = $"<at>bot name</at>giftName,1,{oneSecondAgo.ToString("yyyy-MM-dd HH:mm")}";
+                var response = await client.SendTeamsText(text);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                createdMessages[0].Activity.Text.Should().Contain("must be future time");
             }
         }
     }

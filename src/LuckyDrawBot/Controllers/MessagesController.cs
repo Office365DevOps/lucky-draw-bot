@@ -180,10 +180,21 @@ namespace LuckyDrawBot.Controllers
             if (parameters.WinnerCount <= 0)
             {
                 var localization = _localizationFactory.Create(activity.Locale);
-                var help = activity.CreateReply(localization["InvalidCommand.WinnerCountLessThanOne"]);
+                var invalidCommandReply = activity.CreateReply(localization["InvalidCommand.WinnerCountLessThanOne"]);
                 using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
                 {
-                    await botClient.SendToConversationAsync(help);
+                    await botClient.SendToConversationAsync(invalidCommandReply);
+                }
+                return false;
+            }
+
+            if (parameters.PlannedDrawTime < _dateTimeService.UtcNow)
+            {
+                var localization = _localizationFactory.Create(activity.Locale);
+                var invalidCommandReply = activity.CreateReply(localization["InvalidCommand.PlannedDrawTimeNotFuture"]);
+                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
+                {
+                    await botClient.SendToConversationAsync(invalidCommandReply);
                 }
                 return false;
             }
