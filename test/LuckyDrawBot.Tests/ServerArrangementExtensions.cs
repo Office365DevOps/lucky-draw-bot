@@ -14,11 +14,6 @@ namespace LuckyDrawBot.Tests
 {
     public static class ServerArrangementExtensions
     {
-        public static DependencyServiceHttpHandler GetTimerServiceHandler(this ServerArrangement arrangement)
-        {
-            return arrangement.GetHttpHandler("Timer");
-        }
-
         public static void SetUtcNow(this ServerArrangement arrangement, DateTimeOffset utcNow)
         {
             var mockService = arrangement.MainServices.GetRequiredService<IDateTimeService>() as SimpleDateTimeService;

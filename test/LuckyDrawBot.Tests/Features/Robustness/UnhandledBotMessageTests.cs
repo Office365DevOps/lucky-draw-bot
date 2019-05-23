@@ -12,11 +12,6 @@ namespace LuckyDrawBot.Tests.Features.HealthCheck
 {
     public class UnhandledBotMessageTests : BaseTest
     {
-        private class HealthCheckResponse
-        {
-            public string Status { get; set; }
-        }
-
         public UnhandledBotMessageTests(ITestOutputHelper output) : base(output)
         {
         }
