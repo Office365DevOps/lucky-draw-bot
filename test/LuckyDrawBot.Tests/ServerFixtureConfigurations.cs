@@ -32,6 +32,7 @@ namespace LuckyDrawBot.Tests
             {
                 services.ReplaceSingleton<IDateTimeService, SimpleDateTimeService>();
                 services.ReplaceSingleton<IBotClientFactory, SimpleBotClientFactory>();
+                services.ReplaceSingleton<IBotValidator, SimpleBotValidator>();
             },
             MainServicePostAppConfiguration = (configuration, testContext) =>
             {

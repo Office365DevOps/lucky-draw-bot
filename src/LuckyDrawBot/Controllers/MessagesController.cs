@@ -12,7 +12,9 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -43,6 +45,7 @@ namespace LuckyDrawBot.Controllers
 
         private const char ChineseCommaCharacter = '，';
         private readonly ILogger<MessagesController> _logger;
+        private readonly IBotValidator _botValidator;
         private readonly IBotClientFactory _botClientFactory;
         private readonly ICompetitionService _competitionService;
         private readonly IActivityBuilder _activityBuilder;
@@ -52,6 +55,7 @@ namespace LuckyDrawBot.Controllers
 
         public MessagesController(
             ILogger<MessagesController> logger,
+            IBotValidator botValidator,
             IBotClientFactory botClientFactory,
             ICompetitionService competitionService,
             IActivityBuilder activityBuilder,
@@ -60,6 +64,7 @@ namespace LuckyDrawBot.Controllers
             ILocalizationFactory localizationFactory)
         {
             _logger = logger;
+            _botValidator = botValidator;
             _botClientFactory = botClientFactory;
             _competitionService = competitionService;
             _activityBuilder = activityBuilder;
@@ -75,6 +80,12 @@ namespace LuckyDrawBot.Controllers
         {
             _logger.LogInformation($"ChannelId:{activity.ChannelId} Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
             _logger.LogInformation($"Input activity: {JsonConvert.SerializeObject(activity)}");
+
+            var (isAuthenticated, authenticationErrorMessage) = await _botValidator.Validate(Request);
+            if (!isAuthenticated)
+            {
+                return Unauthorized(authenticationErrorMessage);
+            }
 
             if (activity.ChannelId != "msteams")
             {
