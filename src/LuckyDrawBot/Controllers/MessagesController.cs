@@ -86,6 +86,7 @@ namespace LuckyDrawBot.Controllers
             {
                 return Unauthorized(authenticationErrorMessage);
             }
+            _logger.LogInformation($"Authentication check succeeded.");
 
             if (activity.ChannelId != "msteams")
             {
