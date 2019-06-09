@@ -1,7 +1,9 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
 namespace LuckyDrawBot.Services
@@ -13,10 +15,12 @@ namespace LuckyDrawBot.Services
 
     public class BotValidator : IBotValidator
     {
+        private readonly ILogger<BotValidator> _logger;
         private readonly IConfiguration _configuration;
 
-        public BotValidator(IConfiguration configuration)
+        public BotValidator(ILogger<BotValidator> logger, IConfiguration configuration)
         {
+            _logger = logger;
             _configuration = configuration;
         }
 
@@ -30,10 +34,18 @@ namespace LuckyDrawBot.Services
             var credential = new SimpleCredentialProvider(
                 _configuration.GetValue<string>("Bot:Id"),
                 _configuration.GetValue<string>("Bot:Password"));
-            var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authorizationHeader, credential, null, null);
-            if (!claimsIdentity.IsAuthenticated)
+            try
             {
-                return (false, "The request fails to pass auth check.");
+                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authorizationHeader, credential, null, null);
+                if (!claimsIdentity.IsAuthenticated)
+                {
+                    return (false, "The request fails to pass auth check.");
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to check authentication.");
+                return (false, $"Failed to check authentication: {ex.Message}");
             }
 
             return (true, string.Empty);
