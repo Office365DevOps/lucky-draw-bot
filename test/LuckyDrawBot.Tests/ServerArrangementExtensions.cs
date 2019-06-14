@@ -26,5 +26,11 @@ namespace LuckyDrawBot.Tests
             return openCompetitions;
         }
 
+        public static InMemoryDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity> GetClosedCompetitions(this ServerArrangement arrangement)
+        {
+            var closedCompetitions = arrangement.MainServices.GetRequiredService<IDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity>>() as InMemoryDataTable<LuckyDrawDataTablesSettings, ClosedCompetitionEntity>;
+            return closedCompetitions;
+        }
+
     }
 }

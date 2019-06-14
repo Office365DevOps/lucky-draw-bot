@@ -141,6 +141,11 @@ namespace LuckyDrawBot.Services
         public async Task<Competition> Draw(Guid competitionId)
         {
             var competition = await _repositoryService.GetOpenCompetition(competitionId);
+            if (competition == null)
+            {
+                return null;
+            }
+
             if (competition.Competitors.Count > 0)
             {
                 var candidates = competition.Competitors.Select(c => c.AadObjectId).ToList();

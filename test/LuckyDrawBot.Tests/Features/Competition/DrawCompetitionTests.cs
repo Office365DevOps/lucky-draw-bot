@@ -102,5 +102,47 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 completedCompetitions[0].WinnerAadObjectIds.Should().HaveCount(0);
             }
         }
+
+        [Fact]
+        public async Task WhenCompetitorHasAlreadyBeenDrawn_DrawCompetition_ResultActivityCanStillBePosted()
+        {
+            var utcNow = DateTimeOffset.UtcNow;
+            var userAadObjectId = "user aad object id";
+            var competition = new ClosedCompetitionEntity(Guid.NewGuid())
+            {
+                MainActivityId = "main activity id",
+                Locale = "en-US",
+                OffsetHours = 8,
+                PlannedDrawTime = DateTimeOffset.UtcNow.AddDays(-1),
+                Gift = "gift name",
+                Status = CompetitionStatus.Completed,
+                Competitors = new List<Competitor> { new Competitor { Name = "user name", AadObjectId = userAadObjectId } },
+                WinnerCount = 1,
+                WinnerAadObjectIds = new List<string> { userAadObjectId }
+            };
+
+            using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
+            using (var client = server.CreateClient())
+            {
+                var arrangement = server.Arrange();
+                arrangement.SetUtcNow(utcNow);
+                await arrangement.GetClosedCompetitions().InsertOrReplace(competition);
+
+                var response = await client.PostAsync($"competitions/{competition.Id}/draw", new StringContent(string.Empty));
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                // The main activity should be updated
+                var updatedMessages = server.Assert().GetUpdatedMessages();
+                updatedMessages.Should().HaveCount(1);
+                updatedMessages[0].ReplacedActivityId.Should().Be(competition.MainActivityId);
+                var updatedMessageHeroCard = updatedMessages[0].NewActivity.Attachments[0].Content as HeroCard;
+                updatedMessageHeroCard.Buttons.Should().HaveCount(1);
+                // The result activity should be created
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                var createdMessageHeroCard = createdMessages[0].Activity.Attachments[0].Content as HeroCard;
+                createdMessageHeroCard.Title.Should().Contain(competition.Competitors[0].Name);
+            }
+        }
     }
 }

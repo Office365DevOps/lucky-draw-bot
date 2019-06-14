@@ -57,10 +57,25 @@ namespace LuckyDrawBot.Controllers
         private async Task<bool> Draw(Guid competitionId)
         {
             var competition = await _competitionService.Draw(competitionId);
+            if (competition == null)
+            {
+                // Sometimes, the competitions was drawn but posting ResultActivity failed.
+                // So, when the timer service invokes the "draw" endpoint again, the competition is in "Closed" list already.
+                // Get the competition from "Closed" list, and then try to post ResultActivity to Teams again.
+                _logger.LogWarning("The competition has already been drawn and closed. Try to get it from Closed competition list. {competitionId}", competitionId);
+                competition = await _competitionService.GetCompetition(competitionId);
+            }
+
             if (string.IsNullOrEmpty(competition.MainActivityId))
             {
                 _logger.LogWarning("The competition has not generated main activity. Skip this competition. {competitionId}", competitionId);
                 return false;
+            }
+
+            if (!string.IsNullOrEmpty(competition.ResultActivityId))
+            {
+                _logger.LogWarning("The competition has been drawn and the ResultActivity has already been posted. Skip the duplicate posting. {competitionId}", competitionId);
+                return true;
             }
 
             using (var botClient = _botClientFactory.CreateBotClient(competition.ServiceUrl))
