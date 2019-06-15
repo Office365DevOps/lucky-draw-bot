@@ -1,17 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.Schema;
-using Microsoft.Bot.Schema.Teams;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace LuckyDrawBot.Controllers
 {

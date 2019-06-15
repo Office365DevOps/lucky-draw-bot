@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using AdaptiveCards;
 using LuckyDrawBot.Models;
 using Microsoft.Bot.Schema;
@@ -317,11 +315,22 @@ namespace LuckyDrawBot.Services
                             Width = "1",
                             Items = new List<AdaptiveElement>
                             {
-                                new AdaptiveTimeInput
-                                {
-                                    Id = "plannedDrawTimeLocalTime",
-                                    Value = localPlannedDrawTime.ToString("HH:mm")
-                                }
+                                // Similar to the above BUG: https://github.com/Microsoft/AdaptiveCards/issues/2644
+                                // TimeInput does not send back the correct value for non-English culture, when user selects 4:30 of afternoon, it sends back "04:30".
+                                // Workaround: use TextInput instead and validate user's input against "HH:mm" format
+                                (currentLocale != null && currentLocale.StartsWith("en"))
+                                    ? new AdaptiveTimeInput
+                                    {
+                                        Id = "plannedDrawTimeLocalTime",
+                                        Value = localPlannedDrawTime.ToString("HH:mm")
+                                    }
+                                    : new AdaptiveTextInput
+                                    {
+                                        Id = "plannedDrawTimeLocalTime",
+                                        Placeholder = localization["EditCompetition.Form.PlannedDrawTimeLocalTime.Placeholder"],
+                                        Value = localPlannedDrawTime.ToString("HH:mm")
+                                    } as AdaptiveElement
+
                             }
                         }
                     }

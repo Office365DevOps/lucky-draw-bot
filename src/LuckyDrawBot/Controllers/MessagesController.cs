@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -79,7 +74,7 @@ namespace LuckyDrawBot.Controllers
         public async Task<IActionResult> GetMessage([FromBody]Activity activity)
         {
             _logger.LogInformation($"ChannelId:{activity.ChannelId} Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
-            _logger.LogInformation($"Input activity: {JsonConvert.SerializeObject(activity)}");
+            _logger.LogInformation("Input activity: {activity}", JsonConvert.SerializeObject(activity));
 
             var (isAuthenticated, authenticationErrorMessage) = await _botValidator.Validate(Request);
             if (!isAuthenticated)

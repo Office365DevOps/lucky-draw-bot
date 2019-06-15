@@ -11,7 +11,6 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
-using static LuckyDrawBot.Controllers.MessagesController;
 using static LuckyDrawBot.Services.CompetitionRepositoryService;
 
 namespace LuckyDrawBot.Tests.Features.Competition

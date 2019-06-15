@@ -1,4 +1,3 @@
-using System;
 using LuckyDrawBot.Infrastructure.Database;
 
 namespace LuckyDrawBot.Services
