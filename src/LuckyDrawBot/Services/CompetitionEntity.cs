@@ -93,11 +93,11 @@ namespace LuckyDrawBot.Services
             {
                 var properties = base.WriteEntity(operationContext);
 
-                this.ChunkLongString(properties, nameof(CompetitionEntity.Competitors));
-
                 properties[nameof(CompetitionEntity.Status)] = EntityProperty.GeneratePropertyForString(Status.ToString());
                 properties[nameof(CompetitionEntity.WinnerAadObjectIds)] = EntityProperty.GeneratePropertyForString(JsonConvert.SerializeObject(WinnerAadObjectIds));
                 properties[nameof(CompetitionEntity.Competitors)] = EntityProperty.GeneratePropertyForString(JsonConvert.SerializeObject(Competitors));
+
+                this.ChunkLongString(properties, nameof(CompetitionEntity.Competitors));
                 return properties;
             }
         }
