@@ -96,6 +96,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
             using (var server = CreateServerFixture(ServerFixtureConfigurations.Default))
             using (var client = server.CreateClient())
             {
+                server.Arrange().SetUtcNow(new DateTimeOffset(2019, 8, 8, 0, 0, 0, TimeSpan.Zero));
                 var text = $"<at>bot name</at>free coffee,1,{inputPlannedDrawTime}";
                 var response = await client.SendTeamsText(text, locale: locale, offsetHours: offsetHours);
 

@@ -71,6 +71,8 @@ namespace LuckyDrawBot.Services
 
             public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
             {
+                this.ConcatenateLongString(properties, nameof(CompetitionEntity.Competitors));
+
                 base.ReadEntity(properties, operationContext);
                 EntityProperty property;
                 if (properties.TryGetValue(nameof(CompetitionEntity.Status), out property))
@@ -90,6 +92,9 @@ namespace LuckyDrawBot.Services
             public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
             {
                 var properties = base.WriteEntity(operationContext);
+
+                this.ChunkLongString(properties, nameof(CompetitionEntity.Competitors));
+
                 properties[nameof(CompetitionEntity.Status)] = EntityProperty.GeneratePropertyForString(Status.ToString());
                 properties[nameof(CompetitionEntity.WinnerAadObjectIds)] = EntityProperty.GeneratePropertyForString(JsonConvert.SerializeObject(WinnerAadObjectIds));
                 properties[nameof(CompetitionEntity.Competitors)] = EntityProperty.GeneratePropertyForString(JsonConvert.SerializeObject(Competitors));
