@@ -29,6 +29,7 @@ namespace LuckyDrawBot.Localizations
             ["ResultActivity.WinnersSubtitle"] = "奖品: {0}",
             ["ResultActivity.WinnersImageUrl"] = "https://serverpress.com/wp-content/uploads/2015/12/congrats-gif-2.gif",
             ["CompetitionDetail.Competitors"] = "参与人",
+            ["CompetitionDetail.NoCompetitorJoined"] = "目前还没有人参与",
             ["EditCompetition.NotAllowed"] = "只有发起此次抽奖的人才可以进行编辑。",
             ["EditCompetition.Form.Gift.Label"] = "奖品",
             ["EditCompetition.Form.Gift.Placeholder"] = "奖品名字",

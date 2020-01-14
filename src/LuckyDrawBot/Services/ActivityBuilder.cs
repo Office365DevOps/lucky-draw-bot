@@ -187,15 +187,33 @@ namespace LuckyDrawBot.Services
         public TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition)
         {
             var localization = _localizationFactory.Create(competition.Locale);
-            var body = new List<AdaptiveElement>
+
+            List<AdaptiveElement> body;
+            if (competition.Competitors.Any())
             {
-                new AdaptiveTextBlock
+                body = new List<AdaptiveElement>
                 {
-                    Text = localization["CompetitionDetail.Competitors"],
-                    Size = AdaptiveTextSize.Large
-                },
-            };
-            body.AddRange(competition.Competitors.Select(c => new AdaptiveTextBlock { Text = c.Name }));
+                    new AdaptiveTextBlock
+                    {
+                        Text = localization["CompetitionDetail.Competitors"],
+                        Size = AdaptiveTextSize.Large
+                    },
+                };
+                body.AddRange(competition.Competitors.Select(c => new AdaptiveTextBlock { Text = c.Name }));
+            }
+            else
+            {
+                body = new List<AdaptiveElement>
+                {
+                    new AdaptiveTextBlock
+                    {
+                        Text = localization["CompetitionDetail.NoCompetitorJoined"],
+                        Size = AdaptiveTextSize.Medium
+                    },
+                };
+                body.AddRange(competition.Competitors.Select(c => new AdaptiveTextBlock { Text = c.Name }));
+            }
+
             var taskInfo = new TaskModuleTaskInfo
             {
                 Type = "continue",
