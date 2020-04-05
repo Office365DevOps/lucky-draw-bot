@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Microsoft.AspNetCore.Builder

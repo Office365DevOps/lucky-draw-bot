@@ -29,15 +29,6 @@ namespace LuckyDrawBot.Controllers
             public double OffsetHours { get; set; }
         }
 
-        public class CompetitionEditForm
-        {
-            public string Gift { get; set; }
-            public string GiftImageUrl { get; set; }
-            public int WinnerCount { get; set; }
-            public string PlannedDrawTimeLocalDate { get; set; }
-            public string PlannedDrawTimeLocalTime { get; set; }
-        }
-
         private const char ChineseCommaCharacter = '，';
         private readonly ILogger<MessagesController> _logger;
         private readonly IBotValidator _botValidator;

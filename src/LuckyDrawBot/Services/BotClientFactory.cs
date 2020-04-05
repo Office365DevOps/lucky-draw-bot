@@ -84,7 +84,7 @@ namespace LuckyDrawBot.Services
 
     public class BotClientFactory : IBotClientFactory
     {
-        private ILogger<BotClientFactory> _logger;
+        private readonly ILogger<BotClientFactory> _logger;
         private readonly IDateTimeService _dateTimeService;
         private readonly IConfiguration _configuration;
 
