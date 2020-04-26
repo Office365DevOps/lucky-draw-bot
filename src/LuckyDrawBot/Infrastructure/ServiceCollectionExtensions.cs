@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     client.BaseAddress = new Uri(clientConfiguration["BaseAddress"]);
                     var authenticationSection = clientConfiguration.GetSection("Authentication");
-                    if (authenticationSection.GetChildren().Count() > 0)
+                    if (authenticationSection.GetChildren().Any())
                     {
                         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                             authenticationSection["Scheme"],
@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (managerService != null)
             {
                 var applicationParts = ((ApplicationPartManager)managerService.ImplementationInstance).ApplicationParts;
-                var exists = applicationParts.Any(p => (p is AssemblyPart) ? ((AssemblyPart)p).Assembly == assembly : false);
+                var exists = applicationParts.Any(p => (p is AssemblyPart) && ((AssemblyPart)p).Assembly == assembly);
                 if (!exists)
                 {
                     var part = new AssemblyPart(assembly);

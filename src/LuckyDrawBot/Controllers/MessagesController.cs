@@ -93,13 +93,13 @@ namespace LuckyDrawBot.Controllers
                     invokeActionData = JsonConvert.DeserializeObject<InvokeActionData>(JsonConvert.SerializeObject(activity.Value));
                 }
 
-                switch(invokeActionData.UserAction)
+                switch (invokeActionData.UserAction)
                 {
                     case InvokeActionType.Join:
                         await HandleJoinCompetitionAction(invokeActionData, activity);
                         return Ok();
                     case InvokeActionType.ViewDetail:
-                        var competitionDetailResponse = await HandleViewCompetitionDetailAction(invokeActionData, activity);
+                        var competitionDetailResponse = await HandleViewCompetitionDetailAction(invokeActionData);
                         return Ok(competitionDetailResponse);
                     case InvokeActionType.EditDraft:
                         var editDraftCompetitionResponse = await HandleEditDraftCompetitionAction(invokeActionData, activity);
@@ -236,7 +236,7 @@ namespace LuckyDrawBot.Controllers
             }
         }
 
-        private async Task<TaskModuleTaskInfoResponse> HandleViewCompetitionDetailAction(InvokeActionData invokeActionData, Activity activity)
+        private async Task<TaskModuleTaskInfoResponse> HandleViewCompetitionDetailAction(InvokeActionData invokeActionData)
         {
             var competition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);
             var taskInfoResponse = _activityBuilder.CreateCompetitionDetailTaskInfoResponse(competition);
@@ -276,12 +276,7 @@ namespace LuckyDrawBot.Controllers
             var time = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalTime);
             var plannedDrawTime = new DateTimeOffset(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
 
-            var competition = await _competitionService.UpdateGift(
-                invokeActionData.CompetitionId,
-                plannedDrawTime,
-                editForm.Gift,
-                editForm.GiftImageUrl,
-                editForm.WinnerCount);
+            await _competitionService.UpdateGift(invokeActionData.CompetitionId, plannedDrawTime, editForm.Gift, editForm.GiftImageUrl, editForm.WinnerCount);
         }
 
         private async Task<TaskModuleTaskInfoResponse> HandleActivateCompetitionAction(InvokeActionData invokeActionData, Activity activity)
@@ -325,13 +320,12 @@ namespace LuckyDrawBot.Controllers
             {
                 errors.Add(localization["EditCompetition.Form.PlannedDrawTime.Invalid"]);
             }
-            if (!string.IsNullOrEmpty(competition.GiftImageUrl))
+            var giftImageUrl = competition.GiftImageUrl;
+            if (!string.IsNullOrEmpty(giftImageUrl)
+                && !giftImageUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)
+                && !giftImageUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (!competition.GiftImageUrl.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase)
-                    && !competition.GiftImageUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    errors.Add(localization["EditCompetition.Form.GiftImageUrl.Invalid"]);
-                }
+                errors.Add(localization["EditCompetition.Form.GiftImageUrl.Invalid"]);
             }
             return string.Join(' ', errors);
         }
@@ -455,24 +449,20 @@ namespace LuckyDrawBot.Controllers
 
             foreach (var minutePostfix in minutePostfixes)
             {
-                if (time.EndsWith(minutePostfix, StringComparison.InvariantCultureIgnoreCase))
+                if (time.EndsWith(minutePostfix, StringComparison.InvariantCultureIgnoreCase)
+                    && double.TryParse(time.Substring(0, time.Length - minutePostfix.Length), out double minutes))
                 {
-                    if (double.TryParse(time.Substring(0, time.Length - minutePostfix.Length), out double minutes))
-                    {
-                        duration = TimeSpan.FromMinutes(minutes);
-                        return true;
-                    }
+                    duration = TimeSpan.FromMinutes(minutes);
+                    return true;
                 }
             }
             foreach (var hourPostfix in hourPostfixes)
             {
-                if (time.EndsWith(hourPostfix, StringComparison.InvariantCultureIgnoreCase))
+                if (time.EndsWith(hourPostfix, StringComparison.InvariantCultureIgnoreCase)
+                    && double.TryParse(time.Substring(0, time.Length - hourPostfix.Length), out double hours))
                 {
-                    if (double.TryParse(time.Substring(0, time.Length - hourPostfix.Length), out double hours))
-                    {
-                        duration = TimeSpan.FromHours(hours);
-                        return true;
-                    }
+                    duration = TimeSpan.FromHours(hours);
+                    return true;
                 }
             }
             duration = TimeSpan.Zero;

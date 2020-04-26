@@ -331,3 +331,6 @@ ASALocalRun/
 
 **/lcov.info
 **/coverage.cobertura.xml
+
+# Sonarqube configuration and output files
+.sonarqube/
