@@ -41,6 +41,16 @@ namespace System
             return methodInfo.Invoke(instance, parameters);
         }
 
+        public static TReturn InvokeMethod<TInstance, TReturn>(this IServiceProvider serviceProvider, TInstance instance, string methodName, Dictionary<Type, object> additionalObjects = null)
+        {
+            return (TReturn)InvokeMethod(serviceProvider, (object)instance, methodName, additionalObjects);
+        }
+
+        public static void InvokeMethod<TInstance>(this IServiceProvider serviceProvider, TInstance instance, string methodName)
+        {
+            InvokeMethod(serviceProvider, (object)instance, methodName);
+        }
+
         private static object[] BuildParameters(IServiceProvider serviceProvider, MethodBase methodBase, Dictionary<Type, object> additionalObjects)
         {
             var parameterInfos = methodBase.GetParameters();
@@ -70,16 +80,6 @@ namespace System
             }
 
             return parameters;
-        }
-
-        public static TReturn InvokeMethod<TInstance, TReturn>(this IServiceProvider serviceProvider, TInstance instance, string methodName, Dictionary<Type, object> additionalObjects = null)
-        {
-            return (TReturn)InvokeMethod(serviceProvider, (object)instance, methodName, additionalObjects);
-        }
-
-        public static void InvokeMethod<TInstance>(this IServiceProvider serviceProvider, TInstance instance, string methodName)
-        {
-            InvokeMethod(serviceProvider, (object)instance, methodName);
         }
     }
 }
