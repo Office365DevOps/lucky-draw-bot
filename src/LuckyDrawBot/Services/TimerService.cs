@@ -1,9 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace LuckyDrawBot.Services
 {
@@ -40,7 +40,7 @@ namespace LuckyDrawBot.Services
                     CallbackMethod = httpMethod,
                     CallbackUrl = new Uri(_callbackBaseUrl, httpRelativeUrl).ToString()
                 };
-                var json = JsonConvert.SerializeObject(requestBody);
+                var json = JsonSerializer.Serialize(requestBody);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(string.Empty, content);
                 response.EnsureSuccessStatusCode();

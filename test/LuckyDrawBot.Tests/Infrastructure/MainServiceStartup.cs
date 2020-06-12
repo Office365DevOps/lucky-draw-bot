@@ -1,9 +1,9 @@
 using LuckyDrawBot.Infrastructure.Database;
 using LuckyDrawBot.Tests.Infrastructure.Database;
-using MaxKagamine.Moq.HttpClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Moq.Contrib.HttpClient;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

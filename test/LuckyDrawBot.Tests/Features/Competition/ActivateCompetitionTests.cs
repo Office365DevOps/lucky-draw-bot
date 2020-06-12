@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using FluentAssertions;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
 using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using static LuckyDrawBot.Services.CompetitionRepositoryService;
@@ -115,8 +115,9 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
                 var result = await response.Content.ReadAsAsync<TaskModuleTaskInfoResponse>();
                 result.Task?.Value?.Card?.Content.Should().NotBeNull();
-                var cardBody = ((JObject)result.Task.Value.Card.Content).GetValue("body");
-                var errorTextBlock = ((JObject)cardBody.First()).ToObject<AdaptiveTextBlock>();
+                var cardBody = ((JsonElement)result.Task.Value.Card.Content).GetProperty("body");
+                var errorTextBlockJson = JsonSerializer.Serialize(cardBody.EnumerateArray().First());
+                var errorTextBlock = Newtonsoft.Json.JsonConvert.DeserializeObject<AdaptiveTextBlock>(errorTextBlockJson);
                 errorTextBlock.Color.Should().Be(AdaptiveTextColor.Attention);
                 errorTextBlock.Text.Should().Be(errorText);
             }

@@ -5,10 +5,9 @@ using LuckyDrawBot.Tests.MockServices;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using Moq;
 using System.Net.Http;
-using MaxKagamine.Moq.HttpClient;
 using System.Net;
+using Moq.Contrib.HttpClient;
 
 namespace LuckyDrawBot.Tests
 {

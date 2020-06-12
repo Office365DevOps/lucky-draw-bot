@@ -7,13 +7,13 @@ namespace System
 {
     public static class ServiceProviderExtensions
     {
-        public static object CreateInstance(this IServiceProvider serviceProvider, Type type, Dictionary<Type, object> additionalObjects = null)
+        public static object CreateInstance(this IServiceProvider serviceProvider, Type type, Dictionary<Type, object> additionalObjects)
         {
             var allConstructorInfos = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
             var orderedConstructorInfos = allConstructorInfos.OrderByDescending(ci => ci.GetParameters().Length).ToList();
             if (orderedConstructorInfos.Count < 1)
             {
-                throw new Exception($"There is no public constructor in type '{type.FullName}'.");
+                throw new ArgumentException($"There is no public constructor in type '{type.FullName}'.", nameof(type));
             }
             var constructorInfo = orderedConstructorInfos.First();
 
@@ -21,34 +21,14 @@ namespace System
             return constructorInfo.Invoke(parameters);
         }
 
-        public static T CreateInstance<T>(this IServiceProvider serviceProvider, Dictionary<Type, object> additionalObjects = null)
+        public static T CreateInstance<T>(this IServiceProvider serviceProvider)
+        {
+            return (T)CreateInstance(serviceProvider, typeof(T), null);
+        }
+
+        public static T CreateInstance<T>(this IServiceProvider serviceProvider, Dictionary<Type, object> additionalObjects)
         {
             return (T)CreateInstance(serviceProvider, typeof(T), additionalObjects);
-        }
-
-        public static object InvokeMethod(this IServiceProvider serviceProvider, object instance, string methodName, Dictionary<Type, object> additionalObjects = null)
-        {
-            var instanceType = instance.GetType();
-            var allMethodInfos = instanceType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-            var selectedMethods = allMethodInfos.Where(method => method.Name.Equals(methodName)).ToList();
-            if (selectedMethods.Count != 1)
-            {
-                throw new Exception($"There is more than one '{methodName}' method in type '{instanceType.FullName}'.");
-            }
-            var methodInfo = selectedMethods.First();
-
-            object[] parameters = BuildParameters(serviceProvider, methodInfo, additionalObjects);
-            return methodInfo.Invoke(instance, parameters);
-        }
-
-        public static TReturn InvokeMethod<TInstance, TReturn>(this IServiceProvider serviceProvider, TInstance instance, string methodName, Dictionary<Type, object> additionalObjects = null)
-        {
-            return (TReturn)InvokeMethod(serviceProvider, (object)instance, methodName, additionalObjects);
-        }
-
-        public static void InvokeMethod<TInstance>(this IServiceProvider serviceProvider, TInstance instance, string methodName)
-        {
-            InvokeMethod(serviceProvider, (object)instance, methodName);
         }
 
         private static object[] BuildParameters(IServiceProvider serviceProvider, MethodBase methodBase, Dictionary<Type, object> additionalObjects)
@@ -74,12 +54,41 @@ namespace System
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception($"Failed to get service for parameter '{parameterInfo.ParameterType.FullName} {parameterInfo.Name}' in method '{methodBase.DeclaringType.FullName}.{methodBase.Name}'", ex);
+                        throw new ArgumentException(
+                            $"Failed to get service for parameter '{parameterInfo.ParameterType.FullName} {parameterInfo.Name}' in method '{methodBase.DeclaringType.FullName}.{methodBase.Name}'",
+                            nameof(methodBase),
+                            ex);
                     }
                 }
             }
 
             return parameters;
         }
+
+        public static object InvokeMethod(this IServiceProvider serviceProvider, object instance, string methodName, Dictionary<Type, object> additionalObjects)
+        {
+            var instanceType = instance.GetType();
+            var allMethodInfos = instanceType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+            var selectedMethods = allMethodInfos.Where(method => method.Name.Equals(methodName, StringComparison.InvariantCulture)).ToList();
+            if (selectedMethods.Count != 1)
+            {
+                throw new ArgumentException($"There is more than one '{methodName}' method in type '{instanceType.FullName}'.", nameof(instance));
+            }
+            var methodInfo = selectedMethods.First();
+
+            object[] parameters = BuildParameters(serviceProvider, methodInfo, additionalObjects);
+            return methodInfo.Invoke(instance, parameters);
+        }
+
+        public static TReturn InvokeMethod<TInstance, TReturn>(this IServiceProvider serviceProvider, TInstance instance, string methodName, Dictionary<Type, object> additionalObjects)
+        {
+            return (TReturn)InvokeMethod(serviceProvider, (object)instance, methodName, additionalObjects);
+        }
+
+        public static void InvokeMethod<TInstance>(this IServiceProvider serviceProvider, TInstance instance, string methodName)
+        {
+            InvokeMethod(serviceProvider, (object)instance, methodName);
+        }
+
     }
 }

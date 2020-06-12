@@ -1,10 +1,11 @@
 using System;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace LuckyDrawBot.Models
 {
-    [JsonConverter(typeof(StringEnumConverter))]
+    [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
     public enum InvokeActionType
     {
         Unknown = 0,
@@ -20,6 +21,7 @@ namespace LuckyDrawBot.Models
         public const string TypeTaskFetch = "task/fetch";
 
         [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; }
 
         public InvokeActionType UserAction { get; set; }

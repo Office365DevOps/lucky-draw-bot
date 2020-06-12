@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
@@ -62,8 +64,15 @@ namespace LuckyDrawBot.Controllers
         [HttpPost]
         [Route("messages")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetMessage([FromBody]Activity activity)
+        public async Task<IActionResult> GetMessage()
         {
+            Activity activity;
+            using (var streamReader = new StreamReader(Request.Body))
+            {
+                var bodyString = await streamReader.ReadToEndAsync();
+                activity = JsonConvert.DeserializeObject<Activity>(bodyString);
+            }
+
             _logger.LogInformation($"ChannelId:{activity.ChannelId} Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
             _logger.LogInformation("Input activity: {activity}", JsonConvert.SerializeObject(activity));
 
@@ -100,16 +109,16 @@ namespace LuckyDrawBot.Controllers
                         return Ok();
                     case InvokeActionType.ViewDetail:
                         var competitionDetailResponse = await HandleViewCompetitionDetailAction(invokeActionData);
-                        return Ok(competitionDetailResponse);
+                        return OkWithNewtonsoftJson(competitionDetailResponse);
                     case InvokeActionType.EditDraft:
                         var editDraftCompetitionResponse = await HandleEditDraftCompetitionAction(invokeActionData, activity);
-                        return Ok(editDraftCompetitionResponse);
+                        return OkWithNewtonsoftJson(editDraftCompetitionResponse);
                     case InvokeActionType.SaveDraft:
                         await HandleSaveDraftCompetitionAction(invokeActionData, activity);
                         return Ok();
                     case InvokeActionType.ActivateCompetition:
                         var activateCompetitionResponse = await HandleActivateCompetitionAction(invokeActionData, activity);
-                        return Ok(activateCompetitionResponse);
+                        return OkWithNewtonsoftJson(activateCompetitionResponse);
                     default:
                         throw new Exception("Unknown invoke action type: " + invokeActionData.UserAction);
                 }
@@ -467,6 +476,17 @@ namespace LuckyDrawBot.Controllers
             }
             duration = TimeSpan.Zero;
             return false;
+        }
+
+        private IActionResult OkWithNewtonsoftJson(object value)
+        {
+            if (value == null)
+            {
+                return NoContent();
+            }
+
+            var json = JsonConvert.SerializeObject(value);
+            return Content(json, "application/json", Encoding.UTF8);
         }
     }
 }
