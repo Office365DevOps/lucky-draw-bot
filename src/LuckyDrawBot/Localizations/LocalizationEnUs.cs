@@ -8,7 +8,7 @@ namespace LuckyDrawBot.Localizations
         private static readonly Dictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
             ["Help.Message"] = "Hi there, To start a lucky draw type something like <b>@luckydraw secret gift, 1, 23:59</b> or you can just type <b>@luckydraw start</b>.",
-            ["InvalidCommand.Message"] = "I'm sorry I couldn't understand what you said.\r\n\r\nGet started with the following commands:\r\n\r\n* \"start\" to create a lucky draw\r\n\r\n* \"help\" to display help information",
+            ["UnknownCommand.Message"] = "I'm sorry I couldn't understand what you said.\r\n\r\nGet started with the following commands:\r\n\r\n* \"start\" to create a lucky draw\r\n\r\n* \"help\" to display help information",
             ["InvalidCommand.WinnerCountLessThanOne"] = "The number of prizes must be bigger than 0.",
             ["InvalidCommand.PlannedDrawTimeNotFuture"] = "The draw time must be future time.",
             ["MainActivity.Draft.EditButton"] = "Edit",

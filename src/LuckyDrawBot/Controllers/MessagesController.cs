@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using LuckyDrawBot.Handlers;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,7 @@ namespace LuckyDrawBot.Controllers
         private readonly ITimerService _timerService;
         private readonly IDateTimeService _dateTimeService;
         private readonly ILocalizationFactory _localizationFactory;
+        private readonly BotHandlers _handlers;
 
         public MessagesController(
             ILogger<MessagesController> logger,
@@ -49,7 +51,8 @@ namespace LuckyDrawBot.Controllers
             IActivityBuilder activityBuilder,
             ITimerService timerService,
             IDateTimeService dateTimeService,
-            ILocalizationFactory localizationFactory)
+            ILocalizationFactory localizationFactory,
+            BotHandlers handlers)
         {
             _logger = logger;
             _botValidator = botValidator;
@@ -59,6 +62,7 @@ namespace LuckyDrawBot.Controllers
             _timerService = timerService;
             _dateTimeService = dateTimeService;
             _localizationFactory = localizationFactory;
+            _handlers = handlers;
         }
 
         [HttpPost]
@@ -66,6 +70,7 @@ namespace LuckyDrawBot.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetMessage()
         {
+            // Get the incoming activity
             Activity activity;
             using (var streamReader = new StreamReader(Request.Body))
             {
@@ -76,6 +81,7 @@ namespace LuckyDrawBot.Controllers
             _logger.LogInformation($"ChannelId:{activity.ChannelId} Type:{activity.Type} Action:{activity.Action} ValueType:{activity.ValueType} Value:{activity.Value}");
             _logger.LogInformation("Input activity: {activity}", JsonConvert.SerializeObject(activity));
 
+            // Authenticate the request
             var (isAuthenticated, authenticationErrorMessage) = await _botValidator.Validate(Request);
             if (!isAuthenticated)
             {
@@ -83,11 +89,14 @@ namespace LuckyDrawBot.Controllers
             }
             _logger.LogInformation($"Authentication check succeeded.");
 
+            // Validate the channel of the incoming activity
             if (activity.ChannelId != "msteams")
             {
-                return OkWithNewtonsoftJson(activity.CreateReply("Sorry, I work for Microsoft Teams only."));
+                await _handlers.NonTeamsChannel.Handle(activity);
+                return Ok();
             }
 
+            // Handle the activity
             if (activity.Type == ActivityTypes.Invoke)
             {
                 InvokeActionData invokeActionData;
@@ -125,18 +134,24 @@ namespace LuckyDrawBot.Controllers
             }
             else if (activity.Type == ActivityTypes.Message)
             {
-                var text = GetText(activity);
+                var text = activity.GetTrimmedText();
                 if (text.Equals("help", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    await HandleDisplayHelp(activity);
+                    await _handlers.HelpCommand.Handle(activity);
                     return Ok();
                 }
 
-                var succeeded = await HandleCompetitionInitialization(activity);
-                if (!succeeded)
+                var parameters = ParseCreateCompetitionParameters(activity);
+                if (parameters == null)
                 {
-                    return Ok();
+                    await _handlers.UnknownCommand.Handle(activity);
                 }
+                else
+                {
+                    await HandleCompetitionInitialization(activity, parameters);
+                }
+
+                return Ok();
             }
             else if (activity.Type == ActivityTypes.ConversationUpdate)
             {
@@ -145,7 +160,7 @@ namespace LuckyDrawBot.Controllers
                     && (activity.MembersAdded.Count > 0)
                     && (activity.MembersAdded[0].Id == botSelf))
                 {
-                    await HandleBeingAddedIntoChannelEvent(activity);
+                    await _handlers.AddedToNewChannel.Handle(activity);
                     return Ok();
                 }
             }
@@ -153,15 +168,8 @@ namespace LuckyDrawBot.Controllers
             return Ok();
         }
 
-        private async Task<bool> HandleCompetitionInitialization(Activity activity)
+        private async Task<bool> HandleCompetitionInitialization(Activity activity, CreateCompetitionParameters parameters)
         {
-            var parameters = ParseCreateCompetitionParameters(activity);
-            if (parameters == null)
-            {
-                await HandleInvalidCommand(activity);
-                return false;
-            }
-
             var channelData = activity.GetChannelData<TeamsChannelData>();
             if (parameters.IsDraft)
             {
@@ -339,58 +347,9 @@ namespace LuckyDrawBot.Controllers
             return string.Join(' ', errors);
         }
 
-        private string GetText(Activity activity)
-        {
-            const string MentionBotEndingFlag = "</at>";
-            var text = activity.Text;
-            if (text.IndexOf(MentionBotEndingFlag) < 0)
-            {
-                return null;
-            }
-            text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
-            text = text.Trim();
-            return text;
-        }
-
-        private async Task HandleDisplayHelp(Activity activity)
-        {
-            var localization = _localizationFactory.Create(activity.Locale);
-            var help = activity.CreateReply(localization["Help.Message"]);
-            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-            {
-                await botClient.SendToConversationAsync(help);
-            }
-        }
-
-        private async Task HandleInvalidCommand(Activity activity)
-        {
-            var localization = _localizationFactory.Create(activity.Locale);
-            var invalidCommandReply = activity.CreateReply(localization["InvalidCommand.Message"]);
-            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-            {
-                await botClient.SendToConversationAsync(invalidCommandReply);
-            }
-        }
-
-        private async Task HandleBeingAddedIntoChannelEvent(Activity activity)
-        {
-            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-            {
-                // This incoming activity does not have locale information, so response welcome message in English
-                var welcomeText = "Hi there, I'm LuckyDraw bot🎁. A teammate of yours recently added me to help your team create lucky draws.\r\n\r\n"
-                                + "Quickstart guide\r\n\r\n"
-                                + "* To create a lucky draw, type:\r\n\r\n"
-                                + "  @LuckyDraw start\r\n\r\n"
-                                + "* To find more about me, type:\r\n\r\n"
-                                + "  @LuckyDraw help";
-                var welcome = activity.CreateReply(welcomeText);
-                await botClient.SendToConversationAsync(welcome);
-            }
-        }
-
         private CreateCompetitionParameters ParseCreateCompetitionParameters(Activity activity)
         {
-            var text = GetText(activity);
+            var text = activity.GetTrimmedText();
 
             var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
 

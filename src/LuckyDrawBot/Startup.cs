@@ -1,4 +1,5 @@
 ﻿using HealthChecks.UI.Client;
+using LuckyDrawBot.Handlers;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Builder;
@@ -40,6 +41,12 @@ namespace LuckyDrawBot
             services.AddSingleton<IActivityBuilder, ActivityBuilder>();
             services.AddSingleton<ILocalizationFactory, LocalizationFactory>();
             services.AddSingleton<IBotValidator, BotValidator>();
+
+            services.AddSingleton<BotHandlers>();
+            services.AddTransient<NonTeamsChannelHandler>();
+            services.AddTransient<HelpCommandHandler>();
+            services.AddTransient<AddedToNewChannelHandler>();
+            services.AddTransient<UnknownCommandHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

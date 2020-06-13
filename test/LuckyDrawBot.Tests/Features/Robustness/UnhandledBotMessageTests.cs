@@ -31,6 +31,9 @@ namespace LuckyDrawBot.Tests.Features.HealthCheck
                 var response = await client.SendActivity(activity);
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
+                var createdMessages = server.Assert().GetCreatedMessages();
+                createdMessages.Should().HaveCount(1);
+                createdMessages[0].Activity.Text.Should().StartWith("Sorry");
             }
         }
 
