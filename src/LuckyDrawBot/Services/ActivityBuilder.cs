@@ -172,7 +172,7 @@ namespace LuckyDrawBot.Services
 
             var activity = Activity.CreateMessageActivity() as Activity;
             activity.From = new ChannelAccount(_botSettings.Id, "bot name");
-            activity.Conversation = new ConversationAccount(id: competition.ChannelId);
+            activity.Conversation = new ConversationAccount(id: competition.ChannelId + ";" + competition.MainActivityId);
             activity.Attachments = new List<Attachment>
             {
                 new Attachment
