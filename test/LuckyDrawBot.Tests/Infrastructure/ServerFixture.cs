@@ -1,3 +1,4 @@
+using FluentAssertions;
 using LuckyDrawBot.Tests.Infrastructure.Xunit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,13 @@ namespace LuckyDrawBot.Tests.Infrastructure
         private readonly ServerFixtureConfiguration _fixtureConfiguration;
         private readonly TestContext _testContext;
         private TestServer _server;
+
+        static ServerFixture()
+        {
+            AssertionOptions.AssertEquivalencyUsing(options =>
+                options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>()
+            );
+        }
 
         public ServerFixture(ServerFixtureConfiguration fixtureConfiguration, TestContext testContext)
         {
