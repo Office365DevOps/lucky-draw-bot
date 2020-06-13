@@ -22,17 +22,6 @@ namespace LuckyDrawBot.Controllers
     [Produces("application/json")]
     public class MessagesController : ControllerBase
     {
-        private class CreateCompetitionParameters
-        {
-            public bool IsDraft { get; set; }
-            public string Gift { get; set; }
-            public string GiftImageUrl { get; set; }
-            public int WinnerCount { get; set; }
-            public DateTimeOffset PlannedDrawTime { get; set; }
-            public double OffsetHours { get; set; }
-        }
-
-        private const char ChineseCommaCharacter = '，';
         private readonly ILogger<MessagesController> _logger;
         private readonly IBotValidator _botValidator;
         private readonly IBotClientFactory _botClientFactory;
@@ -65,8 +54,7 @@ namespace LuckyDrawBot.Controllers
             _handlers = handlers;
         }
 
-        [HttpPost]
-        [Route("messages")]
+        [HttpPost("messages")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetMessage()
         {
@@ -141,14 +129,19 @@ namespace LuckyDrawBot.Controllers
                     return Ok();
                 }
 
-                var parameters = ParseCreateCompetitionParameters(activity);
-                if (parameters == null)
+                if (text.Equals("start", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    await _handlers.UnknownCommand.Handle(activity);
+                    await _handlers.CreateDraftCompetition.Handle(activity);
+                    return Ok();
+                }
+
+                if (_handlers.CreateCompetitionCommand.CanHandle(activity))
+                {
+                    await _handlers.CreateCompetitionCommand.Handle(activity, this.Url);
                 }
                 else
                 {
-                    await HandleCompetitionInitialization(activity, parameters);
+                    await _handlers.UnknownCommand.Handle(activity);
                 }
 
                 return Ok();
@@ -166,81 +159,6 @@ namespace LuckyDrawBot.Controllers
             }
 
             return Ok();
-        }
-
-        private async Task<bool> HandleCompetitionInitialization(Activity activity, CreateCompetitionParameters parameters)
-        {
-            var channelData = activity.GetChannelData<TeamsChannelData>();
-            if (parameters.IsDraft)
-            {
-                var draftCompetition = await _competitionService.CreateDraftCompetition(
-                                                                activity.ServiceUrl,
-                                                                Guid.Parse(channelData.Tenant.Id),
-                                                                channelData.Team.Id,
-                                                                channelData.Channel.Id,
-                                                                activity.Locale,
-                                                                parameters.OffsetHours,
-                                                                activity.From.Name,
-                                                                activity.From.AadObjectId);
-
-                var activityForDraft = _activityBuilder.CreateMainActivity(draftCompetition);
-                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-                {
-                    var mainMessage = await botClient.SendToConversationAsync(activityForDraft);
-                    await _competitionService.UpdateMainActivity(draftCompetition.Id, mainMessage.Id);
-                }
-                return true;
-            }
-
-            if (parameters.WinnerCount <= 0)
-            {
-                var localization = _localizationFactory.Create(activity.Locale);
-                var invalidCommandReply = activity.CreateReply(localization["InvalidCommand.WinnerCountLessThanOne"]);
-                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-                {
-                    await botClient.SendToConversationAsync(invalidCommandReply);
-                }
-                return false;
-            }
-
-            if (parameters.PlannedDrawTime < _dateTimeService.UtcNow)
-            {
-                var localization = _localizationFactory.Create(activity.Locale);
-                var invalidCommandReply = activity.CreateReply(localization["InvalidCommand.PlannedDrawTimeNotFuture"]);
-                using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-                {
-                    await botClient.SendToConversationAsync(invalidCommandReply);
-                }
-                return false;
-            }
-
-            var competition = await _competitionService.CreateActiveCompetition(
-                                                               activity.ServiceUrl,
-                                                               Guid.Parse(channelData.Tenant.Id),
-                                                               channelData.Team.Id,
-                                                               channelData.Channel.Id,
-                                                               parameters.PlannedDrawTime,
-                                                               activity.Locale,
-                                                               parameters.OffsetHours,
-                                                               parameters.Gift,
-                                                               parameters.GiftImageUrl,
-                                                               parameters.WinnerCount,
-                                                               activity.From.Name,
-                                                               activity.From.AadObjectId);
-
-            var mainActivity = _activityBuilder.CreateMainActivity(competition);
-            using (var botClient = _botClientFactory.CreateBotClient(activity.ServiceUrl))
-            {
-                var mainMessage = await botClient.SendToConversationAsync(mainActivity);
-                await _competitionService.UpdateMainActivity(competition.Id, mainMessage.Id);
-            }
-
-            await _timerService.AddScheduledHttpRequest(
-                competition.PlannedDrawTime,
-                "POST",
-                Url.Action(nameof(CompetitionsController.DrawForCompetition), "Competitions", new { competitionId = competition.Id }));
-
-            return true;
         }
 
         private async Task HandleJoinCompetitionAction(InvokeActionData invokeActionData, Activity activity)
@@ -345,96 +263,6 @@ namespace LuckyDrawBot.Controllers
                 errors.Add(localization["EditCompetition.Form.GiftImageUrl.Invalid"]);
             }
             return string.Join(' ', errors);
-        }
-
-        private CreateCompetitionParameters ParseCreateCompetitionParameters(Activity activity)
-        {
-            var text = activity.GetTrimmedText();
-
-            var offset = activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
-
-            if (text.Equals("start", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return new CreateCompetitionParameters
-                {
-                    IsDraft = true,
-                    OffsetHours = offset.TotalHours
-                };
-            }
-
-            var parts = text.Split(',', ChineseCommaCharacter).Select(p => p.Trim()).ToArray();
-            if (parts.Length < 2)
-            {
-                return null;
-            }
-
-            var gift = parts[0].Trim();
-            int winnerCount;
-            if (!int.TryParse(parts[1], out winnerCount))
-            {
-                return null;
-            }
-            DateTimeOffset plannedDrawTime;
-            if (parts.Length > 2)
-            {
-                var timeString = parts[2].Trim();
-                if (TryParseTimeDuration(timeString, out TimeSpan duration))
-                {
-                    plannedDrawTime = _dateTimeService.UtcNow.Add(duration);
-                }
-                else
-                {
-                    DateTimeOffset time;
-                    if (!DateTimeOffset.TryParse(timeString, CultureInfo.GetCultureInfo(activity.Locale), DateTimeStyles.None, out time))
-                    {
-                        return null;
-                    }
-                    plannedDrawTime = new DateTimeOffset(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
-                }
-            }
-            else
-            {
-                plannedDrawTime = _dateTimeService.UtcNow.AddMinutes(1);
-            }
-            var giftImageUrl = parts.Length > 3 ? parts[3].Trim() : string.Empty;
-
-            return new CreateCompetitionParameters
-            {
-                IsDraft = false,
-                Gift = gift,
-                GiftImageUrl = giftImageUrl,
-                WinnerCount = winnerCount,
-                PlannedDrawTime = plannedDrawTime,
-                OffsetHours = offset.TotalHours
-            };
-        }
-
-        // We will leverage LUIS to parse the input time
-        private bool TryParseTimeDuration(string time, out TimeSpan duration)
-        {
-            var minutePostfixes = new string[] { "m", "min", "mins", "minute", "minutes", "分钟" };
-            var hourPostfixes = new string[] { "h", "hr", "hrs", "hour", "hours", "小时" };
-
-            foreach (var minutePostfix in minutePostfixes)
-            {
-                if (time.EndsWith(minutePostfix, StringComparison.InvariantCultureIgnoreCase)
-                    && double.TryParse(time.Substring(0, time.Length - minutePostfix.Length), out double minutes))
-                {
-                    duration = TimeSpan.FromMinutes(minutes);
-                    return true;
-                }
-            }
-            foreach (var hourPostfix in hourPostfixes)
-            {
-                if (time.EndsWith(hourPostfix, StringComparison.InvariantCultureIgnoreCase)
-                    && double.TryParse(time.Substring(0, time.Length - hourPostfix.Length), out double hours))
-                {
-                    duration = TimeSpan.FromHours(hours);
-                    return true;
-                }
-            }
-            duration = TimeSpan.Zero;
-            return false;
         }
 
         private IActionResult OkWithNewtonsoftJson(object value)

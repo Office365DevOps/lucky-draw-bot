@@ -24,8 +24,7 @@ namespace LuckyDrawBot.Controllers
             _activityBuilder = activityBuilder;
         }
 
-        [HttpPost]
-        [Route("competitions/{competitionId}/draw")]
+        [HttpPost("competitions/{competitionId}/draw")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> DrawForCompetition([FromRoute]Guid competitionId)
         {
@@ -33,8 +32,7 @@ namespace LuckyDrawBot.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [Route("competitions/draw")]
+        [HttpPost("competitions/draw")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> DrawForAllCompetitions()
         {

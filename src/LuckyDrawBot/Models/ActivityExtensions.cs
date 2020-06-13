@@ -1,3 +1,5 @@
+using System;
+
 namespace Microsoft.Bot.Schema
 {
     public static class ActivityExtensions
@@ -13,6 +15,11 @@ namespace Microsoft.Bot.Schema
             text = text.Substring(text.IndexOf(MentionBotEndingFlag) + MentionBotEndingFlag.Length);
             text = text.Trim();
             return text;
+        }
+
+        public static TimeSpan GetOffset(this Activity activity)
+        {
+            return activity.LocalTimestamp.HasValue ? activity.LocalTimestamp.Value.Offset : TimeSpan.Zero;
         }
     }
 }

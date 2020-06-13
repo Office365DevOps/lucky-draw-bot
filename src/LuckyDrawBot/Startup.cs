@@ -47,6 +47,8 @@ namespace LuckyDrawBot
             services.AddTransient<HelpCommandHandler>();
             services.AddTransient<AddedToNewChannelHandler>();
             services.AddTransient<UnknownCommandHandler>();
+            services.AddTransient<CreateDraftCompetitionCommandHandler>();
+            services.AddTransient<CreateCompetitionCommandHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
