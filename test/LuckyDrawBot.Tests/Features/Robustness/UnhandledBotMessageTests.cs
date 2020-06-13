@@ -1,11 +1,9 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using LuckyDrawBot.Tests.Infrastructure;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Schema.Teams;
 using Xunit;
 using Xunit.Abstractions;
 
