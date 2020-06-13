@@ -94,22 +94,21 @@ namespace LuckyDrawBot.Controllers
                 if (text.Equals("help", StringComparison.InvariantCultureIgnoreCase))
                 {
                     await _handlers.CommandHelp.Handle(activity);
-                    return Ok();
                 }
-
-                if (text.Equals("start", StringComparison.InvariantCultureIgnoreCase))
+                else if (text.Equals("start", StringComparison.InvariantCultureIgnoreCase))
                 {
                     await _handlers.CommandCreateDraftCompetition.Handle(activity);
-                    return Ok();
-                }
-
-                if (_handlers.CommandCreateCompetition.CanHandle(activity))
-                {
-                    await _handlers.CommandCreateCompetition.Handle(activity, this.Url);
                 }
                 else
                 {
-                    await _handlers.UnknownCommand.Handle(activity);
+                    if (_handlers.CommandCreateCompetition.CanHandle(activity))
+                    {
+                        await _handlers.CommandCreateCompetition.Handle(activity, this.Url);
+                    }
+                    else
+                    {
+                        await _handlers.UnknownCommand.Handle(activity);
+                    }
                 }
 
                 return Ok();
