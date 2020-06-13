@@ -44,11 +44,11 @@ namespace LuckyDrawBot
 
             services.AddSingleton<BotHandlers>();
             services.AddTransient<NonTeamsChannelHandler>();
-            services.AddTransient<HelpCommandHandler>();
+            services.AddTransient<CommandHelpHandler>();
             services.AddTransient<AddedToNewChannelHandler>();
             services.AddTransient<UnknownCommandHandler>();
-            services.AddTransient<CreateDraftCompetitionCommandHandler>();
-            services.AddTransient<CreateCompetitionCommandHandler>();
+            services.AddTransient<CommandCreateDraftCompetitionHandler>();
+            services.AddTransient<CommandCreateCompetitionHandler>();
 
             services.AddTransient<ActionJoinCompetitionHandler>();
             services.AddTransient<ActionViewCompetitionDetailHandler>();

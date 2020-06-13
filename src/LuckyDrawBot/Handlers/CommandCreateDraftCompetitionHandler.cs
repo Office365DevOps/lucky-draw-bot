@@ -6,17 +6,15 @@ using System.Threading.Tasks;
 
 namespace LuckyDrawBot.Handlers
 {
-    public class CreateDraftCompetitionCommandHandler
+    public class CommandCreateDraftCompetitionHandler
     {
         private readonly IBotClientFactory _botClientFactory;
-        private readonly ILocalizationFactory _localizationFactory;
         private readonly ICompetitionService _competitionService;
         private readonly IActivityBuilder _activityBuilder;
 
-        public CreateDraftCompetitionCommandHandler(IBotClientFactory botClientFactory, ILocalizationFactory localizationFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder)
+        public CommandCreateDraftCompetitionHandler(IBotClientFactory botClientFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder)
         {
             _botClientFactory = botClientFactory;
-            _localizationFactory = localizationFactory;
             _competitionService = competitionService;
             _activityBuilder = activityBuilder;
         }

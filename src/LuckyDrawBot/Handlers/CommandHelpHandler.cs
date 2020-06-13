@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace LuckyDrawBot.Handlers
 {
-    public class HelpCommandHandler
+    public class CommandHelpHandler
     {
         private readonly IBotClientFactory _botClientFactory;
         private readonly ILocalizationFactory _localizationFactory;
 
-        public HelpCommandHandler(IBotClientFactory botClientFactory, ILocalizationFactory localizationFactory)
+        public CommandHelpHandler(IBotClientFactory botClientFactory, ILocalizationFactory localizationFactory)
         {
             _botClientFactory = botClientFactory;
             _localizationFactory = localizationFactory;

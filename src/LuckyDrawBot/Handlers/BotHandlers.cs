@@ -15,10 +15,10 @@ namespace LuckyDrawBot.Handlers
         public NonTeamsChannelHandler NonTeamsChannel => _services.GetRequiredService<NonTeamsChannelHandler>();
         public AddedToNewChannelHandler AddedToNewChannel => _services.GetRequiredService<AddedToNewChannelHandler>();
 
-        public HelpCommandHandler HelpCommand => _services.GetRequiredService<HelpCommandHandler>();
+        public CommandHelpHandler CommandHelp => _services.GetRequiredService<CommandHelpHandler>();
+        public CommandCreateCompetitionHandler CommandCreateCompetition => _services.GetRequiredService<CommandCreateCompetitionHandler>();
+        public CommandCreateDraftCompetitionHandler CommandCreateDraftCompetition => _services.GetRequiredService<CommandCreateDraftCompetitionHandler>();
         public UnknownCommandHandler UnknownCommand => _services.GetRequiredService<UnknownCommandHandler>();
-        public CreateCompetitionCommandHandler CreateCompetitionCommand => _services.GetRequiredService<CreateCompetitionCommandHandler>();
-        public CreateDraftCompetitionCommandHandler CreateDraftCompetitionCommand => _services.GetRequiredService<CreateDraftCompetitionCommandHandler>();
 
         public ActionJoinCompetitionHandler ActionJoinCompetition => _services.GetRequiredService<ActionJoinCompetitionHandler>();
         public ActionViewCompetitionDetailHandler ActionViewCompetitionDetail => _services.GetRequiredService<ActionViewCompetitionDetailHandler>();

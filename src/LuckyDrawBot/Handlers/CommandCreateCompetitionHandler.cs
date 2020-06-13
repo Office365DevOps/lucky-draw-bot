@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LuckyDrawBot.Handlers
 {
-    public class CreateCompetitionCommandHandler
+    public class CommandCreateCompetitionHandler
     {
         private const char ChineseCommaCharacter = '，';
         private readonly IDateTimeService _dateTimeService;
@@ -20,7 +20,7 @@ namespace LuckyDrawBot.Handlers
         private readonly IActivityBuilder _activityBuilder;
         private readonly ITimerService _timerService;
 
-        public CreateCompetitionCommandHandler(IDateTimeService dateTimeService, IBotClientFactory botClientFactory, ILocalizationFactory localizationFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder, ITimerService timerService)
+        public CommandCreateCompetitionHandler(IDateTimeService dateTimeService, IBotClientFactory botClientFactory, ILocalizationFactory localizationFactory, ICompetitionService competitionService, IActivityBuilder activityBuilder, ITimerService timerService)
         {
             _dateTimeService = dateTimeService;
             _botClientFactory = botClientFactory;
