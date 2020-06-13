@@ -107,7 +107,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 CompetitionId = competition.Id,
                 Gift = "new gift name",
                 GiftImageUrl = "http://www.abc.com/new.png",
-                WinnerCount = 988,
+                WinnerCount = "988",
                 PlannedDrawTimeLocalDate = "2028-06-18",
                 PlannedDrawTimeLocalTime = "18:28"
             };
@@ -125,7 +125,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 openCompetitions.Should().HaveCount(1);
                 openCompetitions[0].Gift.Should().Be(editActionData.Gift);
                 openCompetitions[0].GiftImageUrl.Should().Be(editActionData.GiftImageUrl);
-                openCompetitions[0].WinnerCount.Should().Be(editActionData.WinnerCount);
+                openCompetitions[0].WinnerCount.Should().Be(int.Parse(editActionData.WinnerCount));
                 openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse($"{editActionData.PlannedDrawTimeLocalDate}T{editActionData.PlannedDrawTimeLocalTime}Z"));
             }
         }
@@ -134,7 +134,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
         {
             public string Gift { get; set; }
             public string GiftImageUrl { get; set; }
-            public int WinnerCount { get; set; }
+            public string WinnerCount { get; set; }
             public string PlannedDrawTimeLocalDate { get; set; }
             public string PlannedDrawTimeLocalTime { get; set; }
         }

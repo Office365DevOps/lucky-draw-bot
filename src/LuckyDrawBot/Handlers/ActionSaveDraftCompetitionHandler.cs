@@ -38,7 +38,7 @@ namespace LuckyDrawBot.Handlers
             var time = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalTime);
             var plannedDrawTime = new DateTimeOffset(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
 
-            await _competitionService.UpdateGift(invokeActionData.CompetitionId, plannedDrawTime, editForm.Gift, editForm.GiftImageUrl, editForm.WinnerCount);
+            await _competitionService.UpdateGift(invokeActionData.CompetitionId, plannedDrawTime, editForm.Gift, editForm.GiftImageUrl, int.Parse(editForm.WinnerCount));
         }
     }
 }

@@ -39,7 +39,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 CompetitionId = competition.Id,
                 Gift = "new gift name",
                 GiftImageUrl = "http://www.abc.com/new.png",
-                WinnerCount = 988,
+                WinnerCount = "988",
                 PlannedDrawTimeLocalDate = "2028-06-18",
                 PlannedDrawTimeLocalTime = "18:28"
             };
@@ -58,7 +58,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 openCompetitions[0].Status.Should().Be(CompetitionStatus.Active);
                 openCompetitions[0].Gift.Should().Be(activateActionData.Gift);
                 openCompetitions[0].GiftImageUrl.Should().Be(activateActionData.GiftImageUrl);
-                openCompetitions[0].WinnerCount.Should().Be(activateActionData.WinnerCount);
+                openCompetitions[0].WinnerCount.Should().Be(int.Parse(activateActionData.WinnerCount));
                 openCompetitions[0].PlannedDrawTime.Should().Be(DateTimeOffset.Parse($"{activateActionData.PlannedDrawTimeLocalDate}T{activateActionData.PlannedDrawTimeLocalTime}Z"));
                 var updatedMessages = server.Assert().GetUpdatedMessages();
                 updatedMessages.Should().HaveCount(1);
@@ -99,7 +99,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 CompetitionId = competition.Id,
                 Gift = gift,
                 GiftImageUrl = giftImageUrl,
-                WinnerCount = winnerCount,
+                WinnerCount = winnerCount.ToString(),
                 PlannedDrawTimeLocalDate = plannedDrawLocalDate,
                 PlannedDrawTimeLocalTime = plannedDrawLocalTime
             };
@@ -127,7 +127,7 @@ namespace LuckyDrawBot.Tests.Features.Competition
         {
             public string Gift { get; set; }
             public string GiftImageUrl { get; set; }
-            public int WinnerCount { get; set; }
+            public string WinnerCount { get; set; }
             public string PlannedDrawTimeLocalDate { get; set; }
             public string PlannedDrawTimeLocalTime { get; set; }
         }
