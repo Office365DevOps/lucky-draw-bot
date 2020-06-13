@@ -85,7 +85,7 @@ namespace LuckyDrawBot.Controllers
 
             if (activity.ChannelId != "msteams")
             {
-                return Ok();
+                return OkWithNewtonsoftJson(activity.CreateReply("Sorry, I work for Microsoft Teams only."));
             }
 
             if (activity.Type == ActivityTypes.Invoke)

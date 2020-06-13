@@ -1,26 +1,19 @@
 using LuckyDrawBot.Infrastructure;
 using LuckyDrawBot.Infrastructure.Database;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Reflection;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -48,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 settings.NullValueHandling = NullValueHandling.Ignore;
                 settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+                settings.Converters.Add(new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() });
                 return settings;
             });
 

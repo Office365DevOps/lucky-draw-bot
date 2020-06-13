@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using LuckyDrawBot.Tests.Infrastructure;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -25,6 +26,8 @@ namespace LuckyDrawBot.Tests.Features.HealthCheck
                 var activity = new Activity
                 {
                     ChannelId = "non msteams",
+                    From = new ChannelAccount("id", "name"),
+                    Conversation = new ConversationAccount(isGroup: true, id: "conv id", name: "conv name"),
                 };
 
                 var response = await client.SendActivity(activity);
