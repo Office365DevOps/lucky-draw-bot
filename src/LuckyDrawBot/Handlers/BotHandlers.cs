@@ -13,15 +13,17 @@ namespace LuckyDrawBot.Handlers
         }
 
         public NonTeamsChannelHandler NonTeamsChannel => _services.GetRequiredService<NonTeamsChannelHandler>();
-
-        public HelpCommandHandler HelpCommand => _services.GetRequiredService<HelpCommandHandler>();
-
         public AddedToNewChannelHandler AddedToNewChannel => _services.GetRequiredService<AddedToNewChannelHandler>();
 
+        public HelpCommandHandler HelpCommand => _services.GetRequiredService<HelpCommandHandler>();
         public UnknownCommandHandler UnknownCommand => _services.GetRequiredService<UnknownCommandHandler>();
-
-        public CreateDraftCompetitionCommandHandler CreateDraftCompetition => _services.GetRequiredService<CreateDraftCompetitionCommandHandler>();
-
         public CreateCompetitionCommandHandler CreateCompetitionCommand => _services.GetRequiredService<CreateCompetitionCommandHandler>();
+        public CreateDraftCompetitionCommandHandler CreateDraftCompetitionCommand => _services.GetRequiredService<CreateDraftCompetitionCommandHandler>();
+
+        public ActionJoinCompetitionHandler ActionJoinCompetition => _services.GetRequiredService<ActionJoinCompetitionHandler>();
+        public ActionViewCompetitionDetailHandler ActionViewCompetitionDetail => _services.GetRequiredService<ActionViewCompetitionDetailHandler>();
+        public ActionEditDraftCompetitionHandler ActionEditDraftCompetition => _services.GetRequiredService<ActionEditDraftCompetitionHandler>();
+        public ActionSaveDraftCompetitionHandler ActionSaveDraftCompetition => _services.GetRequiredService<ActionSaveDraftCompetitionHandler>();
+        public ActionActivateCompetitionHandler ActionActivateCompetition => _services.GetRequiredService<ActionActivateCompetitionHandler>();
     }
 }
