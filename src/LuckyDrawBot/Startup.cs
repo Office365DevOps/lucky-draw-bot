@@ -27,7 +27,6 @@ namespace LuckyDrawBot
 
             services
                 .AddHealthChecks()
-                .AddDependencyService(Configuration, "LuckyDrawBot")
                 .AddAssemblyVersion();
 
             services.AddSingleton(Configuration.GetSection("Bot").Get<BotSettings>());
