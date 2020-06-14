@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/LuckyDrawBot/bin/Debug/netcoreapp2.2/LuckyDrawBot.dll",
+            "program": "${workspaceFolder}/src/LuckyDrawBot/bin/Debug/netcoreapp3.1/LuckyDrawBot.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/LuckyDrawBot",
             "stopAtEntry": false,

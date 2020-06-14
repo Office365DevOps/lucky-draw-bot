@@ -170,9 +170,15 @@ namespace LuckyDrawBot.Services
                 };
             }
 
+            var conversationId = competition.ChannelId;
+            var isGroupChat = string.IsNullOrEmpty(competition.TeamId);
+            if (!isGroupChat)
+            {
+                conversationId += ";messageid=" + competition.MainActivityId;
+            }
             var activity = Activity.CreateMessageActivity() as Activity;
             activity.From = new ChannelAccount(_botSettings.Id, "bot name");
-            activity.Conversation = new ConversationAccount(id: competition.ChannelId + ";messageid=" + competition.MainActivityId);
+            activity.Conversation = new ConversationAccount(id: conversationId);
             activity.Attachments = new List<Attachment>
             {
                 new Attachment
