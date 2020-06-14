@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using AdaptiveCards;
+using LuckyDrawBot.Controllers;
 using LuckyDrawBot.Models;
 using Microsoft.Bot.Schema;
 
@@ -16,6 +18,7 @@ namespace LuckyDrawBot.Services
         TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition);
         TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale);
         Attachment CreateComposeEditForm(string gift, int winnerCount, string giftImageUrl, DateTimeOffset localPlannedDrawTime, string errorMessage, string currentLocale);
+        Attachment CreatePreviewCard(CompetitionEditForm editForm, DateTimeOffset localPlannedDrawTime, string locale);
     }
 
     public class ActivityBuilder : IActivityBuilder
@@ -542,5 +545,49 @@ namespace LuckyDrawBot.Services
             };
         }
 
+        public Attachment CreatePreviewCard(CompetitionEditForm editForm, DateTimeOffset localPlannedDrawTime, string locale)
+        {
+            var localization = _localizationFactory.Create(locale);
+            var plannedDrawTimeString = localPlannedDrawTime.ToString("f", CultureInfo.GetCultureInfo(locale));
+            var winnerCount = int.Parse(editForm.WinnerCount);
+
+            var elements = new List<AdaptiveElement>
+            {
+                new AdaptiveTextBlock { Text = editForm.Gift, Size = AdaptiveTextSize.Large },
+                new AdaptiveTextBlock { Text = localization["MainActivity.Description", winnerCount, plannedDrawTimeString], Size = AdaptiveTextSize.Default },
+                new AdaptiveTextBlock { Text = localization["MainActivity.NoCompetitor"], Size = AdaptiveTextSize.Default },
+            };
+
+            if (!string.IsNullOrEmpty(editForm.GiftImageUrl))
+            {
+                elements.Add(new AdaptiveImage { UrlString = editForm.GiftImageUrl });
+            }
+            elements.Add(new AdaptiveTextBlock { Id = "LuckyDrawData", IsVisible = false, Text = JsonSerializer.Serialize(editForm) });
+
+            var card = new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = new AdaptiveCard("1.0")
+                {
+                    Body = elements,
+                    Height = AdaptiveHeight.Auto,
+                    Actions = new List<AdaptiveAction>()
+                    {
+                        new AdaptiveSubmitAction
+                        {
+                            Type = AdaptiveSubmitAction.TypeName,
+                            Title = localization["MainActivity.JoinButton"]
+                        },
+                        new AdaptiveSubmitAction
+                        {
+                            Type = AdaptiveSubmitAction.TypeName,
+                            Title = localization["MainActivity.ViewDetailButton"]
+                        },
+                    }
+                }
+            };
+
+            return card;
+        }
     }
 }

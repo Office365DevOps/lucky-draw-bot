@@ -69,11 +69,24 @@ namespace LuckyDrawBot.Controllers
                     var response = await _handlers.ComposeStartForm.Handle(activity);
                     return OkWithNewtonsoftJson(response);
                 }
-                else if (activity.Name == "composeExtension/submitAction")
+                else if (activity.Name == "composeExtension/submitAction" && activity.GetCommandId() == "create")
                 {
-                    ComposeActionData composeActionData = activity.GetComposeActionData();
-                    var response = await _handlers.ComposePreview.Handle(activity);
-                    return OkWithNewtonsoftJson(response);
+                    if (activity.GetBotMessagePreviewAction() == "edit")
+                    {
+                        var response = await _handlers.ComposeEditAgain.Handle(activity);
+                        return OkWithNewtonsoftJson(response);
+                    }
+                    if (activity.GetBotMessagePreviewAction() == "send")
+                    {
+                        await _handlers.ComposeSend.Handle(activity, this.Url);
+                        return Ok();
+                    }
+                    else
+                    {
+                        ComposeActionData composeActionData = activity.GetComposeActionData();
+                        var response = await _handlers.ComposePreview.Handle(activity);
+                        return OkWithNewtonsoftJson(response);
+                    }
                 }
                 else
                 {

@@ -1,11 +1,11 @@
 using LuckyDrawBot.Controllers;
-using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -24,40 +24,45 @@ namespace LuckyDrawBot.Handlers
             _localizationFactory = localizationFactory;
         }
 
-        public async Task<TaskModuleTaskInfoResponse> Handle(Activity activity)
+        public async Task<object> Handle(Activity activity)
         {
             var data = ((JObject)activity.Value).GetValue("data");
             var editForm = JsonSerializer.Deserialize<CompetitionEditForm>(Newtonsoft.Json.JsonConvert.SerializeObject(data));
-
-            // Teams/AdaptiveCards BUG: https://github.com/Microsoft/AdaptiveCards/issues/2644
-            // DateInput does not post back the value in non-English situation.
-            // Workaround: use TextInput instead and validate user's input against "yyyy-MM-dd" format
-            if (!DateTimeOffset.TryParseExact(editForm.PlannedDrawTimeLocalDate, "yyyy-MM-dd", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.None, out DateTimeOffset dummy))
-            {
-                var defaultPlannedDrawTimeLocal = _dateTimeService.UtcNow.AddHours(2).ToOffset(TimeSpan.FromHours(activity.GetOffset().TotalHours));
-                editForm.PlannedDrawTimeLocalDate = defaultPlannedDrawTimeLocal.ToString("yyyy-MM-dd");
-            }
-
-            var offset = activity.GetOffset();
-            var date = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalDate);
-            var time = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalTime);
-            var plannedDrawTime = new DateTimeOffset(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
-            var localPlannedDrawTime = plannedDrawTime.ToOffset(TimeSpan.FromHours(activity.GetOffset().TotalHours));
+            var plannedDrawTime = editForm.GetPlannedDrawTime(activity.GetOffset(), _dateTimeService.UtcNow.AddHours(2));
+            var localPlannedDrawTime = plannedDrawTime.ToOffset(activity.GetOffset());
 
             var errorMessage = CanPreviewCompetition(editForm.Gift, int.Parse(editForm.WinnerCount), plannedDrawTime, editForm.GiftImageUrl, activity.Locale);
-            var card = _activityBuilder.CreateComposeEditForm(editForm.Gift, int.Parse(editForm.WinnerCount), editForm.GiftImageUrl, localPlannedDrawTime, errorMessage, activity.Locale);
-            var taskInfo = new TaskModuleTaskInfo
+            if (string.IsNullOrEmpty(errorMessage))
             {
-                Type = "continue",
-                Value = new TaskModuleTaskInfo.TaskInfoValue
+                var card = _activityBuilder.CreatePreviewCard(editForm, localPlannedDrawTime, activity.Locale);
+                var preview = MessageFactory.Attachment(card) as Activity;
+                preview.Value = editForm;
+                var response = new MessagingExtensionActionResponse
                 {
-                    Title = string.Empty,
-                    Card = card
-                }
-            };
-
-            var response = new TaskModuleTaskInfoResponse { Task = taskInfo };
-            return await Task.FromResult(response);
+                    ComposeExtension = new MessagingExtensionResult
+                    {
+                        Type = "botMessagePreview",
+                        ActivityPreview = preview
+                    }
+                };
+                return await Task.FromResult(response);
+            }
+            else
+            {
+                var card = _activityBuilder.CreateComposeEditForm(editForm.Gift, int.Parse(editForm.WinnerCount), editForm.GiftImageUrl, localPlannedDrawTime, errorMessage, activity.Locale);
+                var taskInfo = new TaskModuleContinueResponse
+                {
+                    Type = "continue",
+                    Value = new Microsoft.Bot.Schema.Teams.TaskModuleTaskInfo
+                    {
+                        Title = string.Empty,
+                        Width = "medium",
+                        Card = card
+                    }
+                };
+                var response = new MessagingExtensionActionResponse { Task = taskInfo };
+                return await Task.FromResult(response);
+            }
         }
 
         private string CanPreviewCompetition(string gift, int winnerCount, DateTimeOffset plannedDrawTime, string giftImageUrl, string locale)

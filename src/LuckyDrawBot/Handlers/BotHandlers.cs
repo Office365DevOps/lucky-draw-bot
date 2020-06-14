@@ -28,5 +28,7 @@ namespace LuckyDrawBot.Handlers
 
         public ComposeStartFormHandler ComposeStartForm => _services.GetRequiredService<ComposeStartFormHandler>();
         public ComposePreviewHandler ComposePreview => _services.GetRequiredService<ComposePreviewHandler>();
+        public ComposeEditAgainHandler ComposeEditAgain => _services.GetRequiredService<ComposeEditAgainHandler>();
+        public ComposeSendHandler ComposeSend => _services.GetRequiredService<ComposeSendHandler>();
     }
 }

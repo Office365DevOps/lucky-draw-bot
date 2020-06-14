@@ -64,5 +64,12 @@ namespace Microsoft.Bot.Schema
             var commandId = (string)value.GetValue("commandId");
             return commandId;
         }
+
+        public static string GetBotMessagePreviewAction(this Activity activity)
+        {
+            var value = (JObject)activity.Value;
+            var botMessagePreviewAction = (string)value.GetValue("botMessagePreviewAction");
+            return botMessagePreviewAction;
+        }
     }
 }

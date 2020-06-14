@@ -58,6 +58,8 @@ namespace LuckyDrawBot
 
             services.AddTransient<ComposeStartFormHandler>();
             services.AddTransient<ComposePreviewHandler>();
+            services.AddTransient<ComposeEditAgainHandler>();
+            services.AddTransient<ComposeSendHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
