@@ -45,11 +45,8 @@ namespace LuckyDrawBot.Services
             }
 
             var localization = _localizationFactory.Create(competition.Locale);
-            // var plannedDrawTimeString = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
-            //                                                        .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
-            var plannedDrawTime = competition.PlannedDrawTime.ToUniversalTime();
-            var plannedDrawTimeString = plannedDrawTime.ToString("yyyy-MM-dd") + "T" + plannedDrawTime.ToString("HH-mm-ss") + "Z";
-            var plannedDrawTimeAdaptiveCardString = "{{DATE(" + plannedDrawTimeString + ", SHORT)}} {{TIME(" + plannedDrawTimeString + ")}}";
+            var plannedDrawTimeString = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours))
+                                                                   .ToString("f", CultureInfo.GetCultureInfo(competition.Locale));
             var viewDetailAction = new CardAction
             {
                 Title = localization["MainActivity.ViewDetailButton"],
@@ -71,7 +68,7 @@ namespace LuckyDrawBot.Services
                     Content = new HeroCard()
                     {
                         Title = competition.Gift,
-                        Subtitle = localization["MainActivity.Description", competition.WinnerCount, plannedDrawTimeAdaptiveCardString],
+                        Subtitle = localization["MainActivity.Description", competition.WinnerCount, plannedDrawTimeString],
                         Text = GenerateCompetitorsText(competition),
                         Images = string.IsNullOrEmpty(competition.GiftImageUrl) ? null : new List<CardImage>()
                         {
