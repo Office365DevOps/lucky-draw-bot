@@ -43,5 +43,26 @@ namespace Microsoft.Bot.Schema
                 return JsonSerializer.Deserialize<InvokeActionData>(Newtonsoft.Json.JsonConvert.SerializeObject(activity.Value));
             }
         }
+
+        public static ComposeActionData GetComposeActionData(this Activity activity)
+        {
+            var value = (JObject)activity.Value;
+            if (value.ContainsKey("data"))
+            {
+                var data = value.GetValue("data");
+                return JsonSerializer.Deserialize<ComposeActionData>(Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            }
+            else
+            {
+                return JsonSerializer.Deserialize<ComposeActionData>(Newtonsoft.Json.JsonConvert.SerializeObject(activity.Value));
+            }
+        }
+
+        public static string GetCommandId(this Activity activity)
+        {
+            var value = (JObject)activity.Value;
+            var commandId = (string)value.GetValue("commandId");
+            return commandId;
+        }
     }
 }

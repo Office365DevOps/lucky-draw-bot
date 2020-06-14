@@ -46,6 +46,7 @@ namespace LuckyDrawBot.Localizations
             ["EditCompetition.Form.GiftImageUrl.Invalid"] = "奖品图片URL必须以'http://'或者'https://'开头。",
             ["EditCompetition.SaveDraftButton"] = "保存",
             ["EditCompetition.ActivateCompetition"] = "开放抽奖",
+            ["EditCompetition.PreviewButton"] = "预览",
         };
 
         public LocalizationZhCn() : base(Strings)

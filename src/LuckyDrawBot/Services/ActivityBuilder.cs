@@ -15,6 +15,7 @@ namespace LuckyDrawBot.Services
         TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
         TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition);
         TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale);
+        Attachment CreateComposeEditForm(string gift, int winnerCount, string giftImageUrl, DateTimeOffset localPlannedDrawTime, string errorMessage, string currentLocale);
     }
 
     public class ActivityBuilder : IActivityBuilder
@@ -413,6 +414,132 @@ namespace LuckyDrawBot.Services
                 }
             };
             return new TaskModuleTaskInfoResponse { Task = taskInfo };
+        }
+
+        public Attachment CreateComposeEditForm(string gift, int winnerCount, string giftImageUrl, DateTimeOffset localPlannedDrawTime, string errorMessage, string currentLocale)
+        {
+            var localization = _localizationFactory.Create(currentLocale);
+
+            var body = new List<AdaptiveElement>
+            {
+                new AdaptiveTextBlock
+                {
+                    Text = localization["EditCompetition.Form.Gift.Label"],
+                },
+                new AdaptiveTextInput
+                {
+                    Id = "gift",
+                    Placeholder = localization["EditCompetition.Form.Gift.Placeholder"],
+                    Value = gift,
+                    IsMultiline = false
+                },
+                new AdaptiveTextBlock
+                {
+                    Text = localization["EditCompetition.Form.WinnerCount.Label"],
+                },
+                new AdaptiveNumberInput
+                {
+                    Id = "winnerCount",
+                    Placeholder = localization["EditCompetition.Form.WinnerCount.Placeholder"],
+                    Value = winnerCount,
+                    Min = 1,
+                    Max = 10000
+                },
+                new AdaptiveTextBlock
+                {
+                    Text = localization["EditCompetition.Form.PlannedDrawTime.Label"],
+                },
+                new AdaptiveColumnSet
+                {
+                    Columns = new List<AdaptiveColumn>
+                    {
+                        new AdaptiveColumn
+                        {
+                            Width = "1",
+                            Items = new List<AdaptiveElement>
+                            {
+                                // Teams/AdaptiveCards BUG: https://github.com/Microsoft/AdaptiveCards/issues/2644
+                                // DateInput does not post back the value in non-English situation.
+                                // Workaround: use TextInput instead and validate user's input against "yyyy-MM-dd" format
+                                (currentLocale != null && currentLocale.StartsWith("en"))
+                                    ? new AdaptiveDateInput
+                                    {
+                                        Id = "plannedDrawTimeLocalDate",
+                                        Value = localPlannedDrawTime.ToString("yyyy-MM-dd")
+                                    }
+                                    : new AdaptiveTextInput
+                                    {
+                                        Id = "plannedDrawTimeLocalDate",
+                                        Placeholder = localization["EditCompetition.Form.PlannedDrawTimeLocalDate.Placeholder"],
+                                        Value = localPlannedDrawTime.ToString("yyyy-MM-dd")
+                                    } as AdaptiveElement
+                            }
+                        },
+                        new AdaptiveColumn
+                        {
+                            Width = "1",
+                            Items = new List<AdaptiveElement>
+                            {
+                                // Similar to the above BUG: https://github.com/Microsoft/AdaptiveCards/issues/2644
+                                // TimeInput does not send back the correct value for non-English culture, when user selects 4:30 of afternoon, it sends back "04:30".
+                                // Workaround: use TextInput instead and validate user's input against "HH:mm" format
+                                (currentLocale != null && currentLocale.StartsWith("en"))
+                                    ? new AdaptiveTimeInput
+                                    {
+                                        Id = "plannedDrawTimeLocalTime",
+                                        Value = localPlannedDrawTime.ToString("HH:mm")
+                                    }
+                                    : new AdaptiveTextInput
+                                    {
+                                        Id = "plannedDrawTimeLocalTime",
+                                        Placeholder = localization["EditCompetition.Form.PlannedDrawTimeLocalTime.Placeholder"],
+                                        Value = localPlannedDrawTime.ToString("HH:mm")
+                                    } as AdaptiveElement
+
+                            }
+                        }
+                    }
+                },
+                new AdaptiveTextBlock
+                {
+                    Text = localization["EditCompetition.Form.GiftImageUrl.Label"],
+                },
+                new AdaptiveTextInput
+                {
+                    Id = "giftImageUrl",
+                    Style = AdaptiveTextInputStyle.Url,
+                    Placeholder = localization["EditCompetition.Form.GiftImageUrl.Placeholder"],
+                    Value = giftImageUrl
+                }
+            };
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                body.Insert(0, new AdaptiveTextBlock
+                {
+                    Text = errorMessage,
+                    Color = AdaptiveTextColor.Attention
+                });
+            }
+
+            var actions = new List<AdaptiveAction>
+            {
+                new AdaptiveSubmitAction
+                {
+                    Title = localization["EditCompetition.PreviewButton"],
+                    Data = new ComposeActionData { UserAction = ComposeActionType.Preview } 
+                }
+            };
+
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = new AdaptiveCard("1.0")
+                {
+                    Body = body,
+                    Actions = actions
+                }
+            };
         }
 
     }

@@ -25,5 +25,8 @@ namespace LuckyDrawBot.Handlers
         public ActionEditDraftCompetitionHandler ActionEditDraftCompetition => _services.GetRequiredService<ActionEditDraftCompetitionHandler>();
         public ActionSaveDraftCompetitionHandler ActionSaveDraftCompetition => _services.GetRequiredService<ActionSaveDraftCompetitionHandler>();
         public ActionActivateCompetitionHandler ActionActivateCompetition => _services.GetRequiredService<ActionActivateCompetitionHandler>();
+
+        public ComposeStartFormHandler ComposeStartForm => _services.GetRequiredService<ComposeStartFormHandler>();
+        public ComposePreviewHandler ComposePreview => _services.GetRequiredService<ComposePreviewHandler>();
     }
 }

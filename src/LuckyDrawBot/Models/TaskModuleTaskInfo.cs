@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Bot.Schema;
 
 namespace LuckyDrawBot.Models

@@ -46,6 +46,7 @@ namespace LuckyDrawBot.Localizations
             ["EditCompetition.Form.GiftImageUrl.Invalid"] = "The URL of prize image must start with 'http://' or 'https://'.",
             ["EditCompetition.SaveDraftButton"] = "Save",
             ["EditCompetition.ActivateCompetition"] = "Start",
+            ["EditCompetition.PreviewButton"] = "Preview",
         };
 
         public LocalizationEnUs() : base(Strings)

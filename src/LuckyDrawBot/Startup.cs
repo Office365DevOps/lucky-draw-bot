@@ -55,6 +55,9 @@ namespace LuckyDrawBot
             services.AddTransient<ActionEditDraftCompetitionHandler>();
             services.AddTransient<ActionSaveDraftCompetitionHandler>();
             services.AddTransient<ActionActivateCompetitionHandler>();
+
+            services.AddTransient<ComposeStartFormHandler>();
+            services.AddTransient<ComposePreviewHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

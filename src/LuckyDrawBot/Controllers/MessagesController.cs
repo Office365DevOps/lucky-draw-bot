@@ -64,28 +64,42 @@ namespace LuckyDrawBot.Controllers
             // Handle the activity
             if (activity.Type == ActivityTypes.Invoke)
             {
-                InvokeActionData invokeActionData = activity.GetInvokeActionData();
-
-                switch (invokeActionData.UserAction)
+                if (activity.Name == "composeExtension/fetchTask" && activity.GetCommandId() == "create")
                 {
-                    case InvokeActionType.Join:
-                        await _handlers.ActionJoinCompetition.Handle(activity);
-                        return Ok();
-                    case InvokeActionType.ViewDetail:
-                        var competitionDetailResponse = await _handlers.ActionViewCompetitionDetail.Handle(activity);
-                        return OkWithNewtonsoftJson(competitionDetailResponse);
-                    case InvokeActionType.EditDraft:
-                        var editDraftCompetitionResponse = await _handlers.ActionEditDraftCompetition.Handle(activity);
-                        return OkWithNewtonsoftJson(editDraftCompetitionResponse);
-                    case InvokeActionType.SaveDraft:
-                        await _handlers.ActionSaveDraftCompetition.Handle(activity);
-                        return Ok();
-                    case InvokeActionType.ActivateCompetition:
-                        await _handlers.ActionSaveDraftCompetition.Handle(activity);
-                        var activateCompetitionResponse = await _handlers.ActionActivateCompetition.Handle(activity, this.Url);
-                        return OkWithNewtonsoftJson(activateCompetitionResponse);
-                    default:
-                        throw new Exception("Unknown invoke action type: " + invokeActionData.UserAction);
+                    var response = await _handlers.ComposeStartForm.Handle(activity);
+                    return OkWithNewtonsoftJson(response);
+                }
+                else if (activity.Name == "composeExtension/submitAction")
+                {
+                    ComposeActionData composeActionData = activity.GetComposeActionData();
+                    var response = await _handlers.ComposePreview.Handle(activity);
+                    return OkWithNewtonsoftJson(response);
+                }
+                else
+                {
+                    InvokeActionData invokeActionData = activity.GetInvokeActionData();
+
+                    switch (invokeActionData.UserAction)
+                    {
+                        case InvokeActionType.Join:
+                            await _handlers.ActionJoinCompetition.Handle(activity);
+                            return Ok();
+                        case InvokeActionType.ViewDetail:
+                            var competitionDetailResponse = await _handlers.ActionViewCompetitionDetail.Handle(activity);
+                            return OkWithNewtonsoftJson(competitionDetailResponse);
+                        case InvokeActionType.EditDraft:
+                            var editDraftCompetitionResponse = await _handlers.ActionEditDraftCompetition.Handle(activity);
+                            return OkWithNewtonsoftJson(editDraftCompetitionResponse);
+                        case InvokeActionType.SaveDraft:
+                            await _handlers.ActionSaveDraftCompetition.Handle(activity);
+                            return Ok();
+                        case InvokeActionType.ActivateCompetition:
+                            await _handlers.ActionSaveDraftCompetition.Handle(activity);
+                            var activateCompetitionResponse = await _handlers.ActionActivateCompetition.Handle(activity, this.Url);
+                            return OkWithNewtonsoftJson(activateCompetitionResponse);
+                        default:
+                            throw new Exception("Unknown invoke action type: " + invokeActionData.UserAction);
+                    }
                 }
             }
             else if (activity.Type == ActivityTypes.Message)
