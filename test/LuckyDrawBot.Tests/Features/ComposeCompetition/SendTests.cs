@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -11,10 +9,8 @@ using FluentAssertions;
 using LuckyDrawBot.Controllers;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
-using LuckyDrawBot.Tests.Models;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
