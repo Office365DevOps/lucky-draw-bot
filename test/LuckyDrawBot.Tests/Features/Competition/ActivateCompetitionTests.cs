@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using FluentAssertions;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
+using LuckyDrawBot.Tests.Models;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using static LuckyDrawBot.Services.CompetitionRepositoryService;
@@ -113,11 +113,10 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 var response = await client.SendTeamsTaskFetch(activateActionData);
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var result = await response.Content.ReadAsAsync<TaskModuleTaskInfoResponse>();
+                var result = await response.Content.ReadAsWithNewtonsoftJsonAsync<TaskModuleResponseForContinue>();
                 result.Task?.Value?.Card?.Content.Should().NotBeNull();
-                var cardBody = ((JsonElement)result.Task.Value.Card.Content).GetProperty("body");
-                var errorTextBlockJson = JsonSerializer.Serialize(cardBody.EnumerateArray().First());
-                var errorTextBlock = Newtonsoft.Json.JsonConvert.DeserializeObject<AdaptiveTextBlock>(errorTextBlockJson);
+                var cardBody = ((JObject)result.Task.Value.Card.Content).GetValue("body");
+                var errorTextBlock = ((JArray)cardBody).First.ToObject<AdaptiveTextBlock>();
                 errorTextBlock.Color.Should().Be(AdaptiveTextColor.Attention);
                 errorTextBlock.Text.Should().Be(errorText);
             }

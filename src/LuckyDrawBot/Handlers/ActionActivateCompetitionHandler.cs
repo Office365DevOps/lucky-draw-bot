@@ -3,6 +3,7 @@ using LuckyDrawBot.Models;
 using LuckyDrawBot.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace LuckyDrawBot.Handlers
             _timerService = timerService;
         }
 
-        public async Task<TaskModuleTaskInfoResponse> Handle(Activity activity, IUrlHelper urlHelper)
+        public async Task<TaskModuleResponse> Handle(Activity activity, IUrlHelper urlHelper)
         {
             var invokeActionData = activity.GetInvokeActionData();
             var competition = await _competitionService.GetCompetition(invokeActionData.CompetitionId);

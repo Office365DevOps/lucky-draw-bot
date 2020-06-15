@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using FluentAssertions;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
+using LuckyDrawBot.Tests.Models;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using static LuckyDrawBot.Services.CompetitionRepositoryService;
@@ -46,10 +47,9 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 var response = await client.SendTeamsTaskFetch(new InvokeActionData { UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id });
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var result = await response.Content.ReadAsAsync<TaskModuleTaskInfoResponse>();
+                var result = await response.Content.ReadAsWithNewtonsoftJsonAsync<TaskModuleResponseForContinue>();
                 result.Task?.Value?.Card?.Content.Should().NotBeNull();
-                var cardJson = JsonSerializer.Serialize(result.Task.Value.Card.Content);
-                var card = Newtonsoft.Json.JsonConvert.DeserializeObject<AdaptiveCard>(cardJson);
+                var card = ((JObject)result.Task.Value.Card.Content).ToObject<AdaptiveCard>();
                 card.Body.Should().HaveCount(1 + competition.Competitors.Count);
                 card.Body[1].GetType().Should().Be(typeof(AdaptiveTextBlock));
                 ((AdaptiveTextBlock)card.Body[1]).Text.Should().Be(competition.Competitors[0].Name);
@@ -80,10 +80,9 @@ namespace LuckyDrawBot.Tests.Features.Competition
                 var response = await client.SendTeamsTaskFetch(new InvokeActionData { UserAction = InvokeActionType.ViewDetail, CompetitionId = competition.Id });
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var result = await response.Content.ReadAsAsync<TaskModuleTaskInfoResponse>();
+                var result = await response.Content.ReadAsWithNewtonsoftJsonAsync<TaskModuleResponseForContinue>();
                 result.Task?.Value?.Card?.Content.Should().NotBeNull();
-                var cardJson = JsonSerializer.Serialize(result.Task.Value.Card.Content);
-                var card = Newtonsoft.Json.JsonConvert.DeserializeObject<AdaptiveCard>(cardJson);
+                var card = ((JObject)result.Task.Value.Card.Content).ToObject<AdaptiveCard>();
                 card.Body.Should().HaveCount(1);
                 card.Body.First().GetType().Should().Be(typeof(AdaptiveTextBlock));
                 ((AdaptiveTextBlock)card.Body.First()).Text.Should().Contain("no joined users");

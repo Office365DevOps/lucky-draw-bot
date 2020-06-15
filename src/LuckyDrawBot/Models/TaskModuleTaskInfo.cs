@@ -2,9 +2,9 @@ using Microsoft.Bot.Schema;
 
 namespace LuckyDrawBot.Models
 {
-    public class TaskModuleTaskInfo
+    public class TaskModuleTaskInfo2
     {
-        public class TaskInfoValue
+        public class TaskInfoValue2
         {
             public string Title { get; set; }
             public object Height { get; set; }
@@ -16,11 +16,11 @@ namespace LuckyDrawBot.Models
         }
 
         public string Type { get; set; }
-        public TaskInfoValue Value { get; set; }
+        public TaskInfoValue2 Value { get; set; }
     }
 
-    public class TaskModuleTaskInfoResponse
+    public class TaskModuleTaskInfoResponse2
     {
-        public TaskModuleTaskInfo Task { get; set; }
+        public TaskModuleTaskInfo2 Task { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using AdaptiveCards;
 using LuckyDrawBot.Controllers;
 using LuckyDrawBot.Models;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.Schema.Teams;
 
 namespace LuckyDrawBot.Services
 {
@@ -14,9 +15,9 @@ namespace LuckyDrawBot.Services
     {
         Activity CreateMainActivity(Competition competition);
         Activity CreateResultActivity(Competition competition);
-        TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
-        TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition);
-        TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale);
+        TaskModuleResponse CreateCompetitionDetailTaskInfoResponse(Competition competition);
+        TaskModuleResponse CreateEditNotAllowedTaskInfoResponse(Competition competition);
+        TaskModuleResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale);
         Attachment CreateComposeEditForm(string gift, int winnerCount, string giftImageUrl, DateTimeOffset localPlannedDrawTime, string errorMessage, string currentLocale);
         Attachment CreatePreviewCard(CompetitionEditForm editForm, DateTimeOffset localPlannedDrawTime, string locale);
     }
@@ -194,7 +195,7 @@ namespace LuckyDrawBot.Services
             return activity;
         }
 
-        public TaskModuleTaskInfoResponse CreateCompetitionDetailTaskInfoResponse(Competition competition)
+        public TaskModuleResponse CreateCompetitionDetailTaskInfoResponse(Competition competition)
         {
             var localization = _localizationFactory.Create(competition.Locale);
 
@@ -209,7 +210,12 @@ namespace LuckyDrawBot.Services
                         Size = AdaptiveTextSize.Large
                     },
                 };
-                body.AddRange(competition.Competitors.Select(c => new AdaptiveTextBlock { Text = c.Name }));
+                foreach (var competitor in competition.Competitors)
+                {
+                    var isWinner = competition.WinnerAadObjectIds.Contains(competitor.AadObjectId);
+                    var namePrefix = isWinner ? "🎁 " : string.Empty;
+                    body.Add(new AdaptiveTextBlock { Text = namePrefix + competitor.Name });
+                }
             }
             else
             {
@@ -221,13 +227,12 @@ namespace LuckyDrawBot.Services
                         Size = AdaptiveTextSize.Medium
                     },
                 };
-                body.AddRange(competition.Competitors.Select(c => new AdaptiveTextBlock { Text = c.Name }));
             }
 
-            var taskInfo = new TaskModuleTaskInfo
+            var taskInfo = new TaskModuleContinueResponse
             {
                 Type = "continue",
-                Value = new TaskModuleTaskInfo.TaskInfoValue
+                Value = new TaskModuleTaskInfo
                 {
                     Title = string.Empty,
                     Height = "medium",
@@ -242,18 +247,18 @@ namespace LuckyDrawBot.Services
                     }
                 }
             };
-            return new TaskModuleTaskInfoResponse { Task = taskInfo };
+            return new TaskModuleResponse { Task = taskInfo };
         }
 
-        public TaskModuleTaskInfoResponse CreateEditNotAllowedTaskInfoResponse(Competition competition)
+        public TaskModuleResponse CreateEditNotAllowedTaskInfoResponse(Competition competition)
         {
             var localization = _localizationFactory.Create(competition.Locale);
-            return new TaskModuleTaskInfoResponse
+            return new TaskModuleResponse
             {
-                Task = new TaskModuleTaskInfo
+                Task = new TaskModuleContinueResponse
                 {
                     Type = "continue",
-                    Value = new TaskModuleTaskInfo.TaskInfoValue
+                    Value = new TaskModuleTaskInfo
                     {
                         Title = string.Empty,
                         Height = "small",
@@ -278,7 +283,7 @@ namespace LuckyDrawBot.Services
             };
         }
 
-        public TaskModuleTaskInfoResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale)
+        public TaskModuleResponse CreateDraftCompetitionEditTaskInfoResponse(Competition competition, string errorMessage, string currentLocale)
         {
             var localization = _localizationFactory.Create(competition.Locale);
             var localPlannedDrawTime = competition.PlannedDrawTime.ToOffset(TimeSpan.FromHours(competition.OffsetHours));
@@ -399,10 +404,10 @@ namespace LuckyDrawBot.Services
                 }
             };
 
-            var taskInfo = new TaskModuleTaskInfo
+            var taskInfo = new TaskModuleContinueResponse
             {
                 Type = "continue",
-                Value = new TaskModuleTaskInfo.TaskInfoValue
+                Value = new TaskModuleTaskInfo
                 {
                     Title = string.Empty,
                     Card = new Attachment
@@ -416,7 +421,7 @@ namespace LuckyDrawBot.Services
                     }
                 }
             };
-            return new TaskModuleTaskInfoResponse { Task = taskInfo };
+            return new TaskModuleResponse { Task = taskInfo };
         }
 
         public Attachment CreateComposeEditForm(string gift, int winnerCount, string giftImageUrl, DateTimeOffset localPlannedDrawTime, string errorMessage, string currentLocale)

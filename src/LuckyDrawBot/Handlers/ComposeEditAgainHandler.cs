@@ -4,6 +4,8 @@ using LuckyDrawBot.Services;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Globalization;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -25,6 +27,12 @@ namespace LuckyDrawBot.Handlers
             var editForm = GetEditForm(activity);
 
             var localPlannedDrawTime = _dateTimeService.UtcNow.AddHours(2).ToOffset(activity.GetOffset());
+            if (!string.IsNullOrEmpty(editForm.PlannedDrawTimeLocalDate) && !string.IsNullOrEmpty(editForm.PlannedDrawTimeLocalTime))
+            {
+                var dateTime = DateTime.Parse(editForm.PlannedDrawTimeLocalDate + "T" + editForm.PlannedDrawTimeLocalTime, CultureInfo.InvariantCulture);
+                localPlannedDrawTime = new DateTimeOffset(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, 0, activity.GetOffset());
+            }
+
             var card = _activityBuilder.CreateComposeEditForm(editForm.Gift, int.Parse(editForm.WinnerCount), editForm.GiftImageUrl, localPlannedDrawTime, string.Empty, activity.Locale);
             var taskInfo = new TaskModuleContinueResponse
             {

@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using FluentAssertions;
 using LuckyDrawBot.Models;
 using LuckyDrawBot.Tests.Infrastructure;
+using LuckyDrawBot.Tests.Models;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using static LuckyDrawBot.Services.CompetitionRepositoryService;
@@ -45,10 +46,9 @@ namespace LuckyDrawBot.Tests.Features.Competition
                     from: new ChannelAccount { AadObjectId = competition.CreatorAadObjectId });
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var result = await response.Content.ReadAsAsync<TaskModuleTaskInfoResponse>();
+                var result = await response.Content.ReadAsWithNewtonsoftJsonAsync<TaskModuleResponseForContinue>();
                 result.Task?.Value?.Card?.Content.Should().NotBeNull();
-                var cardJson = JsonSerializer.Serialize(result.Task.Value.Card.Content);
-                var card = Newtonsoft.Json.JsonConvert.DeserializeObject<AdaptiveCard>(cardJson);
+                var card = ((JObject)result.Task.Value.Card.Content).ToObject<AdaptiveCard>();
                 card.Actions.Should().HaveCount(2);
                 card.Actions[0].Title.Should().Be("Save");
                 card.Actions[1].Title.Should().Be("Start");
@@ -81,10 +81,9 @@ namespace LuckyDrawBot.Tests.Features.Competition
                     from: new ChannelAccount { AadObjectId = currentUserAadObjectId });
 
                 response.StatusCode.Should().Be(HttpStatusCode.OK);
-                var result = await response.Content.ReadAsAsync<TaskModuleTaskInfoResponse>();
+                var result = await response.Content.ReadAsWithNewtonsoftJsonAsync<TaskModuleResponseForContinue>();
                 result.Task?.Value?.Card?.Content.Should().NotBeNull();
-                var cardJson = JsonSerializer.Serialize(result.Task.Value.Card.Content);
-                var card = Newtonsoft.Json.JsonConvert.DeserializeObject<AdaptiveCard>(cardJson);
+                var card = ((JObject)result.Task.Value.Card.Content).ToObject<AdaptiveCard>();
                 card.Body.Should().HaveCount(1);
                 card.Body[0].Type.Should().Be("TextBlock");
             }
