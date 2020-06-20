@@ -21,8 +21,8 @@ namespace LuckyDrawBot.Handlers
 
         public async Task Handle(Activity activity)
         {
-            var isGroupChat = activity.Conversation.ConversationType == "groupChat";
             var channelData = activity.GetChannelData<TeamsChannelData>();
+            var isGroupChat = channelData.Channel == null;
             var teamId = isGroupChat ? string.Empty : channelData.Team.Id;
             var channelId = isGroupChat ? activity.Conversation.Id : channelData.Channel.Id;
             var draftCompetition = await _competitionService.CreateDraftCompetition(

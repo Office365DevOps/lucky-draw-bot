@@ -37,8 +37,8 @@ namespace LuckyDrawBot.Handlers
             var time = DateTimeOffset.Parse(editForm.PlannedDrawTimeLocalTime);
             var plannedDrawTime = new DateTimeOffset(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, 0, offset).ToUniversalTime();
 
-            var isGroupChat = activity.Conversation.ConversationType == "groupChat";
             var channelData = activity.GetChannelData<TeamsChannelData>();
+            var isGroupChat = channelData.Channel == null;
             var teamId = isGroupChat ? string.Empty : channelData.Team.Id;
             var channelId = isGroupChat ? activity.Conversation.Id : channelData.Channel.Id;
             var competition = await _competitionService.CreateActiveCompetition(
