@@ -27,6 +27,7 @@ namespace LuckyDrawBot.Handlers
                 Value = new TaskModuleTaskInfo
                 {
                     Title = string.Empty,
+                    Width = "medium",
                     Card = card
                 }
             };

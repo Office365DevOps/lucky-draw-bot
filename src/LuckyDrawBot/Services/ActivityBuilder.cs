@@ -65,6 +65,10 @@ namespace LuckyDrawBot.Services
                 Value = new InvokeActionData { UserAction = InvokeActionType.Join, CompetitionId = competition.Id }
             };
 
+            var isCompleted = (competition.Status == CompetitionStatus.Completed);
+            var subtitle = isCompleted
+                           ? localization["MainActivity.DescriptionAfterCompletion", competition.WinnerCount, plannedDrawTimeString]
+                           : localization["MainActivity.Description", competition.WinnerCount, plannedDrawTimeString];
             activity.Attachments = new List<Attachment>
             {
                 new Attachment
@@ -73,7 +77,7 @@ namespace LuckyDrawBot.Services
                     Content = new HeroCard()
                     {
                         Title = competition.Gift,
-                        Subtitle = localization["MainActivity.Description", competition.WinnerCount, plannedDrawTimeString],
+                        Subtitle = subtitle,
                         Text = GenerateCompetitorsText(competition),
                         Images = string.IsNullOrEmpty(competition.GiftImageUrl) ? null : new List<CardImage>()
                         {
@@ -82,7 +86,7 @@ namespace LuckyDrawBot.Services
                                 Url = competition.GiftImageUrl
                             }
                         },
-                        Buttons = (competition.Status == CompetitionStatus.Completed) ? new List<CardAction> { viewDetailAction } : new List<CardAction> { joinAction, viewDetailAction }
+                        Buttons = isCompleted ? new List<CardAction> { viewDetailAction } : new List<CardAction> { joinAction, viewDetailAction }
                     }
                 }
             };

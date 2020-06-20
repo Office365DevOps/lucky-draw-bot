@@ -53,7 +53,7 @@ namespace LuckyDrawBot.Handlers
                 var taskInfo = new TaskModuleContinueResponse
                 {
                     Type = "continue",
-                    Value = new Microsoft.Bot.Schema.Teams.TaskModuleTaskInfo
+                    Value = new TaskModuleTaskInfo
                     {
                         Title = string.Empty,
                         Width = "medium",

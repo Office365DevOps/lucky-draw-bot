@@ -15,6 +15,7 @@ namespace LuckyDrawBot.Localizations
             ["MainActivity.Draft.Title"] = "{0} is starting a lucky draw",
             ["MainActivity.Draft.Subtitle"] = "Get ready for it 😁",
             ["MainActivity.Description"] = "{0} prize(s). Time: {1}",
+            ["MainActivity.DescriptionAfterCompletion"] = "[Closed] {0} prize(s). Time: {1}",
             ["MainActivity.JoinButton"] = "I am in",
             ["MainActivity.ViewDetailButton"] = "Joined Users",
             ["MainActivity.NoCompetitor"] = "",
